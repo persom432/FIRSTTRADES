@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - FIRSTTRADES</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -172,6 +173,18 @@
 
     <button class="login-btn" onclick="login()">Login</button>
 
+    <div style="text-align:right; margin-top:0.75rem;">
+        <a href="#" onclick="showForgotPassword()" style="color:rgba(255,255,255,0.5); font-size:0.85rem; text-decoration:none;">Forgot password?</a>
+    </div>
+
+    <!-- Forgot Password Panel -->
+    <div id="forgotPanel" style="display:none; margin-top:1.25rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:1.25rem;">
+        <p style="color:rgba(255,255,255,0.7); font-size:0.85rem; margin-bottom:1rem;">Enter your registered email and we'll send your password to it.</p>
+        <input type="email" id="resetEmail" placeholder="Enter your email" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; color:#fff; font-size:0.9rem; font-family:'Poppins',sans-serif; margin-bottom:0.75rem;">
+        <div id="resetMsg" style="display:none; font-size:0.85rem; margin-bottom:0.75rem;"></div>
+        <button onclick="sendPasswordReset()" style="width:100%; padding:12px; background:linear-gradient(135deg,#f5c856,#d4af37); color:#1a1a1a; border:none; border-radius:10px; font-weight:700; font-size:0.9rem; cursor:pointer; font-family:'Poppins',sans-serif;">Send Password</button>
+    </div>
+
     <div class="divider">or</div>
 
     <div class="register-link">
@@ -183,6 +196,46 @@
     // If already logged in, go straight to dashboard
     if (sessionStorage.getItem('loggedIn') === 'true') {
         window.location.href = 'trading-dashboard.html';
+    }
+
+    function showForgotPassword() {
+        var panel = document.getElementById('forgotPanel');
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function sendPasswordReset() {
+        var email    = document.getElementById('resetEmail').value.trim().toLowerCase();
+        var msgEl    = document.getElementById('resetMsg');
+        var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+        if (!email) {
+            msgEl.style.color = '#e74c3c';
+            msgEl.textContent = '❌ Please enter your email.';
+            msgEl.style.display = 'block';
+            return;
+        }
+
+        if (!userData.email || userData.email.toLowerCase() !== email) {
+            msgEl.style.color = '#e74c3c';
+            msgEl.textContent = '❌ No account found with that email.';
+            msgEl.style.display = 'block';
+            return;
+        }
+
+        emailjs.init('0J1wL_xAXvlRU7WaV');
+        emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
+            to_name:  userData.fullName || 'User',
+            to_email: userData.email,
+            code:     'Your FIRSTTRADES password is: ' + userData.password
+        }).then(function() {
+            msgEl.style.color = '#27ae60';
+            msgEl.textContent = '✅ Password sent to ' + userData.email;
+            msgEl.style.display = 'block';
+        }, function() {
+            msgEl.style.color = '#e74c3c';
+            msgEl.textContent = '❌ Failed to send. Please try again.';
+            msgEl.style.display = 'block';
+        });
     }
 
     function login() {
