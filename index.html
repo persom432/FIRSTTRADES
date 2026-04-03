@@ -404,15 +404,12 @@
 
         // Start showing notifications
         function startNotifications() {
-            // Show first notification after 3 seconds
             setTimeout(() => {
                 createNotification();
-                
-                // Then show notifications every 4 seconds
                 setInterval(() => {
                     createNotification();
-                }, 4000);
-            }, 3000);
+                }, 5000);
+            }, 2000);
         }
 
         // Start notifications when page loads
