@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exodus Wallet - FIRSTTRADES</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f5f7fa; color:#222; margin:0; padding:20px; }
+    .card { background:#fff; border-radius:10px; box-shadow:0 12px 25px rgba(0,0,0,0.08); padding:20px; max-width:820px; margin:16px auto; }
+    .grid { display:grid; gap:16px; grid-template-columns:1fr 1fr; }
+    .button { background:#667eea; border:none; color:#fff; border-radius:8px; padding:12px 16px; cursor:pointer; }
+    .button:disabled { background:#9aa5b7; cursor:not-allowed; }
+    table { width:100%; border-collapse:collapse; margin-top:12px; }
+    td,th { border:1px solid #e2e8f0; padding:10px; }
+    .status { margin-top:14px; padding:10px; border-radius:8px; }
+    .status.success { background:#e6fffa; color:#0f766e; }
+    .status.error { background:#ffebe6; color:#9f1f1f; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Pay with Crypto / Use Exodus Wallet</h2>
+    <p>Enter your Exodus receive address to track your deposit and begin trading.</p>
+
+    <div class="grid">
+      <div>
+        <label>Exodus Wallet Address</label><br>
+        <input id="apiKey" style="width:100%;padding:10px;margin:8px 0;" placeholder="Your Exodus Receive Address">
+      </div>
+      <div>
+        <label>Optional Comment</label><br>
+        <input id="apiSecret" style="width:100%;padding:10px;margin:8px 0;" placeholder="Optional note or tag">
+      </div>
+    </div>
+
+    <button class="button" id="connectBtn">Connect to Exodus</button>
+    <div id="connectStatus" class="status" style="display:none"></div>
+  </div>
+
+  <div id="dashboard" class="card" style="display:none;">
+    <h3>Your Exodus Wallet (Demo) Account</h3>
+    <div id="balancesSection"></div>
+    <div id="ordersSection"></div>
+    <div id="positionsSection"></div>
+
+    <div class="card" style="margin-top:20px;">
+      <h4>Place Order</h4>
+      <div class="grid">
+        <div>
+          <label>Symbol</label><br>
+          <select id="symbol" style="width:100%;padding:10px;"><option>BTCUSDT</option><option>ETHUSDT</option><option>XRPUST</option></select>
+        </div>
+        <div>
+          <label>Order Type</label><br>
+          <select id="orderType" style="width:100%;padding:10px;"><option value="Market">Market</option><option value="Limit">Limit</option></select>
+        </div>
+        <div>
+          <label>Side</label><br>
+          <select id="side" style="width:100%;padding:10px;"><option value="Buy">Buy</option><option value="Sell">Sell</option></select>
+        </div>
+        <div>
+          <label>Quantity</label><br>
+          <input id="qty" style="width:100%;padding:10px;" placeholder="Qty" type="number">
+        </div>
+        <div><label>Price (limit only)</label><br><input id="price" style="width:100%;padding:10px;" placeholder="Price" type="number"></div>
+        <div><button class="button" id="orderBtn">Place Order</button></div>
+      </div>
+      <div id="orderStatus" class="status" style="display:none"></div>
+    </div>
+  </div>
+
+  <script>
+    const connectBtn=document.getElementById('connectBtn');
+    const statusEl=document.getElementById('connectStatus');
+    const dashboardEl=document.getElementById('dashboard');
+    const balancesSection=document.getElementById('balancesSection');
+    const ordersSection=document.getElementById('ordersSection');
+    const positionsSection=document.getElementById('positionsSection');
+    const orderStatus=document.getElementById('orderStatus');
+
+    connectBtn.onclick=async()=>{
+      statusEl.style.display='none';
+      const apiKey=document.getElementById('apiKey').value.trim();
+      const apiSecret=document.getElementById('apiSecret').value.trim();
+      if(!apiKey||!apiSecret){statusEl.textContent='API Key/Secret required';statusEl.className='status error';statusEl.style.display='block';return;}
+
+      try{
+        const resp=await fetch('/bybit/connect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey,apiSecret})});
+        const data=await resp.json();
+        if(!resp.ok){throw new Error(data.error||'Connection failed');}
+
+        statusEl.textContent='Connected to Exodus wallet successfully';
+        statusEl.className='status success';
+        statusEl.style.display='block';
+        dashboardEl.style.display='block';
+
+        displayBalances(data.balances);
+        displayOrders(data.openOrders);
+        displayPositions(data.positions);
+      }catch(err){statusEl.textContent=err.message;statusEl.className='status error';statusEl.style.display='block';}
+    };
+
+    document.getElementById('orderBtn').onclick=async()=>{
+      orderStatus.style.display='none';
+      const body={symbol:document.getElementById('symbol').value,side:document.getElementById('side').value,type:document.getElementById('orderType').value.toLowerCase(),qty:document.getElementById('qty').value,price:document.getElementById('price').value};
+      try{
+        const r=await fetch('/bybit/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+        const j=await r.json();
+        if(!r.ok) throw new Error(j.error||'Order failed');
+        orderStatus.textContent='Order placed: '+JSON.stringify(j.details); orderStatus.className='status success'; orderStatus.style.display='block';
+      }catch(e){orderStatus.textContent=e.message;orderStatus.className='status error';orderStatus.style.display='block';}
+    };
+
+    function displayBalances(balances){
+      balancesSection.innerHTML='<h4>Balances</h4>'+Object.entries(balances||{}).map(([k,v])=>`<div>${k}: ${v.available||0} (locked ${v.locked||0})</div>`).join('');
+    }
+    function displayOrders(o){ordersSection.innerHTML='<h4>Open Orders</h4>'+(o?.length?'<pre>'+JSON.stringify(o,null,2)+'</pre>':'None');}
+    function displayPositions(p){positionsSection.innerHTML='<h4>Positions</h4>'+(p?.length?'<pre>'+JSON.stringify(p,null,2)+'</pre>':'None');}
+  </script>
+</body>
+</html>

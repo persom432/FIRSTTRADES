@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Account - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .verification-form {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 120px 20px 80px;
+        }
+
+        .verification-container {
+            max-width: 500px;
+            width: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .verification-header {
+            margin-bottom: 2rem;
+        }
+
+        .verification-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .verification-header p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .email-display {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .email-display strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .code-display {
+            background: rgba(39, 174, 96, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(39, 174, 96, 0.2);
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #27ae60;
+            text-align: center;
+        }
+
+        .code-display strong {
+            color: #27ae60;
+        }
+
+        .verification-input {
+            margin-bottom: 2rem;
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+            transform: scale(1.05);
+        }
+
+        .code-input.filled {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .timer {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .timer.expired {
+            color: #e74c3c;
+        }
+
+        .resend-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .resend-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .resend-link.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .step-circle.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .step-line {
+            width: 40px;
+            height: 2px;
+            background: #e9ecef;
+            margin: 0 0.5rem;
+        }
+
+        .step-line.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .verification-methods {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .method-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .method-btn.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .method-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .verification-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .verification-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .code-inputs {
+                gap: 0.25rem;
+            }
+
+            .code-input {
+                width: 45px;
+                height: 55px;
+                font-size: 1.5rem;
+            }
+
+            .verification-methods {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">FIRSTTRADES</div>
+            <ul>
+                <li><a href="broker.html#home">Home</a></li>
+                <li><a href="broker.html#features">Features</a></li>
+                <li><a href="broker.html#stats">Statistics</a></li>
+                <li><a href="broker.html#about">About</a></li>
+                <li><a href="broker.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="verification-form">
+        <div class="verification-container">
+            <div class="progress-indicator">
+                <div class="progress-step">
+                    <div class="step-circle completed">1</div>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="progress-step">
+                    <div class="step-circle completed">2</div>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="progress-step">
+                    <div class="step-circle completed">3</div>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="progress-step">
+                    <div class="step-circle active">4</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle">5</div>
+                </div>
+            </div>
+
+            <div class="verification-header">
+                <h1>Verify Your Account</h1>
+                <p>We've sent a 6-digit verification code to your email and phone number</p>
+            </div>
+
+            <div class="email-display">
+                <strong id="userEmail">Loading...</strong>
+            </div>
+
+            <div class="code-display" id="codeDisplay" style="display: none;">
+                <strong>Demo Code:</strong> <span id="demoCode">123456</span><br>
+                <small style="color: #666; font-size: 0.8rem;">(In production, this code would be sent via email)</small>
+            </div>
+
+            <div class="verification-methods">
+                <button class="method-btn active" id="emailBtn" onclick="switchMethod('email')">📧 Email</button>
+                <button class="method-btn" id="phoneBtn" onclick="switchMethod('phone')">📱 Phone</button>
+            </div>
+
+            <div class="verification-input">
+                <div class="code-inputs">
+                    <input type="text" class="code-input" maxlength="1" id="code1">
+                    <input type="text" class="code-input" maxlength="1" id="code2">
+                    <input type="text" class="code-input" maxlength="1" id="code3">
+                    <input type="text" class="code-input" maxlength="1" id="code4">
+                    <input type="text" class="code-input" maxlength="1" id="code5">
+                    <input type="text" class="code-input" maxlength="1" id="code6">
+                </div>
+
+                <div class="timer" id="timer">Resend code in 05:00</div>
+
+                <a href="#" class="resend-link disabled" id="resendLink" onclick="resendCode()">Resend Code</a>
+            </div>
+
+            <div class="error-message" id="errorMessage">Invalid verification code. Please try again.</div>
+            <div class="success-message" id="successMessage">Verification successful! Redirecting...</div>
+
+            <div style="margin-top: 2rem;">
+                <button class="btn" id="verifyBtn" onclick="verifyCode()" disabled>Verify</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let currentMethod = 'email';
+        let countdownTime = 300; // 5 minutes
+        let countdownInterval;
+        let verificationCode = '';
+
+        // Load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const userEmail = userData.email || 'your.email@example.com';
+            document.getElementById('userEmail').textContent = userEmail;
+
+            // Generate a random verification code (in real app, this would come from server)
+            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // Display the code for demo purposes
+            document.getElementById('demoCode').textContent = verificationCode;
+            document.getElementById('codeDisplay').style.display = 'block';
+
+            console.log('Verification code:', verificationCode); // For testing purposes
+
+            startCountdown();
+            setupCodeInputs();
+        });
+
+        function switchMethod(method) {
+            currentMethod = method;
+            document.getElementById('emailBtn').classList.toggle('active', method === 'email');
+            document.getElementById('phoneBtn').classList.toggle('active', method === 'phone');
+
+            // Reset code inputs
+            document.querySelectorAll('.code-input').forEach(input => {
+                input.value = '';
+                input.classList.remove('filled');
+            });
+            document.getElementById('verifyBtn').disabled = true;
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function setupCodeInputs() {
+            const inputs = document.querySelectorAll('.code-input');
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    // Only allow numbers
+                    this.value = this.value.replace(/[^0-9]/g, '');
+
+                    if (this.value) {
+                        this.classList.add('filled');
+                    } else {
+                        this.classList.remove('filled');
+                    }
+
+                    // Auto-focus next input
+                    if (this.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+
+                    // Check if all inputs are filled
+                    const allFilled = Array.from(inputs).every(inp => inp.value);
+                    document.getElementById('verifyBtn').disabled = !allFilled;
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = paste.replace(/[^0-9]/g, '').slice(0, 6);
+
+                    digits.split('').forEach((digit, i) => {
+                        if (inputs[i]) {
+                            inputs[i].value = digit;
+                            inputs[i].classList.add('filled');
+                        }
+                    });
+
+                    // Focus last filled input or next empty one
+                    const lastFilledIndex = Math.min(digits.length - 1, 5);
+                    inputs[lastFilledIndex].focus();
+
+                    // Check if all inputs are filled
+                    setTimeout(() => {
+                        const allFilled = Array.from(inputs).every(inp => inp.value);
+                        document.getElementById('verifyBtn').disabled = !allFilled;
+                    }, 100);
+                });
+            });
+        }
+
+        function startCountdown() {
+            const timerElement = document.getElementById('timer');
+            const resendLink = document.getElementById('resendLink');
+
+            countdownInterval = setInterval(() => {
+                const minutes = Math.floor(countdownTime / 60);
+                const seconds = countdownTime % 60;
+                timerElement.textContent = `Resend code in ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                countdownTime--;
+
+                if (countdownTime < 0) {
+                    clearInterval(countdownInterval);
+                    timerElement.textContent = 'You can now resend the code';
+                    timerElement.classList.add('expired');
+                    resendLink.classList.remove('disabled');
+                }
+            }, 1000);
+        }
+
+        function resendCode() {
+            // Reset countdown
+            countdownTime = 300;
+            clearInterval(countdownInterval);
+
+            // Generate new code
+            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // Display the new code for demo purposes
+            document.getElementById('demoCode').textContent = verificationCode;
+            document.getElementById('codeDisplay').style.display = 'block';
+
+            console.log('New verification code:', verificationCode);
+
+            // Reset UI
+            document.getElementById('timer').classList.remove('expired');
+            document.getElementById('resendLink').classList.add('disabled');
+            document.getElementById('errorMessage').style.display = 'none';
+
+            // Clear inputs
+            document.querySelectorAll('.code-input').forEach(input => {
+                input.value = '';
+                input.classList.remove('filled');
+            });
+            document.getElementById('verifyBtn').disabled = true;
+
+            startCountdown();
+
+            // Show success message
+            alert('New verification code sent!');
+        }
+
+        function verifyCode() {
+            const inputs = document.querySelectorAll('.code-input');
+            const enteredCode = Array.from(inputs).map(input => input.value).join('');
+
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+
+            if (enteredCode === verificationCode) {
+                // Success
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('verifyBtn').disabled = true;
+
+                // Store verification status
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                userData.verified = true;
+                userData.verificationDate = new Date().toISOString();
+                localStorage.setItem('userData', JSON.stringify(userData));
+
+                // Redirect after success
+                setTimeout(() => {
+                    alert('Account verification successful! Welcome to FIRSTTRADES!');
+                    // In a real app, redirect to dashboard
+                    window.location.href = 'step6.html';
+                }, 2000);
+            } else {
+                // Error
+                document.getElementById('errorMessage').style.display = 'block';
+
+                // Shake animation
+                inputs.forEach(input => {
+                    input.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => input.style.animation = '', 500);
+                });
+            }
+        }
+
+        // Add shake animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

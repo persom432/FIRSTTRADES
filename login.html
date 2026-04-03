@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #f5c856;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card h2 {
+            text-align: center;
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .login-card .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder { color: rgba(255,255,255,0.3); }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f5c856;
+            background: rgba(255,255,255,0.12);
+        }
+
+        .error-box {
+            background: rgba(231,76,60,0.15);
+            border: 1px solid rgba(231,76,60,0.4);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            display: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f5c856, #d4af37);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245,200,86,0.35);
+        }
+
+        .divider {
+            text-align: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        .register-link {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        .register-link a {
+            color: #f5c856;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="logo">FIRSTTRADES</div>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Login to access your trading dashboard</p>
+
+    <div class="error-box" id="errorBox">❌ Incorrect email or password. Please try again.</div>
+
+    <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" onkeypress="if(event.key==='Enter') login()">
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" onkeypress="if(event.key==='Enter') login()">
+    </div>
+
+    <button class="login-btn" onclick="login()">Login</button>
+
+    <div class="divider">or</div>
+
+    <div class="register-link">
+        Don't have an account? <a href="getstarted.html">Create one</a>
+    </div>
+</div>
+
+<script>
+    // If already logged in, go straight to dashboard
+    if (sessionStorage.getItem('loggedIn') === 'true') {
+        window.location.href = 'trading-dashboard.html';
+    }
+
+    function login() {
+        var email    = document.getElementById('loginEmail').value.trim().toLowerCase();
+        var password = document.getElementById('loginPassword').value;
+        var errorBox = document.getElementById('errorBox');
+
+        errorBox.style.display = 'none';
+
+        if (!email || !password) {
+            errorBox.textContent = '❌ Please enter both email and password.';
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+        if (!userData.email) {
+            errorBox.textContent = '❌ No account found. Please register first.';
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        if (userData.email.toLowerCase() === email && userData.password === password) {
+            sessionStorage.setItem('loggedIn', 'true');
+            window.location.href = 'trading-dashboard.html';
+        } else {
+            errorBox.textContent = '❌ Incorrect email or password. Please try again.';
+            errorBox.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>

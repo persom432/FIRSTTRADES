@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Account Type - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Back Arrow */
+        .back-arrow {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-arrow:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        .back-arrow svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            padding: 60px 20px 30px;
+        }
+
+        .page-header .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f5c856;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+
+        .page-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Account Options */
+        .options-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .account-option {
+            background: rgba(255,255,255,0.07);
+            border: 1.5px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 1.5rem 1.75rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            backdrop-filter: blur(10px);
+        }
+
+        .account-option:active {
+            transform: scale(0.97);
+        }
+
+        .account-option.tapped {
+            background: rgba(79, 70, 229, 0.35);
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.4);
+        }
+
+        .option-icon {
+            font-size: 2.2rem;
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-text { flex: 1; }
+
+        .option-text h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+
+        .option-text p {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.5;
+        }
+
+        .option-arrow {
+            flex-shrink: 0;
+            opacity: 0.4;
+        }
+
+        .option-arrow svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Ticker */
+        .market-ticker {
+            background: rgba(0,0,0,0.3);
+            padding: 10px 0;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .ticker-track {
+            display: flex;
+            gap: 3rem;
+            animation: ticker 25s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+        }
+
+        .ticker-symbol { font-weight: 600; color: #f5c856; }
+        .ticker-price  { color: #fff; }
+        .ticker-change { color: #10b981; }
+    </style>
+</head>
+<body>
+
+    <!-- Back Arrow -->
+    <a class="back-arrow" href="broker.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+
+    <!-- Ticker -->
+    <div class="market-ticker">
+        <div class="ticker-track" id="tickerTrack">
+            <div class="ticker-item"><span class="ticker-symbol">AAPL</span><span class="ticker-price">$175.23</span><span class="ticker-change">+2.45%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">GOOGL</span><span class="ticker-price">$2,834.12</span><span class="ticker-change">+1.87%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">MSFT</span><span class="ticker-price">$335.67</span><span class="ticker-change">+3.12%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">TSLA</span><span class="ticker-price">$248.90</span><span class="ticker-change">+2.87%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">NVDA</span><span class="ticker-price">$875.43</span><span class="ticker-change">+4.56%</span></div>
+            <div class="ticker-item"><span class="ticker-symbol">AMZN</span><span class="ticker-price">$3,245.80</span><span class="ticker-change">+2.34%</span></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="logo">FIRSTTRADES</div>
+        <h1>Choose Account Type</h1>
+        <p>Tap an account type to get started</p>
+    </div>
+
+    <!-- Options -->
+    <div class="options-container">
+
+        <div class="account-option" data-type="individual">
+            <div class="option-icon">👤</div>
+            <div class="option-text">
+                <h3>Individual Account</h3>
+                <p>For personal investors seeking direct market access with real-time analytics.</p>
+            </div>
+            <div class="option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+
+        <div class="account-option" data-type="business">
+            <div class="option-icon">🏢</div>
+            <div class="option-text">
+                <h3>Business Account</h3>
+                <p>For businesses and institutions needing advanced trading infrastructure.</p>
+            </div>
+            <div class="option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+
+
+
+    </div>
+
+    <script>
+        document.querySelectorAll('.account-option').forEach(function(option) {
+            option.addEventListener('click', function() {
+                var type = this.getAttribute('data-type');
+                localStorage.setItem('selectedAccountType', type);
+                this.classList.add('tapped');
+                setTimeout(function() {
+                    window.location.href = 'step2.html';
+                }, 250);
+            });
+        });
+    </script>
+
+</body>
+</html>

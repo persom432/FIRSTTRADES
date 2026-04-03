@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 40px 20px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .admin-header h1 {
+            color: #f5c856;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-header p {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+
+        /* Login */
+        .login-box {
+            background: #1f2937;
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 400px;
+            margin: 0 auto 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .login-box h2 {
+            color: #f5c856;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #374151;
+            border-radius: 10px;
+            background: #111827;
+            color: #f3f4f6;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #f5c856;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #f5c856 0%, #d4af37 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245,200,86,0.3);
+        }
+
+        /* Dashboard */
+        #adminDashboard { display: none; }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #1f2937;
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .stat-card .num {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f5c856;
+        }
+
+        .stat-card .lbl {
+            color: #9ca3af;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .deposits-table {
+            background: #1f2937;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .deposits-table h2 {
+            color: #f5c856;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .deposit-row {
+            background: #111827;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-left: 4px solid #f5c856;
+        }
+
+        .deposit-row.approved { border-left-color: #27ae60; }
+        .deposit-row.rejected { border-left-color: #e74c3c; opacity: 0.6; }
+
+        .deposit-info { flex: 1; min-width: 200px; }
+
+        .deposit-info .method {
+            font-weight: 600;
+            color: #f3f4f6;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        .deposit-info .time {
+            color: #6b7280;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .deposit-status {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending  { background: rgba(245,200,86,0.15); color: #f5c856; }
+        .status-approved { background: rgba(39,174,96,0.15);  color: #27ae60; }
+        .status-rejected { background: rgba(231,76,60,0.15);  color: #e74c3c; }
+
+        .action-buttons { display: flex; gap: 0.75rem; }
+
+        .approve-btn, .reject-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .approve-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .approve-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(39,174,96,0.4); }
+
+        .reject-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .reject-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(231,76,60,0.4); }
+
+        .amount-input {
+            padding: 8px 12px;
+            border: 2px solid #374151;
+            border-radius: 8px;
+            background: #1f2937;
+            color: #f3f4f6;
+            font-size: 0.9rem;
+            width: 130px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .amount-input:focus { outline: none; border-color: #f5c856; }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 3rem;
+            font-size: 0.95rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 2px solid #374151;
+            color: #9ca3af;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            float: right;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+        @media (max-width: 600px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .deposit-row { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>⚙️ FIRSTTRADES Admin</h1>
+            <p>Deposit Management Panel</p>
+        </div>
+
+        <!-- Login -->
+        <div class="login-box" id="loginBox">
+            <h2>🔐 Admin Login</h2>
+            <input type="password" id="adminPassword" placeholder="Enter admin password" onkeypress="if(event.key==='Enter') login()">
+            <button class="login-btn" onclick="login()">Login</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="adminDashboard">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="num" id="statTotal">0</div>
+                    <div class="lbl">Total Deposits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="statPending">0</div>
+                    <div class="lbl">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num" id="statApproved">0</div>
+                    <div class="lbl">Approved</div>
+                </div>
+            </div>
+
+            <div class="deposits-table">
+                <h2>📋 Deposit Requests</h2>
+                <div id="depositsList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ADMIN_PASSWORD = 'olougahs1';
+
+    function login() {
+        const pw = document.getElementById('adminPassword').value;
+        if (pw === ADMIN_PASSWORD) {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            loadDeposits();
+        } else {
+            alert('Incorrect password.');
+        }
+    }
+
+    function logout() {
+        document.getElementById('loginBox').style.display = 'block';
+        document.getElementById('adminDashboard').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
+    }
+
+    function getDeposits() {
+        return JSON.parse(localStorage.getItem('allDeposits') || '[]');
+    }
+
+    function saveDeposits(deposits) {
+        localStorage.setItem('allDeposits', JSON.stringify(deposits));
+    }
+
+    // On page load, migrate any existing fundingData into allDeposits list
+    function migrateExisting() {
+        const fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
+        if (fd.method && fd.method !== 'skipped') {
+            const existing = getDeposits();
+            const alreadyAdded = existing.some(d => d.timestamp === fd.timestamp);
+            if (!alreadyAdded) {
+                fd.id = fd.timestamp;
+                existing.push(fd);
+                saveDeposits(existing);
+            }
+        }
+    }
+
+    function loadDeposits() {
+        migrateExisting();
+        const deposits = getDeposits();
+        const list = document.getElementById('depositsList');
+
+        const pending  = deposits.filter(d => d.status === 'pending').length;
+        const approved = deposits.filter(d => d.status === 'approved').length;
+        document.getElementById('statTotal').textContent   = deposits.length;
+        document.getElementById('statPending').textContent  = pending;
+        document.getElementById('statApproved').textContent = approved;
+
+        if (deposits.length === 0) {
+            list.innerHTML = '<div class="empty-state">No deposit requests yet.</div>';
+            return;
+        }
+
+        list.innerHTML = deposits.slice().reverse().map((d, i) => {
+            const realIndex = deposits.length - 1 - i;
+            const isPending = d.status === 'pending';
+            const date = new Date(d.timestamp).toLocaleString();
+            return `
+            <div class="deposit-row ${d.status}" id="row-${realIndex}">
+                <div class="deposit-info">
+                    <div class="method">${d.method === 'btc' ? '₿ Bitcoin' : 'Ξ Ethereum'}</div>
+                    <div class="time">${date}</div>
+                </div>
+                <span class="deposit-status status-${d.status}">${d.status}</span>
+                ${isPending ? `
+                <input class="amount-input" type="number" id="amt-${realIndex}" placeholder="Amount $" min="1" step="0.01">
+                <div class="action-buttons">
+                    <button class="approve-btn" onclick="approveDeposit(${realIndex})">✅ Approve</button>
+                    <button class="reject-btn"  onclick="rejectDeposit(${realIndex})">❌ Reject</button>
+                </div>` : `
+                <div style="color:#6b7280;font-size:0.85rem;">
+                    ${d.status === 'approved' ? '💰 $' + parseFloat(d.approvedAmount).toLocaleString() : 'Rejected'}
+                </div>`}
+            </div>`;
+        }).join('');
+    }
+
+    function approveDeposit(index) {
+        const amtInput = document.getElementById(`amt-${index}`);
+        const amount = parseFloat(amtInput?.value);
+        if (!amount || amount <= 0) {
+            alert('Please enter the approved deposit amount.');
+            return;
+        }
+
+        const deposits = getDeposits();
+        deposits[index].status = 'approved';
+        deposits[index].approvedAmount = amount;
+        saveDeposits(deposits);
+
+        // Update the user-facing fundingData so dashboard reflects approval
+        const fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
+        if (fd.timestamp === deposits[index].timestamp) {
+            fd.status = 'approved';
+            fd.approvedAmount = amount;
+            localStorage.setItem('fundingData', JSON.stringify(fd));
+        }
+
+        loadDeposits();
+    }
+
+    function rejectDeposit(index) {
+        if (!confirm('Reject this deposit?')) return;
+        const deposits = getDeposits();
+        deposits[index].status = 'rejected';
+        saveDeposits(deposits);
+
+        const fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
+        if (fd.timestamp === deposits[index].timestamp) {
+            fd.status = 'rejected';
+            localStorage.setItem('fundingData', JSON.stringify(fd));
+        }
+
+        loadDeposits();
+    }
+</script>
+</body>
+</html>

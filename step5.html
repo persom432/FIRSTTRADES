@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fund Your Account - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .funding-form {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 120px 20px 80px;
+        }
+
+        .funding-container {
+            max-width: 700px;
+            width: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 3rem;
+        }
+
+        .funding-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .funding-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .funding-header p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .account-type-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .step-circle.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .step-circle.completed {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .step-line {
+            width: 50px;
+            height: 3px;
+            background: #e9ecef;
+            margin: 0 0.5rem;
+        }
+
+        .step-line.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .deposit-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .deposit-option {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .deposit-option:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .deposit-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .deposit-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .deposit-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .deposit-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .deposit-details {
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .detail-value {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .funding-notice {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #f39c12;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .funding-notice h4 {
+            color: #d68910;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .funding-notice p {
+            color: #8b4513;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .funding-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .funding-header h1 {
+                font-size: 2rem;
+            }
+
+            .deposit-options {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-indicator {
+                margin-bottom: 2rem;
+            }
+
+            .step-line {
+                width: 30px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn, .btn-secondary {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">FIRSTTRADES</div>
+            <ul>
+                <li><a href="broker.html#home">Home</a></li>
+                <li><a href="broker.html#features">Features</a></li>
+                <li><a href="broker.html#stats">Statistics</a></li>
+                <li><a href="broker.html#about">About</a></li>
+                <li><a href="broker.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="funding-form">
+        <div class="funding-container">
+            <div class="progress-indicator">
+                <div class="progress-step">
+                    <div class="step-circle completed">1</div>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="progress-step">
+                    <div class="step-circle active">2</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle">3</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle">4</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="progress-step">
+                    <div class="step-circle">5</div>
+                </div>
+            </div>
+
+            <div class="funding-header">
+                <div class="account-type-badge" id="accountTypeBadge">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <h1>Fund Your Account</h1>
+                <p>Choose your preferred deposit method to start trading</p>
+            </div>
+
+            <div class="funding-notice">
+                <h4>💰 Secure Funding Options</h4>
+                <p>All deposits are processed through secure, encrypted channels. Funds are typically available within minutes for trading.</p>
+            </div>
+
+            <div class="deposit-options">
+                <div class="deposit-option" id="btcOption" onclick="selectDepositMethod('btc')">
+                    <span class="deposit-icon">₿</span>
+                    <div class="deposit-title">Bitcoin Deposit</div>
+                    <div class="deposit-description">Deposit via BTC wallet</div>
+                </div>
+                <div class="deposit-option" id="ethOption" onclick="selectDepositMethod('eth')">
+                    <span class="deposit-icon">Ξ</span>
+                    <div class="deposit-title">Ethereum Deposit</div>
+                    <div class="deposit-description">Deposit via ETH wallet</div>
+                </div>
+            </div>
+
+            <div class="deposit-details" id="depositDetails" style="display: none;">
+                <div class="detail-row">
+                    <span class="detail-label">Minimum Deposit:</span>
+                    <span class="detail-value" id="minDeposit">$25</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Processing Time:</span>
+                    <span class="detail-value" id="processingTime">5-30 minutes</span>
+                </div>
+            </div>
+
+            <section id="cryptoDepositPanel" style="display:none; margin-top:1.5rem; padding:1rem; border:2px dashed #d4af37; border-radius:12px; background:rgba(212,175,55,0.08); color:#000;">
+                <h3 style="margin-top:0; color:#000;">Crypto Deposit Info</h3>
+                <p style="color:#000;">Send your selected coin to the wallet address below to complete your deposit.</p>
+                <p style="color:#000;"><strong>Coin:</strong> <span id="cryptoCoin">BTC</span></p>
+                <p style="color:#000;"><strong>Amount:</strong> <span id="cryptoAmount">0.005 BTC</span></p>
+                <p style="color:#000;"><strong>Address:</strong> <span id="cryptoAddress">bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7</span></p>
+                <p style="color:#000;"><strong>Instructions:</strong> Use your wallet app to scan the QR code; it is white. i cant see this</p>
+                <img id="cryptoQr" src="btc.jpeg" alt="Crypto payment QR" style="width:200px;height:200px;border:2px solid #1a1a1a;border-radius:12px;margin-top:0.5rem;display:block;background:#fff;" />
+                <p><small>Expiry: 30 minutes. After that, generate a new deposit request.</small></p>
+            </section>
+
+            <section id="ethDepositPanel" style="display:none; margin-top:1.5rem; padding:1rem; border:2px dashed #d4af37; border-radius:12px; background:rgba(212,175,55,0.08); color:#000;">
+                <h3 style="margin-top:0; color:#000;">Crypto Deposit Info</h3>
+                <p style="color:#000;">Send your selected coin to the wallet address below to complete your deposit.</p>
+                <p style="color:#000;"><strong>Coin:</strong> <span id="ethCoin">ETH</span></p>
+                <p style="color:#000;"><strong>Amount:</strong> <span id="ethAmount">0.1 ETH</span></p>
+                <p style="color:#000;"><strong>Address:</strong> <span id="ethAddress" style="color:#000;">0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B</span></p>
+                <p style="color:#000;"><strong>Instructions:</strong> Use your wallet app to scan the QR code; it is white. i cant see this</p>
+                <img id="ethQr" src="eth.jpeg" alt="Crypto payment QR" style="width:200px;height:200px;border:2px solid #1a1a1a;border-radius:12px;margin-top:0.5rem;display:block;background:#fff;" />
+                <p><small>Expiry: 30 minutes. After that, generate a new deposit request.</small></p>
+            </section>
+
+            <div class="button-group">
+                <button type="button" class="btn-secondary" onclick="skipFunding()">Skip for Now</button>
+                <button type="button" class="btn" id="depositBtn" onclick="proceedToDeposit()" disabled>Deposit Now</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let selectedMethod = null;
+
+        // Load account type from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const accountType = localStorage.getItem('selectedAccountType');
+            const badge = document.getElementById('accountTypeBadge');
+
+            if (accountType) {
+                const typeText = accountType.charAt(0).toUpperCase() + accountType.slice(1);
+                badge.textContent = `${typeText} Account`;
+                badge.style.display = 'inline-block';
+            }
+        });
+
+        function selectDepositMethod(method) {
+            selectedMethod = method;
+
+            // Remove selected class from all options
+            document.querySelectorAll('.deposit-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Add selected class to clicked option and show deposit button
+            if (method === 'btc') {
+                document.getElementById('btcOption').classList.add('selected');
+                showDepositDetails('$25', '5-30 minutes');
+                document.getElementById('depositBtn').disabled = false;
+            } else if (method === 'eth') {
+                document.getElementById('ethOption').classList.add('selected');
+                showDepositDetails('$25', '5-30 minutes');
+                document.getElementById('depositBtn').disabled = false;
+            }
+
+            // Enable deposit button and auto-open the deposit panel
+            document.getElementById('depositBtn').disabled = false;
+            proceedToDeposit();
+        }
+
+        function showDepositDetails(minDeposit, processingTime) {
+            document.getElementById('minDeposit').textContent = minDeposit;
+            document.getElementById('processingTime').textContent = processingTime;
+            document.getElementById('depositDetails').style.display = 'block';
+        }
+
+        function proceedToDeposit() {
+            if (!selectedMethod) {
+                alert('Please select a deposit method first.');
+                return;
+            }
+
+            // Hide both panels first
+            document.getElementById('cryptoDepositPanel').style.display = 'none';
+            document.getElementById('ethDepositPanel').style.display = 'none';
+
+            // Store funding choice as PENDING — admin must approve before balance updates
+            const fundingData = {
+                method: selectedMethod,
+                timestamp: new Date().toISOString(),
+                status: 'pending'
+            };
+
+            localStorage.setItem('fundingData', JSON.stringify(fundingData));
+
+            // Add to allDeposits list for admin panel
+            const allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
+            fundingData.id = fundingData.timestamp;
+            allDeposits.push(fundingData);
+            localStorage.setItem('allDeposits', JSON.stringify(allDeposits));
+
+            // Handle BTC deposit
+            if (selectedMethod === 'btc') {
+                const coin = 'BTC';
+                const amount = '0.005';
+                const fakeAddress = 'bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7';
+
+                document.getElementById('cryptoDepositPanel').style.display = 'block';
+                document.getElementById('cryptoCoin').innerText = coin;
+                document.getElementById('cryptoAmount').innerText = amount + ' ' + coin;
+                document.getElementById('cryptoAddress').innerText = fakeAddress;
+                document.getElementById('cryptoQr').src = 'btc.jpeg';
+
+                alert('Crypto payment panel shown. Please send funds to the generated address for demo.');
+            }
+            // Handle ETH deposit
+            else if (selectedMethod === 'eth') {
+                const coin = 'ETH';
+                const amount = '0.1';
+                const fakeAddress = '0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B';
+
+                document.getElementById('ethDepositPanel').style.display = 'block';
+                document.getElementById('ethCoin').innerText = coin;
+                document.getElementById('ethAmount').innerText = amount + ' ' + coin;
+                document.getElementById('ethAddress').innerText = fakeAddress;
+                document.getElementById('ethQr').src = 'eth.jpeg';
+
+                alert('Crypto payment panel shown. Please send funds to the generated address for demo.');
+            }
+        }
+
+        function skipFunding() {
+            // Store skip choice
+            const fundingData = {
+                method: 'skipped',
+                timestamp: new Date().toISOString(),
+                status: 'skipped'
+            };
+
+            localStorage.setItem('fundingData', JSON.stringify(fundingData));
+
+            // Proceed to next step without funding
+            window.location.href = 'step2.html';
+        }
+    </script>
+</body>
+</html>

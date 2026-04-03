@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Back Arrow */
+        .back-arrow {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-arrow:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+
+        .back-arrow svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            padding: 70px 20px 30px;
+        }
+
+        .page-header .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f5c856;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            background: rgba(39,174,96,0.2);
+            border: 1px solid rgba(39,174,96,0.4);
+            color: #2ecc71;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.5px;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.75rem;
+        }
+
+        .page-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            max-width: 380px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            max-width: 500px;
+            margin: 30px auto 0;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.07);
+            border: 1.5px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card .icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+        .feature-card h4 { font-size: 0.9rem; font-weight: 600; color: #fff; margin-bottom: 0.3rem; }
+        .feature-card p { font-size: 0.75rem; color: rgba(255,255,255,0.5); line-height: 1.4; }
+
+        /* Action Buttons */
+        .actions {
+            max-width: 500px;
+            margin: 24px auto 60px;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: 16px;
+            cursor: pointer;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .action-btn:active { transform: scale(0.97); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(39,174,96,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1.5px solid rgba(255,255,255,0.15);
+        }
+
+        .btn-icon { font-size: 1.4rem; }
+
+        .btn-text { flex: 1; }
+        .btn-text span { display: block; font-size: 0.78rem; font-weight: 400; opacity: 0.75; margin-top: 2px; }
+
+        .btn-arrow svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <a class="back-arrow" href="step3.html">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+
+    <div class="page-header">
+        <div class="logo">FIRSTTRADES</div>
+        <div class="welcome-badge">✅ Account Setup Complete</div>
+        <h1>Welcome Aboard!</h1>
+        <p>Your account is ready. Explore the platform or fund your wallet to start trading.</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <span class="icon">📊</span>
+            <h4>Live Dashboard</h4>
+            <p>Real-time market data & indicators</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">📈</span>
+            <h4>Trading Charts</h4>
+            <p>Advanced charting & timeframes</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">💼</span>
+            <h4>Portfolio</h4>
+            <p>Track positions & performance</p>
+        </div>
+        <div class="feature-card">
+            <span class="icon">⚡</span>
+            <h4>Buy / Sell</h4>
+            <p>Market, limit & stop orders</p>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="action-btn btn-primary" onclick="goTo('step5.html')">
+            <span class="btn-icon">💰</span>
+            <div class="btn-text">Fund My Wallet <span>Deposit via BTC or ETH</span></div>
+            <div class="btn-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+
+        <button class="action-btn btn-secondary" onclick="goTo('trading-dashboard.html')">
+            <span class="btn-icon">🚀</span>
+            <div class="btn-text">Start Trading Now <span>Go to dashboard</span></div>
+            <div class="btn-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+    </div>
+
+    <script>
+        function goTo(page) {
+            window.location.href = page;
+        }
+    </script>
+
+</body>
+</html>

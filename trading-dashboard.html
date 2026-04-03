@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Dashboard - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 120px 20px 80px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .account-type-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .account-balance {
+            text-align: right;
+        }
+
+        .balance-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .balance-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #27ae60;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-chart {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .timeframe-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .timeframe-btn {
+            padding: 8px 16px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timeframe-btn.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .chart-placeholder {
+            height: 400px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ddd;
+            position: relative;
+        }
+
+        #tradingChart {
+            max-height: 400px;
+            width: 100% !important;
+        }
+
+        .chart-placeholder-content {
+            text-align: center;
+            color: #666;
+        }
+
+        .chart-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .trading-panel {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .panel-header {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .order-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .order-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .order-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .buy-btn:hover {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            transform: translateY(-2px);
+        }
+
+        .sell-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .sell-btn:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            transform: translateY(-2px);
+        }
+
+        .portfolio-overview {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .portfolio-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .portfolio-item:last-child {
+            border-bottom: none;
+        }
+
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stock-symbol {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .stock-name {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .stock-price {
+            text-align: right;
+        }
+
+        .current-price {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .price-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .price-change.positive {
+            color: #27ae60;
+        }
+
+        .price-change.negative {
+            color: #e74c3c;
+        }
+
+        .market-prices {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .market-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .market-symbol {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .market-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+
+        .market-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .account-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .timeframe-buttons {
+                flex-wrap: wrap;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .order-buttons {
+                flex-direction: column;
+            }
+
+            .market-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">FIRSTTRADES</div>
+            <ul>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#markets">Markets</a></li>
+                <li><a href="#settings">Settings</a></li>
+                <li><a href="login.html" onclick="sessionStorage.removeItem('loggedIn')">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="dashboard">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <div class="account-info">
+                    <div class="account-type-badge" id="accountTypeBadge">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <h1 style="margin: 0; color: #2c3e50;">Trading Dashboard</h1>
+                </div>
+                <div class="account-balance">
+                    <div class="balance-label">Account Balance</div>
+                    <div class="balance-amount" id="accountBalance">$10,250.75</div>
+                </div>
+            </div>
+
+            <div class="market-prices">
+                <h3 style="margin-bottom: 1.5rem; color: #2c3e50; text-align: center;">Market Prices</h3>
+                <div class="market-grid">
+                    <div class="market-item">
+                        <div class="market-symbol">AAPL</div>
+                        <div class="market-price">$175.23</div>
+                        <div class="market-change positive">+2.45%</div>
+                    </div>
+                    <div class="market-item">
+                        <div class="market-symbol">GOOGL</div>
+                        <div class="market-price">$2,834.12</div>
+                        <div class="market-change negative">-1.23%</div>
+                    </div>
+                    <div class="market-item">
+                        <div class="market-symbol">MSFT</div>
+                        <div class="market-price">$335.67</div>
+                        <div class="market-change positive">+1.87%</div>
+                    </div>
+                    <div class="market-item">
+                        <div class="market-symbol">TSLA</div>
+                        <div class="market-price">$248.90</div>
+                        <div class="market-change positive">+3.21%</div>
+                    </div>
+                    <div class="market-item">
+                        <div class="market-symbol">AMZN</div>
+                        <div class="market-price">$3,245.80</div>
+                        <div class="market-change negative">-0.89%</div>
+                    </div>
+                    <div class="market-item">
+                        <div class="market-symbol">NVDA</div>
+                        <div class="market-price">$875.43</div>
+                        <div class="market-change positive">+4.56%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="main-chart">
+                    <div class="chart-header">
+                        <h2 class="chart-title" id="chartTitle">Trading Chart - AAPL</h2>
+                        <div class="timeframe-buttons">
+                            <button class="timeframe-btn active" onclick="changeSymbol('AAPL', this)">AAPL</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('GOOGL', this)">GOOGL</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('MSFT', this)">MSFT</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('TSLA', this)">TSLA</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('NVDA', this)">NVDA</button>
+                        </div>
+                    </div>
+                    <div id="tradingview-widget" style="height:450px; border-radius:15px; overflow:hidden;">
+                        <div class="tradingview-widget-container" style="height:100%;">
+                            <div id="tv-chart" style="height:100%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="trading-panel">
+                        <div class="panel-header">Buy / Sell Panel</div>
+                        <form class="order-form" onsubmit="submitOrder(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="symbol">Symbol</label>
+                                    <select id="symbol" required>
+                                        <option value="AAPL">AAPL - Apple Inc.</option>
+                                        <option value="GOOGL">GOOGL - Alphabet Inc.</option>
+                                        <option value="MSFT">MSFT - Microsoft Corp.</option>
+                                        <option value="TSLA">TSLA - Tesla Inc.</option>
+                                        <option value="AMZN">AMZN - Amazon.com Inc.</option>
+                                        <option value="NVDA">NVDA - NVIDIA Corp.</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="orderType">Order Type</label>
+                                    <select id="orderType" required>
+                                        <option value="market">Market</option>
+                                        <option value="limit">Limit</option>
+                                        <option value="stop">Stop</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="quantity">Quantity</label>
+                                    <input type="number" id="quantity" min="1" placeholder="Enter quantity" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="price">Price (optional)</label>
+                                    <input type="number" id="price" step="0.01" placeholder="Market price">
+                                </div>
+                            </div>
+
+                            <div class="order-buttons">
+                                <button type="submit" class="order-btn buy-btn" onclick="setOrderSide('buy')">Buy</button>
+                                <button type="submit" class="order-btn sell-btn" onclick="setOrderSide('sell')">Sell</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="portfolio-overview">
+                        <div class="panel-header">Portfolio Overview</div>
+
+                        <div class="portfolio-item">
+                            <div class="stock-info">
+                                <div>
+                                    <div class="stock-symbol">AAPL</div>
+                                    <div class="stock-name">Apple Inc.</div>
+                                </div>
+                            </div>
+                            <div class="stock-price">
+                                <div class="current-price">$175.23</div>
+                                <div class="price-change positive">+2.45%</div>
+                            </div>
+                        </div>
+
+                        <div class="portfolio-item">
+                            <div class="stock-info">
+                                <div>
+                                    <div class="stock-symbol">MSFT</div>
+                                    <div class="stock-name">Microsoft Corp.</div>
+                                </div>
+                            </div>
+                            <div class="stock-price">
+                                <div class="current-price">$335.67</div>
+                                <div class="price-change positive">+1.87%</div>
+                            </div>
+                        </div>
+
+                        <div class="portfolio-item">
+                            <div class="stock-info">
+                                <div>
+                                    <div class="stock-symbol">TSLA</div>
+                                    <div class="stock-name">Tesla Inc.</div>
+                                </div>
+                            </div>
+                            <div class="stock-price">
+                                <div class="current-price">$248.90</div>
+                                <div class="price-change positive">+3.21%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        // Login guard
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        var tvWidget = null;
+
+        function loadTradingViewWidget(symbol) {
+            if (tvWidget) {
+                tvWidget.remove();
+                tvWidget = null;
+            }
+            document.getElementById('tv-chart').innerHTML = '';
+            tvWidget = new TradingView.widget({
+                container_id: 'tv-chart',
+                symbol: 'NASDAQ:' + symbol,
+                interval: '1',
+                timezone: 'Etc/UTC',
+                theme: 'light',
+                style: '1',
+                locale: 'en',
+                toolbar_bg: '#f1f3f6',
+                enable_publishing: false,
+                allow_symbol_change: false,
+                save_image: false,
+                hide_top_toolbar: false,
+                hide_side_toolbar: false,
+                withdateranges: true,
+                autosize: true,
+                studies: ['RSI@tv-basicstudies']
+            });
+        }
+
+        var currentSymbol = 'AAPL';
+        var orderSide = 'buy';
+
+        var stockData = {
+            'AAPL': { basePrice: 175 },
+            'GOOGL': { basePrice: 2834 },
+            'MSFT': { basePrice: 335 },
+            'TSLA': { basePrice: 248 },
+            'AMZN': { basePrice: 3245 },
+            'NVDA': { basePrice: 875 }
+        };
+
+        function changeSymbol(symbol, btn) {
+            currentSymbol = symbol;
+            document.getElementById('chartTitle').textContent = 'Trading Chart - ' + symbol;
+            document.querySelectorAll('.timeframe-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            loadTradingViewWidget(symbol);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Account badge
+            const accountType = localStorage.getItem('selectedAccountType');
+            const badge = document.getElementById('accountTypeBadge');
+            if (accountType) {
+                badge.textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1) + ' Account';
+                badge.style.display = 'inline-block';
+            }
+
+            // Balance
+            const fundingData = JSON.parse(localStorage.getItem('fundingData') || '{}');
+            const balanceEl = document.getElementById('accountBalance');
+            if (fundingData.status === 'approved') {
+                balanceEl.textContent = '$' + parseFloat(fundingData.approvedAmount).toLocaleString('en-US', {minimumFractionDigits: 2});
+            } else if (fundingData.status === 'pending') {
+                balanceEl.textContent = '$0.00';
+                balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
+            } else {
+                balanceEl.textContent = '$0.00';
+            }
+
+            // Load TradingView chart
+            loadTradingViewWidget('AAPL');
+
+            // Live market prices
+            updateAllPrices();
+            setInterval(updateAllPrices, 3000);
+
+            // Symbol select change
+            document.getElementById('symbol').addEventListener('change', function() {
+                currentSymbol = this.value;
+            });
+        });
+
+        function setOrderSide(side) { orderSide = side; }
+
+        function submitOrder(event) {
+            event.preventDefault();
+            var symbol = document.getElementById('symbol').value;
+            var orderType = document.getElementById('orderType').value;
+            var quantity = document.getElementById('quantity').value;
+            var price = document.getElementById('price').value;
+            if (!quantity || quantity < 1) { alert('Please enter a valid quantity.'); return; }
+
+            var entryPrice = price ? parseFloat(price) : stockData[symbol].basePrice;
+            var totalCost = entryPrice * parseInt(quantity);
+
+            // Check balance
+            var fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
+            var balance = fd.status === 'approved' ? parseFloat(fd.approvedAmount || 0) : 0;
+
+            if (balance < totalCost) {
+                alert('Insufficient funds!\n\nOrder Cost: $' + totalCost.toFixed(2) + '\nAccount Balance: $' + balance.toFixed(2) + '\n\nPlease deposit funds to continue trading.');
+                return;
+            }
+
+            var profit = entryPrice * quantity * 0.40;
+            var exitPrice = entryPrice * 1.40;
+            alert(orderSide.toUpperCase() + ' order FILLED!\n\nSymbol: ' + symbol + '\nQty: ' + quantity + '\nEntry Price: $' + entryPrice.toFixed(2) + '\nExit Price: $' + exitPrice.toFixed(2) + '\nProfit: +$' + profit.toFixed(2) + ' (+40%)\n\n✅ TRADE SUCCESSFUL');
+            document.getElementById('quantity').value = '';
+            document.getElementById('price').value = '';
+        }
+
+        function updateAllPrices() {
+            document.querySelectorAll('.market-item').forEach(function(item, index) {
+                const priceEl = item.querySelector('.market-price');
+                const changeEl = item.querySelector('.market-change');
+                const currentPrice = parseFloat(priceEl.textContent.replace('$','').replace(',',''));
+                const newPrice = currentPrice * (1 + 0.001 + Math.random() * 0.002);
+                const gain = ((newPrice - currentPrice) / currentPrice * 100);
+                priceEl.textContent = '$' + newPrice.toFixed(2);
+                changeEl.textContent = '+' + gain.toFixed(2) + '%';
+                changeEl.className = 'market-change positive';
+            });
+        }
+    </script>
+</body>
+</html>
