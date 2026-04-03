@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Your Account - FIRSTTRADES</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
         .verification-form {
@@ -290,21 +291,11 @@
 
             <div class="verification-header">
                 <h1>Verify Your Account</h1>
-                <p>We've sent a 6-digit verification code to your email and phone number</p>
+                <p>A 6-digit verification code has been sent to your email</p>
             </div>
 
             <div class="email-display">
                 <strong id="userEmail">Loading...</strong>
-            </div>
-
-            <div class="code-display" id="codeDisplay" style="display: none;">
-                <strong>Demo Code:</strong> <span id="demoCode">123456</span><br>
-                <small style="color: #666; font-size: 0.8rem;">(In production, this code would be sent via email)</small>
-            </div>
-
-            <div class="verification-methods">
-                <button class="method-btn active" id="emailBtn" onclick="switchMethod('email')">📧 Email</button>
-                <button class="method-btn" id="phoneBtn" onclick="switchMethod('phone')">📱 Phone</button>
             </div>
 
             <div class="verification-input">
@@ -332,196 +323,129 @@
     </section>
 
     <script>
-        let currentMethod = 'email';
-        let countdownTime = 300; // 5 minutes
-        let countdownInterval;
-        let verificationCode = '';
+        // EmailJS config
+        emailjs.init('0J1wL_xAXvlRU7WaV');
 
-        // Load user data
-        document.addEventListener('DOMContentLoaded', function() {
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const userEmail = userData.email || 'your.email@example.com';
-            document.getElementById('userEmail').textContent = userEmail;
+        var verificationCode = '';
+        var countdownTime = 300;
+        var countdownInterval;
 
-            // Generate a random verification code (in real app, this would come from server)
-            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-            // Display the code for demo purposes
-            document.getElementById('demoCode').textContent = verificationCode;
-            document.getElementById('codeDisplay').style.display = 'block';
-
-            console.log('Verification code:', verificationCode); // For testing purposes
-
-            startCountdown();
-            setupCodeInputs();
-        });
-
-        function switchMethod(method) {
-            currentMethod = method;
-            document.getElementById('emailBtn').classList.toggle('active', method === 'email');
-            document.getElementById('phoneBtn').classList.toggle('active', method === 'phone');
-
-            // Reset code inputs
-            document.querySelectorAll('.code-input').forEach(input => {
-                input.value = '';
-                input.classList.remove('filled');
-            });
-            document.getElementById('verifyBtn').disabled = true;
-            document.getElementById('errorMessage').style.display = 'none';
+        function generateCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
-        function setupCodeInputs() {
-            const inputs = document.querySelectorAll('.code-input');
+        function sendCode() {
+            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            var userEmail = userData.email;
+            var userName = userData.fullName || 'User';
 
-            inputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
-                    // Only allow numbers
-                    this.value = this.value.replace(/[^0-9]/g, '');
+            if (!userEmail) {
+                alert('No email found. Please register first.');
+                window.location.href = 'step2.html';
+                return;
+            }
 
-                    if (this.value) {
-                        this.classList.add('filled');
-                    } else {
-                        this.classList.remove('filled');
-                    }
+            document.getElementById('userEmail').textContent = userEmail;
+            verificationCode = generateCode();
 
-                    // Auto-focus next input
-                    if (this.value && index < inputs.length - 1) {
-                        inputs[index + 1].focus();
-                    }
-
-                    // Check if all inputs are filled
-                    const allFilled = Array.from(inputs).every(inp => inp.value);
-                    document.getElementById('verifyBtn').disabled = !allFilled;
-                });
-
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && !this.value && index > 0) {
-                        inputs[index - 1].focus();
-                    }
-                });
-
-                input.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const paste = (e.clipboardData || window.clipboardData).getData('text');
-                    const digits = paste.replace(/[^0-9]/g, '').slice(0, 6);
-
-                    digits.split('').forEach((digit, i) => {
-                        if (inputs[i]) {
-                            inputs[i].value = digit;
-                            inputs[i].classList.add('filled');
-                        }
-                    });
-
-                    // Focus last filled input or next empty one
-                    const lastFilledIndex = Math.min(digits.length - 1, 5);
-                    inputs[lastFilledIndex].focus();
-
-                    // Check if all inputs are filled
-                    setTimeout(() => {
-                        const allFilled = Array.from(inputs).every(inp => inp.value);
-                        document.getElementById('verifyBtn').disabled = !allFilled;
-                    }, 100);
-                });
+            // Send via EmailJS
+            emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
+                to_name:  userName,
+                to_email: userEmail,
+                code:     verificationCode
+            }).then(function() {
+                console.log('Code sent successfully');
+            }, function(error) {
+                console.error('EmailJS error:', error);
+                alert('Failed to send code. Please try again.');
             });
         }
 
         function startCountdown() {
-            const timerElement = document.getElementById('timer');
-            const resendLink = document.getElementById('resendLink');
+            var timerEl   = document.getElementById('timer');
+            var resendBtn = document.getElementById('resendLink');
+            countdownTime = 300;
+            clearInterval(countdownInterval);
+            resendBtn.classList.add('disabled');
+            timerEl.classList.remove('expired');
 
-            countdownInterval = setInterval(() => {
-                const minutes = Math.floor(countdownTime / 60);
-                const seconds = countdownTime % 60;
-                timerElement.textContent = `Resend code in ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
+            countdownInterval = setInterval(function() {
+                var m = Math.floor(countdownTime / 60);
+                var s = countdownTime % 60;
+                timerEl.textContent = 'Resend code in ' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
                 countdownTime--;
-
                 if (countdownTime < 0) {
                     clearInterval(countdownInterval);
-                    timerElement.textContent = 'You can now resend the code';
-                    timerElement.classList.add('expired');
-                    resendLink.classList.remove('disabled');
+                    timerEl.textContent = 'You can now resend the code';
+                    timerEl.classList.add('expired');
+                    resendBtn.classList.remove('disabled');
                 }
             }, 1000);
         }
 
         function resendCode() {
-            // Reset countdown
-            countdownTime = 300;
-            clearInterval(countdownInterval);
-
-            // Generate new code
-            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-            // Display the new code for demo purposes
-            document.getElementById('demoCode').textContent = verificationCode;
-            document.getElementById('codeDisplay').style.display = 'block';
-
-            console.log('New verification code:', verificationCode);
-
-            // Reset UI
-            document.getElementById('timer').classList.remove('expired');
-            document.getElementById('resendLink').classList.add('disabled');
-            document.getElementById('errorMessage').style.display = 'none';
-
-            // Clear inputs
-            document.querySelectorAll('.code-input').forEach(input => {
-                input.value = '';
-                input.classList.remove('filled');
-            });
+            document.querySelectorAll('.code-input').forEach(function(i) { i.value = ''; i.classList.remove('filled'); });
             document.getElementById('verifyBtn').disabled = true;
-
+            document.getElementById('errorMessage').style.display = 'none';
+            sendCode();
             startCountdown();
-
-            // Show success message
-            alert('New verification code sent!');
+            alert('A new code has been sent to your email.');
         }
 
         function verifyCode() {
-            const inputs = document.querySelectorAll('.code-input');
-            const enteredCode = Array.from(inputs).map(input => input.value).join('');
+            var inputs = document.querySelectorAll('.code-input');
+            var entered = Array.from(inputs).map(function(i) { return i.value; }).join('');
 
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
 
-            if (enteredCode === verificationCode) {
-                // Success
+            if (entered === verificationCode) {
                 document.getElementById('successMessage').style.display = 'block';
                 document.getElementById('verifyBtn').disabled = true;
-
-                // Store verification status
-                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                var userData = JSON.parse(localStorage.getItem('userData') || '{}');
                 userData.verified = true;
-                userData.verificationDate = new Date().toISOString();
                 localStorage.setItem('userData', JSON.stringify(userData));
-
-                // Redirect after success
-                setTimeout(() => {
-                    alert('Account verification successful! Welcome to FIRSTTRADES!');
-                    // In a real app, redirect to dashboard
+                setTimeout(function() {
                     window.location.href = 'step6.html';
-                }, 2000);
+                }, 1500);
             } else {
-                // Error
                 document.getElementById('errorMessage').style.display = 'block';
-
-                // Shake animation
-                inputs.forEach(input => {
+                inputs.forEach(function(input) {
                     input.style.animation = 'shake 0.5s ease-in-out';
-                    setTimeout(() => input.style.animation = '', 500);
+                    setTimeout(function() { input.style.animation = ''; }, 500);
                 });
             }
         }
 
-        // Add shake animation CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                75% { transform: translateX(5px); }
-            }
-        `;
+        // Setup inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            sendCode();
+            startCountdown();
+
+            var inputs = document.querySelectorAll('.code-input');
+            inputs.forEach(function(input, index) {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    this.classList.toggle('filled', !!this.value);
+                    if (this.value && index < inputs.length - 1) inputs[index + 1].focus();
+                    document.getElementById('verifyBtn').disabled = !Array.from(inputs).every(function(i) { return i.value; });
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) inputs[index - 1].focus();
+                });
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    var digits = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,6);
+                    digits.split('').forEach(function(d, i) { if (inputs[i]) { inputs[i].value = d; inputs[i].classList.add('filled'); } });
+                    setTimeout(function() {
+                        document.getElementById('verifyBtn').disabled = !Array.from(inputs).every(function(i) { return i.value; });
+                    }, 100);
+                });
+            });
+        });
+
+        var style = document.createElement('style');
+        style.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }';
         document.head.appendChild(style);
     </script>
 </body>
