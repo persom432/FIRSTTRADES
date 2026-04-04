@@ -444,7 +444,10 @@
     <header>
         <nav class="container">
             <div class="logo">FIRSTTRADES</div>
-            <ul>
+            <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul id="navMenu">
                 <li><a href="trading-dashboard.html">Dashboard</a></li>
                 <li><a href="#portfolio" onclick="document.querySelector('.portfolio-overview').scrollIntoView({behavior:'smooth'}); return false;">Portfolio</a></li>
                 <li><a href="#markets" onclick="document.querySelector('.market-prices').scrollIntoView({behavior:'smooth'}); return false;">Markets</a></li>
@@ -655,6 +658,13 @@
     </section>
 
     <script>
+        function toggleNav() {
+            var menu = document.getElementById('navMenu');
+            var btn  = document.getElementById('hamburger');
+            menu.classList.toggle('nav-open');
+            btn.classList.toggle('open');
+        }
+
         let currentSymbol = 'AAPL';
         let orderSide = 'buy';
 

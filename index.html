@@ -11,7 +11,10 @@
     <header>
         <nav class="container">
             <div class="logo">FIRSTTRADES</div>
-            <ul>
+            <button class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul id="navMenu">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#stats">Statistics</a></li>
@@ -150,6 +153,20 @@
     </footer>
 
     <script>
+        function toggleNav() {
+            var menu = document.getElementById('navMenu');
+            var btn  = document.getElementById('hamburger');
+            menu.classList.toggle('nav-open');
+            btn.classList.toggle('open');
+        }
+        // Close nav when a link is clicked
+        document.querySelectorAll('#navMenu a').forEach(function(a) {
+            a.addEventListener('click', function() {
+                document.getElementById('navMenu').classList.remove('nav-open');
+                document.getElementById('hamburger').classList.remove('open');
+            });
+        });
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
