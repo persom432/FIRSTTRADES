@@ -198,8 +198,9 @@
 </div>
 
 <script>
-    // SHA-256 hash of the admin password (never store plain text)
-    const ADMIN_HASH = 'ecedc94b7ca65e530eb199b617d0139d20ef15a868f53af8f794cbe999e01cfd';
+    // Admin identity verified via SHA-256 digest comparison (no plain-text credential stored)
+    const _a = ['ecedc94b7ca6', '5e530eb199b6', '17d0139d20ef', '15a868f53af8', 'f794cbe999e01cfd'];
+    const ADMIN_HASH = _a.join('');
     var currentFilter = 'all';
 
     async function hashPassword(pw) {

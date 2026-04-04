@@ -20,7 +20,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' }
+  cookie: { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', domain: process.env.COOKIE_DOMAIN || 'localhost', path: '/' }
 }));
 
 const csrfProtect = csrf();
