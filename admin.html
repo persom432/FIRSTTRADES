@@ -258,7 +258,7 @@
                 appleInfo = '<div class="apple-code">Code: ' + d.code + '</div>';
             }
 
-            var amountInfo = d.amount ? '<span>Card Amount</span><strong>$' + d.amount + '</strong>' : '';
+            var amountInfo = d.amount && d.amount !== '0' ? '<span>Deposit Amount</span><strong style="color:#f5c856;">$' + parseFloat(d.amount).toLocaleString() + '</strong>' : '';
 
             var actions = isPending ? (
                 '<div class="card-actions">' +

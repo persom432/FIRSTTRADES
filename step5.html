@@ -498,6 +498,7 @@
             // Store funding choice as PENDING — admin must approve before balance updates
             const fundingData = {
                 method: selectedMethod,
+                amount: selectedMethod === 'btc' ? (document.getElementById('btcUsdAmount').value || '0') : (document.getElementById('ethUsdAmount').value || '0'),
                 timestamp: new Date().toISOString(),
                 status: 'pending'
             };
