@@ -457,11 +457,17 @@
             document.getElementById('cryptoDepositPanel').style.display = 'none';
             document.getElementById('ethDepositPanel').style.display = 'none';
 
-            const coin = selectedMethod === 'btc' ? 'btc' : 'eth';
-            const usdAmt = parseFloat(document.getElementById(coin + 'UsdAmount').value || 0);
-            if (selectedMethod !== 'apple' && usdAmt < 100) {
-                alert('Minimum deposit is $100.');
-                return;
+            // Only validate amount when user clicks Deposit Now (depositBtn), not on method selection
+            const depositBtnClicked = document.activeElement && document.activeElement.id === 'depositBtn';
+            if (depositBtnClicked) {
+                const coin = selectedMethod === 'btc' ? 'btc' : 'eth';
+                const usdAmt = parseFloat(document.getElementById(coin + 'UsdAmount').value || 0);
+                if (usdAmt < 100) {
+                    alert('Minimum deposit is $100.');
+                    if (selectedMethod === 'btc') document.getElementById('cryptoDepositPanel').style.display = 'block';
+                    else document.getElementById('ethDepositPanel').style.display = 'block';
+                    return;
+                }
             }
 
             const fundingData = {
