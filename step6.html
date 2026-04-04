@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Welcome - FIRSTTRADES</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -168,7 +168,15 @@
             opacity: 0.6;
         }
     </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WR70LQ6B2D");</script></head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WR70LQ6B2D");</script>
+    <style>
+        /* Mobile touch fixes */
+        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+        button, .btn, .order-btn, .login-btn, .withdraw-btn { min-height: 44px; }
+        * { -webkit-text-size-adjust: 100%; }
+    </style>
+</head>
 <body>
 
     <a class="back-arrow" href="login.html">

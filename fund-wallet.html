@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Fund Wallet - FIRSTTRADES</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
@@ -264,6 +264,14 @@
             .deposit-options { grid-template-columns: 1fr; }
             .button-group { flex-direction: column; }
         }
+    </style>
+
+    <style>
+        /* Mobile touch fixes */
+        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+        button, .btn, .order-btn, .login-btn, .withdraw-btn { min-height: 44px; }
+        * { -webkit-text-size-adjust: 100%; }
     </style>
 </head>
 <body>

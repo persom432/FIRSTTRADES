@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Withdraw - FIRSTTRADES</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -141,6 +141,14 @@
             text-decoration: none;
             font-size: 0.9rem;
         }
+    </style>
+
+    <style>
+        /* Mobile touch fixes */
+        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+        button, .btn, .order-btn, .login-btn, .withdraw-btn { min-height: 44px; }
+        * { -webkit-text-size-adjust: 100%; }
     </style>
 </head>
 <body>

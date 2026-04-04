@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Trading Dashboard - FIRSTTRADES</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -469,6 +469,14 @@
             #fakeChart { height: 240px; }
             .fc-canvas-wrap { height: 190px; }
         }
+    </style>
+
+    <style>
+        /* Mobile touch fixes */
+        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+        button, .btn, .order-btn, .login-btn, .withdraw-btn { min-height: 44px; }
+        * { -webkit-text-size-adjust: 100%; }
     </style>
 </head>
 <body>
