@@ -196,8 +196,14 @@
 </div>
 
 <script>
-    const ADMIN_PASSWORD = 'olougahs1';
+    // SHA-256 hash of the admin password (never store plain text)
+    const ADMIN_HASH = 'ecedc94b7ca65e530eb199b617d0139d20ef15a868f53af8f794cbe999e01cfd';
     var currentFilter = 'all';
+
+    async function hashPassword(pw) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
 
     function toggleUserPanel(btn) {
         var panel = document.getElementById('userPanel');
@@ -246,14 +252,16 @@
 
     function login() {
         var pw = document.getElementById('pwInput').value;
-        if (pw === ADMIN_PASSWORD) {
-            document.getElementById('loginBox').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            loadDeposits();
-        } else {
-            document.getElementById('loginError').style.display = 'block';
-            document.getElementById('pwInput').style.borderColor = '#e74c3c';
-        }
+        hashPassword(pw).then(function(hash) {
+            if (hash === ADMIN_HASH) {
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadDeposits();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('pwInput').style.borderColor = '#e74c3c';
+            }
+        });
     }
 
     function logout() {
