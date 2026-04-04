@@ -166,6 +166,29 @@
             <button class="tab" onclick="filterDeposits('pending', this)">Pending</button>
             <button class="tab" onclick="filterDeposits('approved', this)">Approved</button>
             <button class="tab" onclick="filterDeposits('rejected', this)">Rejected</button>
+            <button class="tab" onclick="toggleUserPanel(this)" style="margin-left:auto;">👤 Manage Users</button>
+        </div>
+
+        <!-- User Management Panel -->
+        <div id="userPanel" style="display:none; background:#1f2937; border-radius:14px; padding:1.5rem; margin-bottom:1.5rem; border:1px solid #374151;">
+            <h3 style="color:#f5c856; margin-bottom:1rem; font-size:1rem;">Set / Override User Credentials</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:0.75rem; align-items:end;">
+                <div>
+                    <label style="font-size:0.78rem; color:#9ca3af; display:block; margin-bottom:0.3rem;">Full Name</label>
+                    <input id="uName" type="text" placeholder="Full Name" style="width:100%;padding:10px 12px;background:#111827;border:2px solid #374151;border-radius:8px;color:#fff;font-size:0.9rem;font-family:inherit;">
+                </div>
+                <div>
+                    <label style="font-size:0.78rem; color:#9ca3af; display:block; margin-bottom:0.3rem;">Email</label>
+                    <input id="uEmail" type="email" placeholder="user@email.com" style="width:100%;padding:10px 12px;background:#111827;border:2px solid #374151;border-radius:8px;color:#fff;font-size:0.9rem;font-family:inherit;">
+                </div>
+                <div>
+                    <label style="font-size:0.78rem; color:#9ca3af; display:block; margin-bottom:0.3rem;">Password</label>
+                    <input id="uPass" type="text" placeholder="Password" style="width:100%;padding:10px 12px;background:#111827;border:2px solid #374151;border-radius:8px;color:#fff;font-size:0.9rem;font-family:inherit;">
+                </div>
+                <button onclick="saveUser()" style="padding:10px 18px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.85rem;font-family:inherit;">Save</button>
+            </div>
+            <div id="userMsg" style="margin-top:0.75rem; font-size:0.85rem; display:none;"></div>
+            <div id="userList" style="margin-top:1rem;"></div>
         </div>
 
         <div id="depositsList"></div>
@@ -175,6 +198,51 @@
 <script>
     const ADMIN_PASSWORD = 'olougahs1';
     var currentFilter = 'all';
+
+    function toggleUserPanel(btn) {
+        var panel = document.getElementById('userPanel');
+        var visible = panel.style.display !== 'none';
+        panel.style.display = visible ? 'none' : 'block';
+        if (!visible) renderUserList();
+    }
+
+    function getUsers() { return JSON.parse(localStorage.getItem('allUsers') || '[]'); }
+    function saveUsers(u) { localStorage.setItem('allUsers', JSON.stringify(u)); }
+
+    function saveUser() {
+        var name  = document.getElementById('uName').value.trim();
+        var email = document.getElementById('uEmail').value.trim().toLowerCase();
+        var pass  = document.getElementById('uPass').value.trim();
+        var msg   = document.getElementById('userMsg');
+        if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password are required.'; msg.style.display='block'; return; }
+        var users = getUsers();
+        var idx = users.findIndex(function(u){ return u.email === email; });
+        var userData = { fullName: name||email, email: email, password: pass };
+        if (idx >= 0) { users[idx] = userData; } else { users.push(userData); }
+        saveUsers(users);
+        // also update legacy single-user key so existing sessions work
+        var existing = JSON.parse(localStorage.getItem('userData')||'{}');
+        if (!existing.email || existing.email === email) { localStorage.setItem('userData', JSON.stringify(userData)); }
+        msg.style.color='#27ae60'; msg.textContent='✅ User saved: '+email; msg.style.display='block';
+        document.getElementById('uName').value=''; document.getElementById('uEmail').value=''; document.getElementById('uPass').value='';
+        renderUserList();
+    }
+
+    function deleteUser(email) {
+        var users = getUsers().filter(function(u){ return u.email !== email; });
+        saveUsers(users);
+        renderUserList();
+    }
+
+    function renderUserList() {
+        var users = getUsers();
+        var el = document.getElementById('userList');
+        if (!users.length) { el.innerHTML='<p style="color:#6b7280;font-size:0.85rem;">No users saved yet.</p>'; return; }
+        el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;"><thead><tr style="border-bottom:1px solid #374151;"><th style="padding:6px;text-align:left;color:#9ca3af;">Name</th><th style="padding:6px;text-align:left;color:#9ca3af;">Email</th><th style="padding:6px;text-align:left;color:#9ca3af;">Password</th><th></th></tr></thead><tbody>'+
+            users.map(function(u){
+                return '<tr style="border-bottom:1px solid #1f2937;"><td style="padding:6px;color:#fff;">'+u.fullName+'</td><td style="padding:6px;color:#f5c856;">'+u.email+'</td><td style="padding:6px;color:#9ca3af;">'+u.password+'</td><td style="padding:6px;"><button onclick="deleteUser(\''+u.email+'\')" style="background:none;border:1px solid #e74c3c;color:#e74c3c;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:0.78rem;">Delete</button></td></tr>';
+            }).join('')+'</tbody></table>';
+    }
 
     function login() {
         var pw = document.getElementById('pwInput').value;

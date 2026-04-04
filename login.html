@@ -204,9 +204,9 @@
     }
 
     function sendPasswordReset() {
-        var email    = document.getElementById('resetEmail').value.trim().toLowerCase();
-        var msgEl    = document.getElementById('resetMsg');
-        var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        var email = document.getElementById('resetEmail').value.trim().toLowerCase();
+        var msgEl = document.getElementById('resetMsg');
+        msgEl.style.display = 'none';
 
         if (!email) {
             msgEl.style.color = '#e74c3c';
@@ -215,26 +215,35 @@
             return;
         }
 
-        if (!userData.email || userData.email.toLowerCase() !== email) {
+        // check allUsers first, then legacy userData
+        var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        var matched = allUsers.find(function(u){ return u.email.toLowerCase() === email; });
+        if (!matched && userData.email && userData.email.toLowerCase() === email) matched = userData;
+
+        if (!matched) {
             msgEl.style.color = '#e74c3c';
             msgEl.textContent = '❌ No account found with that email.';
             msgEl.style.display = 'block';
             return;
         }
 
-        emailjs.init('0J1wL_xAXvlRU7WaV');
+        msgEl.style.color = '#f5c856';
+        msgEl.textContent = '⏳ Sending...';
+        msgEl.style.display = 'block';
+
+        emailjs.init('runwqesYkxfgWYPzf');
         emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
-            to_name:  userData.fullName || 'User',
-            to_email: userData.email,
-            code:     'Your FIRSTTRADES password is: ' + userData.password
+            to_name:  matched.fullName || 'User',
+            to_email: matched.email,
+            code:     'Your FIRSTTRADES password is: ' + matched.password
         }).then(function() {
             msgEl.style.color = '#27ae60';
-            msgEl.textContent = '✅ Password sent to ' + userData.email;
-            msgEl.style.display = 'block';
-        }, function() {
+            msgEl.textContent = '✅ Password sent to ' + matched.email;
+        }, function(err) {
+            console.error('EmailJS error:', err);
             msgEl.style.color = '#e74c3c';
-            msgEl.textContent = '❌ Failed to send. Please try again.';
-            msgEl.style.display = 'block';
+            msgEl.textContent = '❌ Failed to send. Check EmailJS service/template IDs.';
         });
     }
 
@@ -252,18 +261,24 @@
         }
 
         var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        // also check multi-user list (set by admin)
+        var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        var matchedUser = allUsers.find(function(u){ return u.email.toLowerCase() === email; });
+        if (!matchedUser && userData.email) {
+            matchedUser = userData.email.toLowerCase() === email ? userData : null;
+        }
 
-        if (!userData.email) {
-            errorBox.textContent = '❌ No account found. Please register first.';
+        if (!matchedUser) {
+            errorBox.textContent = '❌ No account found with that email. Please register first.';
             errorBox.style.display = 'block';
             return;
         }
 
-        if (userData.email.toLowerCase() === email && userData.password === password) {
+        if (matchedUser.password === password) {
             sessionStorage.setItem('loggedIn', 'true');
             window.location.href = 'trading-dashboard.html';
         } else {
-            errorBox.textContent = '❌ Incorrect email or password. Please try again.';
+            errorBox.textContent = '❌ Incorrect password. Please try again.';
             errorBox.style.display = 'block';
         }
     }
