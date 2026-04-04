@@ -1,5 +1,5 @@
 {
-  "name": "firsttrades",
+  "name": "@firsttrades/platform",
   "version": "1.0.0",
   "description": "FIRSTTRADES - Online Trading Platform",
   "main": "bybit/server.js",
