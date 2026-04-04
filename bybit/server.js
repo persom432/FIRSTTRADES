@@ -40,6 +40,10 @@ function signBybitQuery(params, secret) {
 }
 
 async function bybitRequest(url, params, apiKey, apiSecret) {
+  const allowedUrls = Object.values(BYBIT_URLS);
+  if (!allowedUrls.includes(url)) {
+    throw new Error('Blocked request to non-whitelisted URL: ' + url);
+  }
   const timestamp = Date.now();
   const p = {api_key: apiKey, timestamp, ...params};
   const sign = signBybitQuery(p, apiSecret);
