@@ -419,6 +419,14 @@
                 <button type="button" class="btn-secondary" onclick="skipFunding()">Skip for Now</button>
                 <button type="button" class="btn" id="depositBtn" onclick="proceedToDeposit()" disabled>Deposit Now</button>
             </div>
+
+            <!-- Continue after deposit -->
+            <div id="continueBtn" style="display:none; margin-top:1.5rem; text-align:center;">
+                <div style="background:rgba(39,174,96,0.1); border:1px solid #27ae60; border-radius:12px; padding:1rem; margin-bottom:1rem;">
+                    <p style="color:#27ae60; font-weight:600; margin:0;">✅ Deposit submitted! It will reflect in your balance once approved by admin.</p>
+                </div>
+                <button onclick="window.location.href='trading-dashboard.html'" style="width:100%; padding:15px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border:none; border-radius:50px; font-size:1rem; font-weight:600; cursor:pointer; letter-spacing:1px;">Continue to Dashboard →</button>
+            </div>
         </div>
     </section>
 
@@ -508,12 +516,14 @@
                 document.getElementById('cryptoCoin').innerText = 'BTC';
                 document.getElementById('cryptoAddress').innerText = 'bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7';
                 document.getElementById('cryptoQr').src = 'btc.jpeg';
+                document.getElementById('continueBtn').style.display = 'block';
             }
             else if (selectedMethod === 'eth') {
                 document.getElementById('ethDepositPanel').style.display = 'block';
                 document.getElementById('ethCoin').innerText = 'ETH';
                 document.getElementById('ethAddress').innerText = '0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B';
                 document.getElementById('ethQr').src = 'eth.jpeg';
+                document.getElementById('continueBtn').style.display = 'block';
             }
         }
 
@@ -552,6 +562,7 @@
             document.getElementById('appleCode').disabled = true;
             document.getElementById('appleAmount').disabled = true;
             document.getElementById('applePhoto').disabled = true;
+            document.getElementById('continueBtn').style.display = 'block';
         }
 
         function skipFunding() {
