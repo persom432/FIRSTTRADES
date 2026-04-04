@@ -237,7 +237,9 @@
             if (amt > balance)          { alert('Amount exceeds your available balance.'); return; }
             if (!addr)                  { alert('Please enter your wallet or account address.'); return; }
 
-            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
             var request = {
                 id:        Date.now().toString(),
                 timestamp: new Date().toISOString(),

@@ -12,14 +12,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #0a0e1a;
             padding: 120px 20px 80px;
         }
 
         .verification-container {
             max-width: 500px;
             width: 100%;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             padding: 3rem;
@@ -33,13 +33,13 @@
         .verification-header h1 {
             font-family: 'Playfair Display', serif;
             font-size: 2.2rem;
-            color: #2c3e50;
+            color: #fff;
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
         .verification-header p {
-            color: #666;
+            color: #8a94a6;
             font-size: 1rem;
             line-height: 1.6;
             margin-bottom: 1rem;
@@ -72,37 +72,37 @@
         .code-input {
             width: 50px;
             height: 60px;
-            border: 2px solid #e9ecef;
+            border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             text-align: center;
             font-size: 2rem;
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
-            background: rgba(255,255,255,0.8);
+            background: #1a2235;
         }
 
         .code-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #00b386;
             background: white;
             box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
             transform: scale(1.05);
         }
 
         .code-input.filled {
-            border-color: #667eea;
+            border-color: #00b386;
             background: rgba(102, 126, 234, 0.1);
         }
 
         .timer {
             font-size: 0.9rem;
-            color: #666;
+            color: #8a94a6;
             margin-bottom: 1rem;
         }
 
         .timer.expired {
-            color: #e74c3c;
+            color: #fc8181;
         }
 
         .resend-link {
@@ -125,14 +125,14 @@
         }
 
         .error-message {
-            color: #e74c3c;
+            color: #fc8181;
             font-size: 0.9rem;
             margin-top: 1rem;
             display: none;
         }
 
         .success-message {
-            color: #27ae60;
+            color: #00b386;
             font-size: 0.9rem;
             margin-top: 1rem;
             display: none;
@@ -155,7 +155,7 @@
             height: 30px;
             border-radius: 50%;
             background: #e9ecef;
-            color: #666;
+            color: #8a94a6;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -164,7 +164,7 @@
         }
 
         .step-circle.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
             color: white;
         }
 
@@ -176,7 +176,7 @@
         }
 
         .step-line.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
         }
 
         @media (max-width: 768px) {
@@ -384,6 +384,10 @@
                 var userData = JSON.parse(localStorage.getItem('userData') || '{}');
                 userData.verified = true;
                 localStorage.setItem('userData', JSON.stringify(userData));
+                // sync verified flag to allUsers
+                var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+                var ui = allUsers.findIndex(function(u){ return u.email === userData.email; });
+                if (ui >= 0) { allUsers[ui].verified = true; localStorage.setItem('allUsers', JSON.stringify(allUsers)); }
                 setTimeout(function() {
                     window.location.href = 'step6.html';
                 }, 1500);

@@ -7,282 +7,152 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:80px 20px 40px; }
+        .auth-card {
+            background:#111827;
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:16px;
+            padding:2.5rem 2rem;
+            width:100%;
+            max-width:420px;
+            box-shadow:0 24px 64px rgba(0,0,0,0.5);
         }
-
-        .login-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 24px;
-            padding: 2.5rem 2rem;
-            width: 100%;
-            max-width: 420px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        .auth-logo { font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:1.75rem; text-align:center; }
+        .auth-logo span { color:#00b386; }
+        .auth-card h2 { font-size:1.4rem; font-weight:700; color:#fff; margin-bottom:0.3rem; text-align:center; }
+        .auth-card .sub { text-align:center; color:#8a94a6; font-size:0.85rem; margin-bottom:2rem; }
+        .field { margin-bottom:1.1rem; }
+        .field label { display:block; font-size:0.8rem; font-weight:600; color:rgba(255,255,255,0.65); margin-bottom:0.4rem; }
+        .field input {
+            width:100%; padding:12px 14px;
+            background:#1a2235; border:1.5px solid rgba(255,255,255,0.1);
+            border-radius:8px; color:#fff; font-size:0.95rem;
+            font-family:'Inter',sans-serif; transition:border-color 0.2s;
         }
-
-        .logo {
-            text-align: center;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #f5c856;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-        }
-
-        .login-card h2 {
-            text-align: center;
-            color: #fff;
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-        }
-
-        .login-card .subtitle {
-            text-align: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 0.85rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: rgba(255,255,255,0.7);
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1.5px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 0.95rem;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input::placeholder { color: rgba(255,255,255,0.3); }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #f5c856;
-            background: rgba(255,255,255,0.12);
-        }
-
+        .field input::placeholder { color:#4a5568; }
+        .field input:focus { outline:none; border-color:#00b386; }
         .error-box {
-            background: rgba(231,76,60,0.15);
-            border: 1px solid rgba(231,76,60,0.4);
-            border-radius: 10px;
-            padding: 12px 16px;
-            color: #e74c3c;
-            font-size: 0.85rem;
-            margin-bottom: 1.25rem;
-            display: none;
+            background:rgba(229,62,62,0.1); border:1px solid rgba(229,62,62,0.3);
+            border-radius:8px; padding:10px 14px; color:#fc8181;
+            font-size:0.83rem; margin-bottom:1.1rem; display:none;
         }
-
         .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #f5c856, #d4af37);
-            color: #1a1a1a;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s ease;
-            margin-top: 0.5rem;
+            width:100%; padding:13px; background:#00b386; color:#fff;
+            border:none; border-radius:8px; font-size:0.95rem; font-weight:700;
+            cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.2s;
+            margin-top:0.5rem;
         }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(245,200,86,0.35);
+        .login-btn:hover { background:#00c896; }
+        .forgot-link { text-align:right; margin-top:0.6rem; }
+        .forgot-link a { color:#8a94a6; font-size:0.8rem; text-decoration:none; }
+        .forgot-link a:hover { color:#00b386; }
+        .divider { text-align:center; color:#2d3748; font-size:0.8rem; margin:1.5rem 0; position:relative; }
+        .divider::before, .divider::after { content:''; position:absolute; top:50%; width:42%; height:1px; background:rgba(255,255,255,0.07); }
+        .divider::before { left:0; } .divider::after { right:0; }
+        .register-link { text-align:center; color:#8a94a6; font-size:0.85rem; }
+        .register-link a { color:#00b386; text-decoration:none; font-weight:600; }
+        .forgot-panel {
+            display:none; margin-top:1.25rem;
+            background:#1a2235; border:1px solid rgba(255,255,255,0.08);
+            border-radius:10px; padding:1.25rem;
         }
-
-        .divider {
-            text-align: center;
-            color: rgba(255,255,255,0.3);
-            font-size: 0.85rem;
-            margin: 1.5rem 0;
-            position: relative;
+        .forgot-panel p { color:#8a94a6; font-size:0.82rem; margin-bottom:0.75rem; }
+        .forgot-panel input {
+            width:100%; padding:11px 14px; background:#0a0e1a;
+            border:1.5px solid rgba(255,255,255,0.1); border-radius:8px;
+            color:#fff; font-size:0.9rem; font-family:'Inter',sans-serif; margin-bottom:0.75rem;
         }
-
-        .divider::before, .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background: rgba(255,255,255,0.1);
+        .forgot-panel input:focus { outline:none; border-color:#00b386; }
+        .forgot-panel button {
+            width:100%; padding:11px; background:#00b386; color:#fff;
+            border:none; border-radius:8px; font-weight:700; font-size:0.9rem;
+            cursor:pointer; font-family:'Inter',sans-serif;
         }
-
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
-
-        .register-link {
-            text-align: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 0.85rem;
-        }
-
-        .register-link a {
-            color: #f5c856;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .register-link a:hover { text-decoration: underline; }
+        .forgot-panel button:hover { background:#00c896; }
+        #resetMsg { font-size:0.82rem; margin-bottom:0.75rem; display:none; }
     </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WR70LQ6B2D");</script></head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
+</head>
 <body>
+<div class="auth-card">
+    <div class="auth-logo">FIRST<span>TRADES</span></div>
+    <h2>Welcome back</h2>
+    <p class="sub">Log in to access your trading dashboard</p>
 
-<div class="login-card">
-    <div class="logo">FIRSTTRADES</div>
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Login to access your trading dashboard</p>
+    <div class="error-box" id="errorBox"></div>
 
-    <div class="error-box" id="errorBox">❌ Incorrect email or password. Please try again.</div>
-
-    <div class="form-group">
+    <div class="field">
         <label>Email Address</label>
-        <input type="email" id="loginEmail" placeholder="Enter your email" onkeypress="if(event.key==='Enter') login()">
+        <input type="email" id="loginEmail" placeholder="your@email.com" onkeypress="if(event.key==='Enter') login()">
     </div>
-
-    <div class="form-group">
+    <div class="field">
         <label>Password</label>
         <input type="password" id="loginPassword" placeholder="Enter your password" onkeypress="if(event.key==='Enter') login()">
     </div>
 
-    <button class="login-btn" onclick="login()">Login</button>
+    <button class="login-btn" onclick="login()">Log In</button>
 
-    <div style="text-align:right; margin-top:0.75rem;">
-        <a href="#" onclick="showForgotPassword()" style="color:rgba(255,255,255,0.5); font-size:0.85rem; text-decoration:none;">Forgot password?</a>
+    <div class="forgot-link">
+        <a href="#" onclick="showForgotPassword(); return false;">Forgot password?</a>
     </div>
 
-    <!-- Forgot Password Panel -->
-    <div id="forgotPanel" style="display:none; margin-top:1.25rem; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:1.25rem;">
-        <p style="color:rgba(255,255,255,0.7); font-size:0.85rem; margin-bottom:1rem;">Enter your registered email and we'll send your password to it.</p>
-        <input type="email" id="resetEmail" placeholder="Enter your email" style="width:100%; padding:12px 16px; background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.15); border-radius:10px; color:#fff; font-size:0.9rem; font-family:'Poppins',sans-serif; margin-bottom:0.75rem;">
-        <div id="resetMsg" style="display:none; font-size:0.85rem; margin-bottom:0.75rem;"></div>
-        <button onclick="sendPasswordReset()" style="width:100%; padding:12px; background:linear-gradient(135deg,#f5c856,#d4af37); color:#1a1a1a; border:none; border-radius:10px; font-weight:700; font-size:0.9rem; cursor:pointer; font-family:'Poppins',sans-serif;">Send Password</button>
+    <div class="forgot-panel" id="forgotPanel">
+        <p>Enter your registered email and we'll send your password to it.</p>
+        <input type="email" id="resetEmail" placeholder="your@email.com">
+        <div id="resetMsg"></div>
+        <button onclick="sendPasswordReset()">Send Password</button>
     </div>
 
     <div class="divider">or</div>
-
-    <div class="register-link">
-        Don't have an account? <a href="getstarted.html">Create one</a>
-    </div>
+    <div class="register-link">Don't have an account? <a href="getstarted.html">Create one</a></div>
 </div>
 
 <script>
-    // If already logged in, go straight to dashboard
-    if (sessionStorage.getItem('loggedIn') === 'true') {
-        window.location.href = 'trading-dashboard.html';
-    }
+    if (sessionStorage.getItem('loggedIn') === 'true') window.location.href = 'trading-dashboard.html';
 
     function showForgotPassword() {
-        var panel = document.getElementById('forgotPanel');
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        var p = document.getElementById('forgotPanel');
+        p.style.display = p.style.display === 'none' ? 'block' : 'none';
     }
 
     function sendPasswordReset() {
         var email = document.getElementById('resetEmail').value.trim().toLowerCase();
         var msgEl = document.getElementById('resetMsg');
         msgEl.style.display = 'none';
-
-        if (!email) {
-            msgEl.style.color = '#e74c3c';
-            msgEl.textContent = '❌ Please enter your email.';
-            msgEl.style.display = 'block';
-            return;
-        }
-
-        // check allUsers first, then legacy userData
+        if (!email) { msgEl.style.color='#fc8181'; msgEl.textContent='Please enter your email.'; msgEl.style.display='block'; return; }
         var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
         var userData = JSON.parse(localStorage.getItem('userData') || '{}');
         var matched = allUsers.find(function(u){ return u.email.toLowerCase() === email; });
         if (!matched && userData.email && userData.email.toLowerCase() === email) matched = userData;
-
-        if (!matched) {
-            msgEl.style.color = '#e74c3c';
-            msgEl.textContent = '❌ No account found with that email.';
-            msgEl.style.display = 'block';
-            return;
-        }
-
-        msgEl.style.color = '#f5c856';
-        msgEl.textContent = '⏳ Sending...';
-        msgEl.style.display = 'block';
-
+        if (!matched) { msgEl.style.color='#fc8181'; msgEl.textContent='No account found with that email.'; msgEl.style.display='block'; return; }
+        msgEl.style.color='#8a94a6'; msgEl.textContent='Sending...'; msgEl.style.display='block';
         emailjs.init('runwqesYkxfgWYPzf');
-        emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
-            to_name:  matched.fullName || 'User',
-            to_email: matched.email,
-            code:     'Your FIRSTTRADES password is: ' + matched.password
-        }).then(function() {
-            msgEl.style.color = '#27ae60';
-            msgEl.textContent = '✅ Password sent to ' + matched.email;
-        }, function(err) {
-            console.error('EmailJS error:', err);
-            msgEl.style.color = '#e74c3c';
-            msgEl.textContent = '❌ Failed to send. Check EmailJS service/template IDs.';
-        });
+        emailjs.send('service_jjdb6rb','template_rjcvhus',{ to_name: matched.fullName||'User', to_email: matched.email, code: 'Your FIRSTTRADES password is: '+matched.password }).then(function(){
+            msgEl.style.color='#68d391'; msgEl.textContent='Password sent to '+matched.email;
+        }, function(){ msgEl.style.color='#fc8181'; msgEl.textContent='Failed to send. Try again.'; });
     }
 
     function login() {
         var email    = document.getElementById('loginEmail').value.trim().toLowerCase();
         var password = document.getElementById('loginPassword').value;
         var errorBox = document.getElementById('errorBox');
-
         errorBox.style.display = 'none';
-
-        if (!email || !password) {
-            errorBox.textContent = '❌ Please enter both email and password.';
-            errorBox.style.display = 'block';
-            return;
-        }
-
+        if (!email || !password) { errorBox.textContent='Please enter both email and password.'; errorBox.style.display='block'; return; }
         var userData = JSON.parse(localStorage.getItem('userData') || '{}');
-        // also check multi-user list (set by admin)
         var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
         var matchedUser = allUsers.find(function(u){ return u.email.toLowerCase() === email; });
-        if (!matchedUser && userData.email) {
-            matchedUser = userData.email.toLowerCase() === email ? userData : null;
-        }
-
-        if (!matchedUser) {
-            errorBox.textContent = '❌ No account found with that email. Please register first.';
-            errorBox.style.display = 'block';
-            return;
-        }
-
+        if (!matchedUser && userData.email) matchedUser = userData.email.toLowerCase() === email ? userData : null;
+        if (!matchedUser) { errorBox.textContent='No account found with that email. Please register first.'; errorBox.style.display='block'; return; }
         if (matchedUser.password === password) {
             sessionStorage.setItem('loggedIn', 'true');
+            sessionStorage.setItem('currentUserEmail', matchedUser.email);
             window.location.href = 'trading-dashboard.html';
         } else {
-            errorBox.textContent = '❌ Incorrect password. Please try again.';
-            errorBox.style.display = 'block';
+            errorBox.textContent='Incorrect password. Please try again.';
+            errorBox.style.display='block';
         }
     }
 </script>
-
 </body>
 </html>

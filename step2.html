@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Your Account - FIRSTTRADES</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
         .registration-form {
@@ -11,14 +13,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #0a0e1a;
             padding: 120px 20px 80px;
         }
 
         .form-container {
             max-width: 600px;
             width: 100%;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             padding: 3rem;
@@ -32,19 +34,19 @@
         .form-header h1 {
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
-            color: #2c3e50;
+            color: #fff;
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
         .form-header p {
-            color: #666;
+            color: #8a94a6;
             font-size: 1rem;
         }
 
         .account-type-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
@@ -60,7 +62,7 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #2c3e50;
+            color: #fff;
             font-weight: 500;
             font-size: 0.95rem;
         }
@@ -69,24 +71,24 @@
         .form-group select {
             width: 100%;
             padding: 15px 18px;
-            border: 2px solid #e9ecef;
+            border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: rgba(255,255,255,0.8);
+            background: #1a2235;
             font-family: 'Poppins', sans-serif;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #00b386;
             background: white;
             box-shadow: 0 0 20px rgba(102, 126, 234, 0.1);
         }
 
         .form-group input::placeholder {
-            color: #adb5bd;
+            color: #4a5568;
         }
 
         .password-strength {
@@ -95,9 +97,9 @@
             display: none;
         }
 
-        .strength-weak { color: #e74c3c; }
+        .strength-weak { color: #fc8181; }
         .strength-medium { color: #f39c12; }
-        .strength-strong { color: #27ae60; }
+        .strength-strong { color: #00b386; }
 
         .terms-group {
             display: flex;
@@ -133,7 +135,7 @@
         }
 
         .error-message {
-            color: #e74c3c;
+            color: #fc8181;
             font-size: 0.85rem;
             margin-top: 0.25rem;
             display: none;
@@ -147,7 +149,7 @@
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            background: #1a2235;
             color: white;
             padding: 15px 30px;
             text-decoration: none;
@@ -184,7 +186,7 @@
             height: 30px;
             border-radius: 50%;
             background: #e9ecef;
-            color: #666;
+            color: #8a94a6;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -193,7 +195,7 @@
         }
 
         .step-circle.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
             color: white;
         }
 
@@ -205,7 +207,7 @@
         }
 
         .step-line.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
         }
 
         @media (max-width: 768px) {
@@ -1427,7 +1429,12 @@
 
                 localStorage.setItem('userData', JSON.stringify(userData));
 
-                // Show success message and redirect
+                // Also persist to allUsers array so login always finds the account
+                var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+                var idx = allUsers.findIndex(function(u){ return u.email.toLowerCase() === email.toLowerCase(); });
+                if (idx >= 0) allUsers[idx] = userData; else allUsers.push(userData);
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+
                 window.location.href = 'step3.html';
             }
         });

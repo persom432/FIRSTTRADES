@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fund Your Account - FIRSTTRADES</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
         .funding-form {
@@ -12,14 +14,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #0a0e1a;
             padding: 120px 20px 80px;
         }
 
         .funding-container {
             max-width: 700px;
             width: 100%;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             padding: 3rem;
@@ -33,20 +35,20 @@
         .funding-header h1 {
             font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
-            color: #2c3e50;
+            color: #fff;
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
         .funding-header p {
-            color: #666;
+            color: #8a94a6;
             font-size: 1rem;
             line-height: 1.6;
         }
 
         .account-type-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
@@ -72,7 +74,7 @@
             height: 35px;
             border-radius: 50%;
             background: #e9ecef;
-            color: #666;
+            color: #8a94a6;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -82,7 +84,7 @@
         }
 
         .step-circle.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
             color: white;
         }
 
@@ -99,7 +101,7 @@
         }
 
         .step-line.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
         }
 
         .deposit-options {
@@ -110,24 +112,24 @@
         }
 
         .deposit-option {
-            border: 2px solid #e9ecef;
+            border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 15px;
             padding: 2rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: rgba(255,255,255,0.8);
+            background: #1a2235;
         }
 
         .deposit-option:hover {
-            border-color: #667eea;
+            border-color: #00b386;
             background: rgba(102, 126, 234, 0.05);
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
         }
 
         .deposit-option.selected {
-            border-color: #667eea;
+            border-color: #00b386;
             background: rgba(102, 126, 234, 0.1);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
         }
@@ -141,12 +143,12 @@
         .deposit-title {
             font-size: 1.3rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #fff;
             margin-bottom: 0.5rem;
         }
 
         .deposit-description {
-            color: #666;
+            color: #8a94a6;
             font-size: 0.9rem;
             line-height: 1.5;
         }
@@ -172,11 +174,11 @@
 
         .detail-label {
             font-weight: 600;
-            color: #2c3e50;
+            color: #fff;
         }
 
         .detail-value {
-            color: #27ae60;
+            color: #00b386;
             font-weight: 600;
         }
 
@@ -207,7 +209,7 @@
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            background: #1a2235;
             color: white;
             padding: 15px 30px;
             text-decoration: none;
@@ -228,7 +230,7 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
             color: white;
             padding: 15px 30px;
             border: none;

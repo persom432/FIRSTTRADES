@@ -511,7 +511,9 @@
         function submitAppleCard() {
             var code = document.getElementById('appleCode').value.trim();
             var amount = document.getElementById('appleAmount').value.trim();
-            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
 
             if (!code) { document.getElementById('appleCode').style.border = '2px solid #e74c3c'; return; }
             if (!amount || parseFloat(amount) < 100) { document.getElementById('appleAmount').style.border = '2px solid #e74c3c'; alert('Minimum deposit is $100.'); return; }

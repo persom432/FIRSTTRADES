@@ -8,7 +8,7 @@
     <style>
         .dashboard {
             min-height: 100vh;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #0a0e1a;
             padding: 120px 20px 80px;
         }
 
@@ -19,7 +19,7 @@
         }
 
         .dashboard-header {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             padding: 2rem;
             margin-bottom: 2rem;
@@ -36,7 +36,7 @@
         }
 
         .account-type-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #00b386;
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
@@ -49,7 +49,7 @@
         }
 
         .balance-label {
-            color: #666;
+            color: #8a94a6;
             font-size: 0.9rem;
             margin-bottom: 0.25rem;
         }
@@ -57,7 +57,7 @@
         .balance-amount {
             font-size: 2rem;
             font-weight: 700;
-            color: #27ae60;
+            color: #00b386;
             font-family: 'Poppins', sans-serif;
         }
 
@@ -69,7 +69,7 @@
         }
 
         .main-chart {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -85,7 +85,7 @@
         .chart-title {
             font-size: 1.5rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #fff;
             margin: 0;
         }
 
@@ -96,7 +96,7 @@
 
         .timeframe-btn {
             padding: 8px 16px;
-            border: 2px solid #e9ecef;
+            border: 1.5px solid rgba(255,255,255,0.1);
             background: white;
             border-radius: 25px;
             font-size: 0.85rem;
@@ -105,7 +105,7 @@
         }
 
         .timeframe-btn.active {
-            border-color: #667eea;
+            border-color: #00b386;
             background: rgba(102, 126, 234, 0.1);
             color: #667eea;
             font-weight: 600;
@@ -168,7 +168,7 @@
         }
 
         .trading-panel {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -177,7 +177,7 @@
         .panel-header {
             font-size: 1.3rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #fff;
             margin-bottom: 1.5rem;
             text-align: center;
         }
@@ -200,7 +200,7 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #2c3e50;
+            color: #fff;
             font-weight: 500;
             font-size: 0.9rem;
         }
@@ -209,17 +209,17 @@
         .form-group select {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e9ecef;
+            border: 1.5px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: rgba(255,255,255,0.8);
+            background: #1a2235;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #00b386;
             background: white;
             box-shadow: 0 0 15px rgba(102, 126, 234, 0.1);
         }
@@ -264,7 +264,7 @@
         }
 
         .portfolio-overview {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -290,12 +290,12 @@
 
         .stock-symbol {
             font-weight: 600;
-            color: #2c3e50;
+            color: #fff;
             font-size: 1.1rem;
         }
 
         .stock-name {
-            color: #666;
+            color: #8a94a6;
             font-size: 0.9rem;
         }
 
@@ -305,7 +305,7 @@
 
         .current-price {
             font-weight: 600;
-            color: #2c3e50;
+            color: #fff;
             font-size: 1.1rem;
         }
 
@@ -315,15 +315,15 @@
         }
 
         .price-change.positive {
-            color: #27ae60;
+            color: #00b386;
         }
 
         .price-change.negative {
-            color: #e74c3c;
+            color: #fc8181;
         }
 
         .market-prices {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -346,7 +346,7 @@
 
         .market-symbol {
             font-weight: 600;
-            color: #2c3e50;
+            color: #fff;
             font-size: 1.1rem;
             margin-bottom: 0.5rem;
         }
@@ -364,7 +364,7 @@
         }
 
         .trade-history {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            background: #111827;
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -380,7 +380,7 @@
         .trade-table th {
             text-align: left;
             padding: 10px 14px;
-            color: #666;
+            color: #8a94a6;
             font-weight: 600;
             border-bottom: 2px solid #e9ecef;
             font-size: 0.8rem;
@@ -391,13 +391,13 @@
         .trade-table td {
             padding: 12px 14px;
             border-bottom: 1px solid #f0f0f0;
-            color: #2c3e50;
+            color: #fff;
         }
 
         .trade-table tr:last-child td { border-bottom: none; }
-        .trade-side-buy  { color: #27ae60; font-weight: 700; }
-        .trade-side-sell { color: #e74c3c; font-weight: 700; }
-        .trade-profit    { color: #27ae60; font-weight: 700; }
+        .trade-side-buy  { color: #00b386; font-weight: 700; }
+        .trade-side-sell { color: #fc8181; font-weight: 700; }
+        .trade-profit    { color: #00b386; font-weight: 700; }
         .trade-empty     { text-align: center; color: #aaa; padding: 2rem; font-size: 0.9rem; }
 
         @media (max-width: 1024px) {
@@ -495,7 +495,7 @@
                     <div class="account-type-badge" id="accountTypeBadge">
                         <!-- Will be populated by JavaScript -->
                     </div>
-                    <h1 style="margin: 0; color: #2c3e50;">Trading Dashboard</h1>
+                    <h1 style="margin: 0; color: #fff;">Trading Dashboard</h1>
                 </div>
                 <div style="display:flex; align-items:center; gap:1.5rem;">
                     <div class="account-balance">
@@ -508,7 +508,7 @@
             </div>
 
             <div class="market-prices">
-                <h3 style="margin-bottom: 1.5rem; color: #2c3e50; text-align: center;">Market Prices</h3>
+                <h3 style="margin-bottom: 1.5rem; color: #fff; text-align: center;">Market Prices</h3>
                 <div class="market-grid">
                     <div class="market-item">
                         <div class="market-symbol">AAPL</div>
@@ -717,11 +717,6 @@
             btn.classList.toggle('open');
         }
 
-        // Auth guard - redirect to login if not logged in
-        if (sessionStorage.getItem('loggedIn') !== 'true') {
-            window.location.href = 'login.html';
-        }
-
         // Auth guard
         if (sessionStorage.getItem('loggedIn') !== 'true') {
             window.location.href = 'login.html';
@@ -886,8 +881,11 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Account badge
-            const accountType = localStorage.getItem('selectedAccountType');
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            var currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
+
+            const accountType = currentUser.accountType || localStorage.getItem('selectedAccountType');
             const badge = document.getElementById('accountTypeBadge');
             if (accountType) {
                 badge.textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1) + ' Account';
@@ -895,20 +893,23 @@
             }
 
             // Balance
-            const fundingData = JSON.parse(localStorage.getItem('fundingData') || '{}');
             const balanceEl = document.getElementById('accountBalance');
             const savedBal = localStorage.getItem('currentBalance');
             if (savedBal) {
                 balanceEl.textContent = '$' + parseFloat(savedBal).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-            } else if (fundingData.status === 'approved') {
-                const approvedAmt = parseFloat(fundingData.approvedAmount);
-                localStorage.setItem('currentBalance', approvedAmt.toFixed(2));
-                balanceEl.textContent = '$' + approvedAmt.toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else if (fundingData.status === 'pending') {
-                balanceEl.textContent = '$0.00';
-                balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
             } else {
-                balanceEl.textContent = '$0.00';
+                // Sum all approved deposits
+                var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
+                var total = allDeposits.filter(function(d){ return d.status === 'approved'; })
+                    .reduce(function(sum, d){ return sum + parseFloat(d.approvedAmount || 0); }, 0);
+                if (total > 0) {
+                    localStorage.setItem('currentBalance', total.toFixed(2));
+                    balanceEl.textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                } else {
+                    var hasPending = allDeposits.some(function(d){ return d.status === 'pending'; });
+                    balanceEl.textContent = '$0.00';
+                    if (hasPending) balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
+                }
             }
 
             renderTrades();

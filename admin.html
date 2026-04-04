@@ -395,8 +395,12 @@
 
             var userInfo = '';
             try {
-                var ud = JSON.parse(localStorage.getItem('userData') || '{}');
-                if (ud.fullName) userInfo = '<span>User</span><strong>' + ud.fullName + '</strong><span>Email</span><strong>' + (ud.email || '-') + '</strong>';
+                var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+                var matchedUser = d.email ? allUsers.find(function(u){ return u.email === d.email; }) : null;
+                var ud = matchedUser || JSON.parse(localStorage.getItem('userData') || '{}');
+                var uName = d.user || ud.fullName || '';
+                var uEmail = d.email || ud.email || '';
+                if (uName || uEmail) userInfo = '<span>User</span><strong>' + uName + '</strong><span>Email</span><strong>' + uEmail + '</strong>';
             } catch(e) {}
 
             var appleInfo = '';
