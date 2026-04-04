@@ -172,7 +172,7 @@
             const message = document.getElementById('message').value;
 
             if (!name || !email || !message) {
-                alert('Please fill in all required fields.');
+                document.getElementById('contactForm').querySelector('input').style.border = '2px solid #e74c3c';
                 return;
             }
 

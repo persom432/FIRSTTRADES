@@ -378,6 +378,10 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+        .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); padding:14px 24px; border-radius:12px; font-size:0.95rem; font-weight:600; color:#fff; z-index:9999; opacity:0; transition:opacity 0.3s; pointer-events:none; max-width:90%; text-align:center; }
+        .toast.show { opacity:1; }
+        .toast.success { background:#27ae60; }
+        .toast.error   { background:#e74c3c; }
     </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WR70LQ6B2D");</script></head>
 <body>
@@ -393,6 +397,8 @@
             </ul>
         </nav>
     </header>
+
+    <div id="toast" class="toast"></div>
 
     <section class="dashboard">
         <div class="dashboard-container">
@@ -590,6 +596,13 @@
         }
 
         var currentSymbol = 'AAPL';
+        function showToast(msg, type) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(function() { t.className = 'toast'; }, 3500);
+        }
+
         var orderSide = 'buy';
 
         var stockData = {
@@ -651,23 +664,22 @@
             var orderType = document.getElementById('orderType').value;
             var quantity = document.getElementById('quantity').value;
             var price = document.getElementById('price').value;
-            if (!quantity || quantity < 1) { alert('Please enter a valid quantity.'); return; }
+            if (!quantity || quantity < 1) { showToast('Please enter a valid quantity.', 'error'); return; }
 
             var entryPrice = price ? parseFloat(price) : stockData[symbol].basePrice;
             var totalCost = entryPrice * parseInt(quantity);
 
-            // Check balance
             var fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
             var balance = fd.status === 'approved' ? parseFloat(fd.approvedAmount || 0) : 0;
 
             if (balance < totalCost) {
-                alert('Insufficient funds!\n\nOrder Cost: $' + totalCost.toFixed(2) + '\nAccount Balance: $' + balance.toFixed(2) + '\n\nPlease deposit funds to continue trading.');
+                showToast('Insufficient funds! Order cost: $' + totalCost.toFixed(2) + ' — Balance: $' + balance.toFixed(2), 'error');
                 return;
             }
 
             var profit = entryPrice * quantity * 0.40;
             var exitPrice = entryPrice * 1.40;
-            alert(orderSide.toUpperCase() + ' order FILLED!\n\nSymbol: ' + symbol + '\nQty: ' + quantity + '\nEntry Price: $' + entryPrice.toFixed(2) + '\nExit Price: $' + exitPrice.toFixed(2) + '\nProfit: +$' + profit.toFixed(2) + ' (+40%)\n\n✅ TRADE SUCCESSFUL');
+            showToast(orderSide.toUpperCase() + ' order FILLED! ' + quantity + ' ' + symbol + ' — Profit: +$' + profit.toFixed(2) + ' (+40%) ✅', 'success');
             document.getElementById('quantity').value = '';
             document.getElementById('price').value = '';
         }

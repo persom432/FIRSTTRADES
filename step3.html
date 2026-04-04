@@ -300,7 +300,7 @@
         function updateEmail() {
             var newEmail = document.getElementById('newEmailInput').value.trim();
             if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-                alert('Please enter a valid email address.');
+                document.getElementById('newEmailInput').style.border = '2px solid #e74c3c';
                 return;
             }
             var userData = JSON.parse(localStorage.getItem('userData') || '{}');
@@ -322,7 +322,6 @@
             var userName = userData.fullName || 'User';
 
             if (!userEmail) {
-                alert('No email found. Please register first.');
                 window.location.href = 'step2.html';
                 return;
             }
@@ -339,7 +338,6 @@
                 console.log('Code sent successfully');
             }, function(error) {
                 console.error('EmailJS error:', error);
-                alert('Failed to send code. Please try again.');
             });
         }
 

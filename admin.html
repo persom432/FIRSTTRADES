@@ -292,7 +292,7 @@
             document.getElementById('adminDashboard').style.display = 'block';
             loadDeposits();
         } else {
-            alert('Incorrect password.');
+            document.getElementById('adminPassword').style.border = '2px solid #e74c3c';
         }
     }
 
@@ -368,7 +368,7 @@
         const amtInput = document.getElementById(`amt-${index}`);
         const amount = parseFloat(amtInput?.value);
         if (!amount || amount <= 0) {
-            alert('Please enter the approved deposit amount.');
+            document.getElementById('amt-' + index).style.border = '2px solid #e74c3c';
             return;
         }
 
