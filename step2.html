@@ -229,10 +229,26 @@
                 margin-bottom: 1.5rem;
             }
         }
+        .back-arrow {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            width: 44px;
+            height: 44px;
+            background: rgba(0,0,0,0.15);
+            border: 1px solid rgba(0,0,0,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .back-arrow:hover { background: rgba(0,0,0,0.25); transform: scale(1.1); }
+        .back-arrow svg { width: 20px; height: 20px; fill: none; stroke: #2c3e50; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
     </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WR70LQ6B2D");</script></head>
-<body>
-    <header>
         <nav class="container">
             <div class="logo">FIRSTTRADES</div>
             <ul>
@@ -1435,3 +1451,4 @@
     </script>
 </body>
 </html>
+
