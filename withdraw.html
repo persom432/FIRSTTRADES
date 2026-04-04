@@ -214,6 +214,11 @@
     <script>
         var balance = 0;
 
+        // Auth guard
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             balance = parseFloat(localStorage.getItem('currentBalance') || 0);
             document.getElementById('availBal').textContent = '$' + balance.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});

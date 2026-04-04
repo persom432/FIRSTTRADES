@@ -418,6 +418,11 @@
         let selectedMethod = null;
         var cryptoRates = { btc: 67000, eth: 3500 };
 
+        // Auth guard
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const accountType = localStorage.getItem('selectedAccountType');
             const badge = document.getElementById('accountTypeBadge');

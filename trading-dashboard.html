@@ -717,6 +717,16 @@
             btn.classList.toggle('open');
         }
 
+        // Auth guard - redirect to login if not logged in
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Auth guard
+        if (sessionStorage.getItem('loggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
         let currentSymbol = 'AAPL';
         let orderSide = 'buy';
 
