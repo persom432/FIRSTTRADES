@@ -246,6 +246,14 @@
 
             <div class="email-display">
                 <strong id="userEmail">Loading...</strong>
+                <br>
+                <a href="#" onclick="showChangeEmail()" style="font-size:0.82rem; color:#667eea; text-decoration:none; font-weight:500;">Change email</a>
+            </div>
+
+            <!-- Change Email Panel -->
+            <div id="changeEmailPanel" style="display:none; margin-bottom:1.5rem; background:rgba(102,126,234,0.05); border:1px solid rgba(102,126,234,0.2); border-radius:12px; padding:1rem;">
+                <input type="email" id="newEmailInput" placeholder="Enter new email address" style="width:100%; padding:11px 14px; border:2px solid #e9ecef; border-radius:10px; font-size:0.95rem; font-family:'Poppins',sans-serif; margin-bottom:0.75rem; color:#2c3e50;">
+                <button onclick="updateEmail()" style="width:100%; padding:11px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border:none; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:'Poppins',sans-serif;">Update & Resend Code</button>
             </div>
 
             <div class="verification-input">
@@ -282,6 +290,31 @@
 
         function generateCode() {
             return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function showChangeEmail() {
+            var panel = document.getElementById('changeEmailPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updateEmail() {
+            var newEmail = document.getElementById('newEmailInput').value.trim();
+            if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            userData.email = newEmail;
+            localStorage.setItem('userData', JSON.stringify(userData));
+            document.getElementById('userEmail').textContent = newEmail;
+            document.getElementById('changeEmailPanel').style.display = 'none';
+            document.getElementById('newEmailInput').value = '';
+            document.querySelectorAll('.code-input').forEach(function(i) { i.value = ''; i.classList.remove('filled'); });
+            document.getElementById('verifyBtn').disabled = true;
+            document.getElementById('errorMessage').style.display = 'none';
+            sendCode();
+            startCountdown();
+            alert('Email updated! A new code has been sent to ' + newEmail);
         }
 
         function sendCode() {
