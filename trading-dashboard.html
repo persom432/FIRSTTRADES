@@ -640,9 +640,10 @@
                             <th>Side</th>
                             <th>Qty</th>
                             <th>Entry Price</th>
-                            <th>Invested</th>
-                            <th>Profit (+30%)</th>
-                            <th>Total Return</th>
+                            <th>Exit Price</th>
+                            <th>P&L</th>
+                            <th>Return %</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="tradeHistoryBody">
@@ -863,59 +864,90 @@
             const trades = getTrades();
             const tbody = document.getElementById('tradeHistoryBody');
             if (!trades.length) {
-                tbody.innerHTML = '<tr><td colspan="8" class="trade-empty">No trades yet. Place a buy or sell order above.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="trade-empty">No trades yet. Place a buy or sell order above.</td></tr>';
                 return;
             }
             tbody.innerHTML = trades.slice().reverse().map(function(t) {
+                const isOpen = t.status === 'open';
+                const pnlColor = isOpen ? '#e67e22' : '#27ae60';
+                const pnlText  = isOpen ? '—' : '+$' + t.profit.toFixed(2);
+                const pctText  = isOpen ? '—' : '+' + t.pct.toFixed(2) + '%';
+                const exitText = isOpen ? '—' : '$' + t.exitPrice.toFixed(2);
+                const statusBadge = isOpen
+                    ? '<span style="background:rgba(230,126,34,0.15);color:#e67e22;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">OPEN</span>'
+                    : '<span style="background:rgba(39,174,96,0.15);color:#27ae60;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">CLOSED</span>';
                 return '<tr>' +
                     '<td>' + t.time + '</td>' +
                     '<td><strong>' + t.symbol + '</strong></td>' +
                     '<td class="trade-side-' + t.side + '">' + t.side.toUpperCase() + '</td>' +
                     '<td>' + t.qty + '</td>' +
                     '<td>$' + t.price.toFixed(2) + '</td>' +
-                    '<td>$' + t.invested.toFixed(2) + '</td>' +
-                    '<td class="trade-profit">+$' + t.profit.toFixed(2) + '</td>' +
-                    '<td style="font-weight:700;color:#2c3e50;">$' + t.total.toFixed(2) + '</td>' +
+                    '<td>' + exitText + '</td>' +
+                    '<td style="color:' + pnlColor + ';font-weight:700;">' + pnlText + '</td>' +
+                    '<td style="color:' + pnlColor + ';font-weight:700;">' + pctText + '</td>' +
+                    '<td>' + statusBadge + '</td>' +
                     '</tr>';
             }).join('');
         }
 
         function submitOrder(event) {
             event.preventDefault();
-            const symbol   = document.getElementById('symbol').value;
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const price    = document.getElementById('price').value;
+            const symbol     = document.getElementById('symbol').value;
+            const quantity   = parseInt(document.getElementById('quantity').value);
+            const priceInput = document.getElementById('price').value;
             if (!quantity || quantity < 1) { alert('Please enter a valid quantity.'); return; }
 
-            const entryPrice = price ? parseFloat(price) : stockData[symbol].basePrice;
-            const invested   = entryPrice * quantity;
-            const profit     = invested * 0.30;
-            const total      = invested + profit;
-
-            const trades = getTrades();
+            const entryPrice = priceInput ? parseFloat(priceInput) : stockData[symbol].basePrice;
             const now = new Date();
-            trades.push({
-                time:     now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+            const trade = {
+                id:       now.getTime(),
+                time:     now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
                 symbol:   symbol,
                 side:     orderSide,
                 qty:      quantity,
                 price:    entryPrice,
-                invested: invested,
-                profit:   profit,
-                total:    total
-            });
+                status:   'open',
+                profit:   0,
+                pct:      0,
+                exitPrice: 0
+            };
+
+            const trades = getTrades();
+            trades.push(trade);
             saveTrades(trades);
-
-            // Add 30% profit to balance
-            const fundingData = JSON.parse(localStorage.getItem('fundingData') || '{}');
-            const currentBal  = parseFloat(localStorage.getItem('currentBalance') || fundingData.approvedAmount || 0);
-            const newBal      = currentBal + profit;
-            localStorage.setItem('currentBalance', newBal.toFixed(2));
-            document.getElementById('accountBalance').textContent = '$' + newBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-
             renderTrades();
+
             document.getElementById('quantity').value = '';
             document.getElementById('price').value    = '';
+
+            // Close trade after 4–9 seconds with 27–35% profit
+            const delay = 4000 + Math.random() * 5000;
+            setTimeout(function() {
+                const allTrades = getTrades();
+                const idx = allTrades.findIndex(function(t) { return t.id === trade.id; });
+                if (idx === -1) return;
+
+                const pct       = 27 + Math.random() * 8; // 27–35%
+                const invested  = entryPrice * quantity;
+                const profit    = invested * (pct / 100);
+                const exitPrice = orderSide === 'buy'
+                    ? entryPrice * (1 + pct / 100)
+                    : entryPrice * (1 - pct / 100);
+
+                allTrades[idx].status    = 'closed';
+                allTrades[idx].pct       = pct;
+                allTrades[idx].profit    = profit;
+                allTrades[idx].exitPrice = exitPrice;
+                saveTrades(allTrades);
+
+                // Update balance
+                const currentBal = parseFloat(localStorage.getItem('currentBalance') || 0);
+                const newBal     = currentBal + profit;
+                localStorage.setItem('currentBalance', newBal.toFixed(2));
+                document.getElementById('accountBalance').textContent = '$' + newBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+                renderTrades();
+            }, delay);
         }
 
         function updateAllPrices() {
