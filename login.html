@@ -3,117 +3,537 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - FIRSTTRADES</title>
+    <title>Login — FIRSTTRADES</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        body { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:80px 20px 40px; }
-        .auth-card {
-            background:#111827;
-            border:1px solid rgba(255,255,255,0.08);
-            border-radius:16px;
-            padding:2.5rem 2rem;
-            width:100%;
-            max-width:420px;
-            box-shadow:0 24px 64px rgba(0,0,0,0.5);
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold:    #c9a84c;
+            --gold2:   #e8c96a;
+            --gold-glow: rgba(201,168,76,0.18);
+            --navy:    #07090f;
+            --navy2:   #0d1117;
+            --navy3:   #131a27;
+            --glass:   rgba(255,255,255,0.04);
+            --border:  rgba(255,255,255,0.07);
+            --border-gold: rgba(201,168,76,0.25);
+            --grey:    #8a94a6;
+            --white:   #ffffff;
         }
-        .auth-logo { font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:1.75rem; text-align:center; }
-        .auth-logo span { color:#00b386; }
-        .auth-card h2 { font-size:1.4rem; font-weight:700; color:#fff; margin-bottom:0.3rem; text-align:center; }
-        .auth-card .sub { text-align:center; color:#8a94a6; font-size:0.85rem; margin-bottom:2rem; }
-        .field { margin-bottom:1.1rem; }
-        .field label { display:block; font-size:0.8rem; font-weight:600; color:rgba(255,255,255,0.65); margin-bottom:0.4rem; }
+
+        html, body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: var(--navy);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* ── ANIMATED BACKGROUND ── */
+        .bg-scene {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-scene canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            animation: orbFloat 12s ease-in-out infinite;
+        }
+        .bg-orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(201,168,76,0.09) 0%, transparent 70%);
+            top: -150px; right: -100px;
+            animation-delay: 0s;
+        }
+        .bg-orb-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,179,134,0.07) 0%, transparent 70%);
+            bottom: -100px; left: -100px;
+            animation-delay: -6s;
+        }
+        .bg-orb-3 {
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
+            top: 40%; left: 30%;
+            animation-delay: -3s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50%       { transform: translateY(-40px) scale(1.05); }
+        }
+
+        /* ── GRID LINES ── */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+        }
+
+        /* ── LAYOUT ── */
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ── TOP LOGO BAR ── */
+        .top-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            background: rgba(7,9,15,0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -0.3px;
+            text-decoration: none;
+        }
+        .logo span { color: var(--gold); }
+
+        .top-bar-link {
+            font-size: 0.82rem;
+            color: var(--grey);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .top-bar-link:hover { color: var(--white); }
+
+        /* ── CARD ── */
+        .card {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(13,17,23,0.75);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 2.75rem 2.25rem;
+            box-shadow:
+                0 0 0 1px rgba(201,168,76,0.06),
+                0 32px 80px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.06);
+            animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(28px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ── CARD HEADER ── */
+        .card-emblem {
+            width: 52px; height: 52px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+            border: 1px solid var(--border-gold);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: var(--white);
+            text-align: center;
+            margin-bottom: 0.35rem;
+            letter-spacing: -0.3px;
+        }
+
+        .card .sub {
+            text-align: center;
+            color: var(--grey);
+            font-size: 0.84rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        /* ── DIVIDER LINE ── */
+        .card-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-gold), transparent);
+            margin-bottom: 2rem;
+        }
+
+        /* ── FIELDS ── */
+        .field { margin-bottom: 1.1rem; }
+
+        .field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 0.45rem;
+        }
+
         .field input {
-            width:100%; padding:12px 14px;
-            background:#1a2235; border:1.5px solid rgba(255,255,255,0.1);
-            border-radius:8px; color:#fff; font-size:0.95rem;
-            font-family:'Inter',sans-serif; transition:border-color 0.2s;
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 0.93rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
         }
-        .field input::placeholder { color:#4a5568; }
-        .field input:focus { outline:none; border-color:#00b386; }
+
+        .field input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(201,168,76,0.04);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+        }
+
+        /* ── ERROR ── */
         .error-box {
-            background:rgba(229,62,62,0.1); border:1px solid rgba(229,62,62,0.3);
-            border-radius:8px; padding:10px 14px; color:#fc8181;
-            font-size:0.83rem; margin-bottom:1.1rem; display:none;
+            background: rgba(229,62,62,0.08);
+            border: 1px solid rgba(229,62,62,0.25);
+            border-radius: 10px;
+            padding: 11px 15px;
+            color: #fc8181;
+            font-size: 0.82rem;
+            margin-bottom: 1.1rem;
+            display: none;
+            animation: shake 0.35s ease;
         }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25%      { transform: translateX(-6px); }
+            75%      { transform: translateX(6px); }
+        }
+
+        /* ── BUTTON ── */
         .login-btn {
-            width:100%; padding:13px; background:#00b386; color:#fff;
-            border:none; border-radius:8px; font-size:0.95rem; font-weight:700;
-            cursor:pointer; font-family:'Inter',sans-serif; transition:background 0.2s;
-            margin-top:0.5rem;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #c9a84c, #e8c96a, #c9a84c);
+            background-size: 200% 100%;
+            color: #07090f;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.93rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background-position 0.4s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+            margin-top: 0.5rem;
         }
-        .login-btn:hover { background:#00c896; }
-        .forgot-link { text-align:right; margin-top:0.6rem; }
-        .forgot-link a { color:#8a94a6; font-size:0.8rem; text-decoration:none; }
-        .forgot-link a:hover { color:#00b386; }
-        .divider { text-align:center; color:#2d3748; font-size:0.8rem; margin:1.5rem 0; position:relative; }
-        .divider::before, .divider::after { content:''; position:absolute; top:50%; width:42%; height:1px; background:rgba(255,255,255,0.07); }
-        .divider::before { left:0; } .divider::after { right:0; }
-        .register-link { text-align:center; color:#8a94a6; font-size:0.85rem; }
-        .register-link a { color:#00b386; text-decoration:none; font-weight:600; }
+
+        .login-btn:hover {
+            background-position: 100% 0;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(201,168,76,0.35);
+        }
+
+        .login-btn:active { transform: translateY(0); }
+
+        /* ── FORGOT ── */
+        .forgot-link {
+            text-align: right;
+            margin-top: 0.65rem;
+        }
+
+        .forgot-link a {
+            color: rgba(255,255,255,0.35);
+            font-size: 0.78rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .forgot-link a:hover { color: var(--gold); }
+
+        /* ── DIVIDER TEXT ── */
+        .divider {
+            text-align: center;
+            color: rgba(255,255,255,0.15);
+            font-size: 0.75rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 44%;
+            height: 1px;
+            background: rgba(255,255,255,0.06);
+        }
+        .divider::before { left: 0; }
+        .divider::after  { right: 0; }
+
+        /* ── REGISTER LINK ── */
+        .register-link {
+            text-align: center;
+            color: var(--grey);
+            font-size: 0.84rem;
+        }
+        .register-link a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .register-link a:hover { color: var(--gold2); }
+
+        /* ── FORGOT PANEL ── */
         .forgot-panel {
-            display:none; margin-top:1.25rem;
-            background:#1a2235; border:1px solid rgba(255,255,255,0.08);
-            border-radius:10px; padding:1.25rem;
+            display: none;
+            margin-top: 1.25rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 1.25rem;
         }
-        .forgot-panel p { color:#8a94a6; font-size:0.82rem; margin-bottom:0.75rem; }
+
+        .forgot-panel p {
+            color: var(--grey);
+            font-size: 0.81rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
         .forgot-panel input {
-            width:100%; padding:11px 14px; background:#0a0e1a;
-            border:1.5px solid rgba(255,255,255,0.1); border-radius:8px;
-            color:#fff; font-size:0.9rem; font-family:'Inter',sans-serif; margin-bottom:0.75rem;
+            width: 100%;
+            padding: 11px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.88rem;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.2s;
         }
-        .forgot-panel input:focus { outline:none; border-color:#00b386; }
+        .forgot-panel input:focus { outline: none; border-color: var(--gold); }
+
         .forgot-panel button {
-            width:100%; padding:11px; background:#00b386; color:#fff;
-            border:none; border-radius:8px; font-weight:700; font-size:0.9rem;
-            cursor:pointer; font-family:'Inter',sans-serif;
+            width: 100%;
+            padding: 11px;
+            background: linear-gradient(135deg, #c9a84c, #e8c96a);
+            color: #07090f;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s;
         }
-        .forgot-panel button:hover { background:#00c896; }
-        #resetMsg { font-size:0.82rem; margin-bottom:0.75rem; display:none; }
+        .forgot-panel button:hover { opacity: 0.88; }
+
+        #resetMsg { font-size: 0.8rem; margin-bottom: 0.75rem; display: none; }
+
+        /* ── TRUST ROW ── */
+        .trust-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.75rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .trust-item::before {
+            content: '';
+            width: 5px; height: 5px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        /* ── PARTICLES CANVAS ── */
+        #particleCanvas { opacity: 0.5; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 480px) {
+            .card { padding: 2rem 1.4rem; border-radius: 16px; }
+            .card h2 { font-size: 1.4rem; }
+            .top-bar { padding: 0 16px; }
+            .trust-row { gap: 1rem; flex-wrap: wrap; }
+        }
     </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
 </head>
 <body>
-<div class="auth-card">
-    <div class="auth-logo">FIRST<span>TRADES</span></div>
-    <h2>Welcome back</h2>
-    <p class="sub">Log in to access your trading dashboard</p>
 
-    <div class="error-box" id="errorBox"></div>
+<!-- BACKGROUND -->
+<div class="bg-scene">
+    <canvas id="particleCanvas"></canvas>
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+</div>
 
-    <div class="field">
-        <label>Email Address</label>
-        <input type="email" id="loginEmail" placeholder="your@email.com" onkeypress="if(event.key==='Enter') login()">
+<!-- TOP BAR -->
+<div class="top-bar">
+    <a href="index.html" class="logo">FIRST<span>TRADES</span></a>
+    <a href="index.html" class="top-bar-link">← Back to Home</a>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+    <div class="card">
+        <div class="card-emblem">◈</div>
+        <h2>Welcome Back</h2>
+        <p class="sub">Sign in to access your trading portfolio</p>
+        <div class="card-divider"></div>
+
+        <div class="error-box" id="errorBox"></div>
+
+        <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="your@email.com" onkeypress="if(event.key==='Enter') login()">
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••••" onkeypress="if(event.key==='Enter') login()">
+        </div>
+
+        <button class="login-btn" onclick="login()">Sign In to Dashboard</button>
+
+        <div class="forgot-link">
+            <a href="#" onclick="showForgotPassword(); return false;">Forgot password?</a>
+        </div>
+
+        <div class="forgot-panel" id="forgotPanel">
+            <p>Enter your registered email and we'll send your password to it.</p>
+            <input type="email" id="resetEmail" placeholder="your@email.com">
+            <div id="resetMsg"></div>
+            <button onclick="sendPasswordReset()">Send Password</button>
+        </div>
+
+        <div class="divider">or</div>
+        <div class="register-link">New to FIRSTTRADES? <a href="getstarted.html">Open an Account</a></div>
+
+        <div class="trust-row">
+            <div class="trust-item">256-bit SSL</div>
+            <div class="trust-item">Bank-level security</div>
+            <div class="trust-item">24/7 Support</div>
+        </div>
     </div>
-    <div class="field">
-        <label>Password</label>
-        <input type="password" id="loginPassword" placeholder="Enter your password" onkeypress="if(event.key==='Enter') login()">
-    </div>
-
-    <button class="login-btn" onclick="login()">Log In</button>
-
-    <div class="forgot-link">
-        <a href="#" onclick="showForgotPassword(); return false;">Forgot password?</a>
-    </div>
-
-    <div class="forgot-panel" id="forgotPanel">
-        <p>Enter your registered email and we'll send your password to it.</p>
-        <input type="email" id="resetEmail" placeholder="your@email.com">
-        <div id="resetMsg"></div>
-        <button onclick="sendPasswordReset()">Send Password</button>
-    </div>
-
-    <div class="divider">or</div>
-    <div class="register-link">Don't have an account? <a href="getstarted.html">Create one</a></div>
 </div>
 
 <script>
     if (sessionStorage.getItem('loggedIn') === 'true') window.location.href = 'trading-dashboard.html';
 
+    /* ── PARTICLE BACKGROUND ── */
+    (function() {
+        var canvas = document.getElementById('particleCanvas');
+        var ctx = canvas.getContext('2d');
+        var W, H, particles = [];
+
+        function resize() {
+            W = canvas.width  = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function Particle() {
+            this.x = Math.random() * W;
+            this.y = Math.random() * H;
+            this.r = Math.random() * 1.2 + 0.3;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.3;
+            this.alpha = Math.random() * 0.5 + 0.1;
+            this.gold = Math.random() > 0.65;
+        }
+
+        for (var i = 0; i < 90; i++) particles.push(new Particle());
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(function(p) {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+                if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = p.gold
+                    ? 'rgba(201,168,76,' + p.alpha + ')'
+                    : 'rgba(255,255,255,' + p.alpha * 0.5 + ')';
+                ctx.fill();
+            });
+
+            // Draw faint connecting lines
+            for (var a = 0; a < particles.length; a++) {
+                for (var b = a + 1; b < particles.length; b++) {
+                    var dx = particles[a].x - particles[b].x;
+                    var dy = particles[a].y - particles[b].y;
+                    var dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.strokeStyle = 'rgba(201,168,76,' + (0.06 * (1 - dist/100)) + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+
+    /* ── FORGOT PASSWORD ── */
     function showForgotPassword() {
         var p = document.getElementById('forgotPanel');
-        p.style.display = p.style.display === 'none' ? 'block' : 'none';
+        p.style.display = p.style.display === 'none' || !p.style.display ? 'block' : 'none';
     }
 
     function sendPasswordReset() {
@@ -128,11 +548,18 @@
         if (!matched) { msgEl.style.color='#fc8181'; msgEl.textContent='No account found with that email.'; msgEl.style.display='block'; return; }
         msgEl.style.color='#8a94a6'; msgEl.textContent='Sending...'; msgEl.style.display='block';
         emailjs.init('runwqesYkxfgWYPzf');
-        emailjs.send('service_jjdb6rb','template_rjcvhus',{ to_name: matched.fullName||'User', to_email: matched.email, code: 'Your FIRSTTRADES password is: '+matched.password }).then(function(){
-            msgEl.style.color='#68d391'; msgEl.textContent='Password sent to '+matched.email;
-        }, function(){ msgEl.style.color='#fc8181'; msgEl.textContent='Failed to send. Try again.'; });
+        emailjs.send('service_jjdb6rb','template_rjcvhus',{
+            to_name: matched.fullName||'User',
+            to_email: matched.email,
+            code: 'Your FIRSTTRADES password is: ' + matched.password
+        }).then(function(){
+            msgEl.style.color='#c9a84c'; msgEl.textContent='Password sent to ' + matched.email;
+        }, function(){
+            msgEl.style.color='#fc8181'; msgEl.textContent='Failed to send. Try again.';
+        });
     }
 
+    /* ── LOGIN ── */
     function login() {
         var email    = document.getElementById('loginEmail').value.trim().toLowerCase();
         var password = document.getElementById('loginPassword').value;
