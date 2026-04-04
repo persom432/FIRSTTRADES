@@ -438,6 +438,22 @@
                 badge.textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1) + ' Account';
                 badge.style.display = 'inline-block';
             }
+
+            // Pre-select and pre-fill from signals page
+            var params = new URLSearchParams(window.location.search);
+            var sigAmt = params.get('signal');
+            var sigPlan = params.get('plan');
+            if (sigAmt) {
+                if (sigPlan) {
+                    var notice = document.createElement('div');
+                    notice.style.cssText = 'background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;color:#e8c96a;font-size:0.88rem;font-weight:600;';
+                    notice.innerHTML = '&#9733; Activating <strong>' + sigPlan + ' Signals Plan</strong> &mdash; deposit $' + sigAmt + ' to unlock AI trading';
+                    document.querySelector('.funding-container').insertBefore(notice, document.querySelector('.deposit-options'));
+                }
+                selectDepositMethod('btc');
+                document.getElementById('btcUsdAmount').value = sigAmt;
+                convertToCrypto('btc');
+            }
         });
 
         function convertToCrypto(coin) {
