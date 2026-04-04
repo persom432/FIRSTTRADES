@@ -572,13 +572,30 @@
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="quantity">Quantity</label>
-                                    <input type="number" id="quantity" min="1" placeholder="Enter quantity" required>
+                                    <label for="tradeAmount">Trade Amount ($)</label>
+                                    <input type="number" id="tradeAmount" min="1" step="0.01" placeholder="Amount to invest" required oninput="checkBalance()">
                                 </div>
                                 <div class="form-group">
-                                    <label for="price">Price (optional)</label>
-                                    <input type="number" id="price" step="0.01" placeholder="Market price">
+                                    <label for="quantity">Quantity</label>
+                                    <input type="number" id="quantity" min="1" placeholder="Shares" required>
                                 </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tradeDuration">⏱ Trade Duration (AI closes after)</label>
+                                <select id="tradeDuration" required>
+                                    <option value="30">30 seconds</option>
+                                    <option value="60">1 minute</option>
+                                    <option value="120">2 minutes</option>
+                                    <option value="300" selected>5 minutes</option>
+                                    <option value="600">10 minutes</option>
+                                    <option value="1800">30 minutes</option>
+                                    <option value="3600">1 hour</option>
+                                </select>
+                            </div>
+
+                            <div id="balanceWarning" style="display:none;background:rgba(231,76,60,0.1);border:1px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:0.85rem;color:#e74c3c;">
+                                ⚠️ Insufficient balance. Please fund your wallet first.
                             </div>
 
                             <div class="order-buttons">
@@ -642,6 +659,8 @@
                             <th>Symbol</th>
                             <th>Side</th>
                             <th>Qty</th>
+                            <th>Invested</th>
+                            <th>Duration</th>
                             <th>Entry Price</th>
                             <th>Exit Price</th>
                             <th>P&L</th>
@@ -650,7 +669,7 @@
                         </tr>
                     </thead>
                     <tbody id="tradeHistoryBody">
-                        <tr><td colspan="8" class="trade-empty">No trades yet. Place a buy or sell order above.</td></tr>
+                        <tr><td colspan="11" class="trade-empty">No trades yet. Place a buy or sell order above.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -874,7 +893,7 @@
             const trades = getTrades();
             const tbody = document.getElementById('tradeHistoryBody');
             if (!trades.length) {
-                tbody.innerHTML = '<tr><td colspan="9" class="trade-empty">No trades yet. Place a buy or sell order above.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="trade-empty">No trades yet. Place a buy or sell order above.</td></tr>';
                 return;
             }
             tbody.innerHTML = trades.slice().reverse().map(function(t) {
@@ -891,6 +910,8 @@
                     '<td><strong>' + t.symbol + '</strong></td>' +
                     '<td class="trade-side-' + t.side + '">' + t.side.toUpperCase() + '</td>' +
                     '<td>' + t.qty + '</td>' +
+                    '<td>$' + (t.invested ? t.invested.toFixed(2) : '—') + '</td>' +
+                    '<td>' + (t.duration || '—') + '</td>' +
                     '<td>$' + t.price.toFixed(2) + '</td>' +
                     '<td>' + exitText + '</td>' +
                     '<td style="color:' + pnlColor + ';font-weight:700;">' + pnlText + '</td>' +
@@ -900,25 +921,50 @@
             }).join('');
         }
 
+        function checkBalance() {
+            const amt = parseFloat(document.getElementById('tradeAmount').value || 0);
+            const bal = parseFloat(localStorage.getItem('currentBalance') || 0);
+            const warn = document.getElementById('balanceWarning');
+            const btns = document.querySelectorAll('.order-btn');
+            if (amt > 0 && amt > bal) {
+                warn.style.display = 'block';
+                btns.forEach(b => { b.disabled = true; b.style.opacity = '0.5'; b.style.cursor = 'not-allowed'; });
+            } else {
+                warn.style.display = 'none';
+                btns.forEach(b => { b.disabled = false; b.style.opacity = '1'; b.style.cursor = 'pointer'; });
+            }
+        }
+
         function submitOrder(event) {
             event.preventDefault();
-            const symbol     = document.getElementById('symbol').value;
-            const quantity   = parseInt(document.getElementById('quantity').value);
-            const priceInput = document.getElementById('price').value;
-            if (!quantity || quantity < 1) { alert('Please enter a valid quantity.'); return; }
+            const symbol      = document.getElementById('symbol').value;
+            const quantity    = parseInt(document.getElementById('quantity').value);
+            const tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
+            const duration    = parseInt(document.getElementById('tradeDuration').value); // seconds
+            const currentBal  = parseFloat(localStorage.getItem('currentBalance') || 0);
 
-            const entryPrice = priceInput ? parseFloat(priceInput) : stockData[symbol].basePrice;
+            if (!quantity || quantity < 1)    { alert('Please enter a valid quantity.'); return; }
+            if (!tradeAmount || tradeAmount <= 0) { alert('Please enter a trade amount.'); return; }
+            if (tradeAmount > currentBal)     { alert('Insufficient balance. Please fund your wallet first.'); return; }
+
+            const entryPrice = stockData[symbol].basePrice;
             const now = new Date();
+
+            // Format duration label
+            const durLabel = duration < 60 ? duration + 's' : duration < 3600 ? (duration/60) + 'm' : (duration/3600) + 'h';
+
             const trade = {
-                id:       now.getTime(),
-                time:     now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
-                symbol:   symbol,
-                side:     orderSide,
-                qty:      quantity,
-                price:    entryPrice,
-                status:   'open',
-                profit:   0,
-                pct:      0,
+                id:        now.getTime(),
+                time:      now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+                symbol:    symbol,
+                side:      orderSide,
+                qty:       quantity,
+                price:     entryPrice,
+                invested:  tradeAmount,
+                duration:  durLabel,
+                status:    'open',
+                profit:    0,
+                pct:       0,
                 exitPrice: 0
             };
 
@@ -927,19 +973,18 @@
             saveTrades(trades);
             renderTrades();
 
-            document.getElementById('quantity').value = '';
-            document.getElementById('price').value    = '';
+            document.getElementById('quantity').value    = '';
+            document.getElementById('tradeAmount').value = '';
+            document.getElementById('balanceWarning').style.display = 'none';
 
-            // Close trade after 4–9 seconds with 27–35% profit
-            const delay = 4000 + Math.random() * 5000;
+            // Close trade after selected duration with 27-35% profit
             setTimeout(function() {
                 const allTrades = getTrades();
                 const idx = allTrades.findIndex(function(t) { return t.id === trade.id; });
                 if (idx === -1) return;
 
-                const pct       = 27 + Math.random() * 8; // 27–35%
-                const invested  = entryPrice * quantity;
-                const profit    = invested * (pct / 100);
+                const pct       = 27 + Math.random() * 8;
+                const profit    = tradeAmount * (pct / 100);
                 const exitPrice = orderSide === 'buy'
                     ? entryPrice * (1 + pct / 100)
                     : entryPrice * (1 - pct / 100);
@@ -950,14 +995,12 @@
                 allTrades[idx].exitPrice = exitPrice;
                 saveTrades(allTrades);
 
-                // Update balance
-                const currentBal = parseFloat(localStorage.getItem('currentBalance') || 0);
-                const newBal     = currentBal + profit;
+                const newBal = parseFloat(localStorage.getItem('currentBalance') || 0) + profit;
                 localStorage.setItem('currentBalance', newBal.toFixed(2));
                 document.getElementById('accountBalance').textContent = '$' + newBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 
                 renderTrades();
-            }, delay);
+            }, duration * 1000);
         }
 
         function updateAllPrices() {
