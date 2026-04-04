@@ -111,31 +111,54 @@
             font-weight: 600;
         }
 
-        .chart-placeholder {
-            height: 400px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        #fakeChart {
+            height: 450px;
+            background: #131722;
             border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .fc-topbar {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border: 2px dashed #ddd;
-            position: relative;
+            gap: 1rem;
+            padding: 10px 16px;
+            background: #1e222d;
+            border-bottom: 1px solid #2a2e39;
+            flex-wrap: wrap;
         }
 
-        #tradingChart {
-            max-height: 400px;
-            width: 100% !important;
+        .fc-symbol { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .fc-price  { font-size: 1.1rem; font-weight: 700; color: #26a69a; }
+        .fc-change { font-size: 0.85rem; font-weight: 600; }
+        .fc-change.up   { color: #26a69a; }
+        .fc-change.down { color: #ef5350; }
+
+        .fc-tf {
+            display: flex; gap: 4px; margin-left: auto;
+        }
+        .fc-tf button {
+            padding: 3px 9px; border: 1px solid #2a2e39; background: transparent;
+            color: #9598a1; border-radius: 4px; font-size: 0.75rem; cursor: pointer;
+        }
+        .fc-tf button.active { background: #2962ff; color: #fff; border-color: #2962ff; }
+
+        .fc-canvas-wrap { position: relative; width: 100%; height: 370px; }
+        #fcCanvas { display: block; width: 100%; height: 100%; }
+
+        .fc-crosshair {
+            position: absolute; pointer-events: none;
+            border-left: 1px dashed rgba(255,255,255,0.25);
+            border-top: 1px dashed rgba(255,255,255,0.25);
+            top: 0; left: 0; width: 0; height: 100%;
         }
 
-        .chart-placeholder-content {
-            text-align: center;
-            color: #666;
-        }
-
-        .chart-placeholder-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            display: block;
+        .fc-tooltip {
+            position: absolute; background: #1e222d; border: 1px solid #2a2e39;
+            border-radius: 6px; padding: 6px 10px; font-size: 0.75rem; color: #d1d4dc;
+            pointer-events: none; display: none; white-space: nowrap; z-index: 10;
         }
 
         .sidebar {
@@ -453,14 +476,31 @@
                     <div class="chart-header">
                         <h2 class="chart-title" id="chartTitle">Trading Chart - AAPL</h2>
                         <div class="timeframe-buttons">
-                            <button class="timeframe-btn active" onclick="changeSymbol('AAPL')">AAPL</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('GOOGL')">GOOGL</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('MSFT')">MSFT</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('TSLA')">TSLA</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('NVDA')">NVDA</button>
+                            <button class="timeframe-btn active" onclick="changeSymbol('AAPL',this)">AAPL</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('GOOGL',this)">GOOGL</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('MSFT',this)">MSFT</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('TSLA',this)">TSLA</button>
+                            <button class="timeframe-btn" onclick="changeSymbol('NVDA',this)">NVDA</button>
                         </div>
                     </div>
-                    <div id="tradingview-widget" style="height:450px; border-radius:15px; overflow:hidden;"></div>
+                    <div id="fakeChart">
+                        <div class="fc-topbar">
+                            <span class="fc-symbol" id="fcSymbol">AAPL</span>
+                            <span class="fc-price" id="fcPrice">$175.23</span>
+                            <span class="fc-change up" id="fcChange">▲ +2.45%</span>
+                            <div class="fc-tf">
+                                <button onclick="setTf('1m',this)">1m</button>
+                                <button onclick="setTf('5m',this)">5m</button>
+                                <button class="active" onclick="setTf('1D',this)">1D</button>
+                                <button onclick="setTf('1W',this)">1W</button>
+                            </div>
+                        </div>
+                        <div class="fc-canvas-wrap">
+                            <canvas id="fcCanvas"></canvas>
+                            <div class="fc-crosshair" id="fcCrosshair"></div>
+                            <div class="fc-tooltip" id="fcTooltip"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="sidebar">
@@ -554,48 +594,163 @@
         </div>
     </section>
 
-    <script src="https://s3.tradingview.com/tv.js"></script>
     <script>
         let currentSymbol = 'AAPL';
         let orderSide = 'buy';
-        let tvWidget = null;
 
         const stockData = {
-            'AAPL': { basePrice: 175 },
-            'GOOGL': { basePrice: 2834 },
-            'MSFT': { basePrice: 335 },
-            'TSLA': { basePrice: 248 },
-            'AMZN': { basePrice: 3245 },
-            'NVDA': { basePrice: 875 }
+            'AAPL': { basePrice: 175.23 },
+            'GOOGL': { basePrice: 2834.12 },
+            'MSFT': { basePrice: 335.67 },
+            'TSLA': { basePrice: 248.90 },
+            'AMZN': { basePrice: 3245.80 },
+            'NVDA': { basePrice: 875.43 }
         };
 
-        function loadTradingViewWidget(symbol) {
-            document.getElementById('tradingview-widget').innerHTML = '';
-            new TradingView.widget({
-                container_id: 'tradingview-widget',
-                symbol: 'NASDAQ:' + symbol,
-                interval: 'D',
-                timezone: 'Etc/UTC',
-                theme: 'light',
-                style: '1',
-                locale: 'en',
-                toolbar_bg: '#f1f3f6',
-                enable_publishing: false,
-                allow_symbol_change: true,
-                save_image: false,
-                height: 450,
-                width: '100%',
-                hide_side_toolbar: false,
-                studies: ['RSI@tv-basicstudies', 'MACD@tv-basicstudies']
+        /* ── Fake Chart ── */
+        const canvas = document.getElementById('fcCanvas');
+        const ctx = canvas.getContext('2d');
+        let candles = [];
+        let animFrame;
+
+        function genCandles(base, count) {
+            let price = base;
+            const out = [];
+            for (let i = 0; i < count; i++) {
+                const open  = price;
+                const close = open + (Math.random() - 0.48) * open * 0.018;
+                const high  = Math.max(open, close) + Math.random() * open * 0.008;
+                const low   = Math.min(open, close) - Math.random() * open * 0.008;
+                out.push({ open, close, high, low });
+                price = close;
+            }
+            return out;
+        }
+
+        function drawChart() {
+            const W = canvas.offsetWidth;
+            const H = canvas.offsetHeight;
+            canvas.width  = W;
+            canvas.height = H;
+
+            const pad = { top: 20, bottom: 30, left: 10, right: 60 };
+            const chartW = W - pad.left - pad.right;
+            const chartH = H - pad.top - pad.bottom;
+
+            const prices = candles.flatMap(c => [c.high, c.low]);
+            const minP = Math.min(...prices);
+            const maxP = Math.max(...prices);
+            const range = maxP - minP || 1;
+
+            const toY = p => pad.top + chartH - ((p - minP) / range) * chartH;
+            const cw  = Math.max(4, chartW / candles.length - 1);
+
+            // background
+            ctx.fillStyle = '#131722';
+            ctx.fillRect(0, 0, W, H);
+
+            // grid lines
+            ctx.strokeStyle = '#1e222d';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = pad.top + (chartH / 5) * i;
+                ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+                const label = (maxP - (range / 5) * i).toFixed(2);
+                ctx.fillStyle = '#4a4e5a'; ctx.font = '11px Segoe UI';
+                ctx.fillText('$' + label, W - pad.right + 4, y + 4);
+            }
+
+            // candles
+            candles.forEach((c, i) => {
+                const x    = pad.left + i * (chartW / candles.length) + cw * 0.1;
+                const bull = c.close >= c.open;
+                const col  = bull ? '#26a69a' : '#ef5350';
+                ctx.fillStyle   = col;
+                ctx.strokeStyle = col;
+                ctx.lineWidth   = 1;
+
+                // wick
+                const cx = x + cw / 2;
+                ctx.beginPath();
+                ctx.moveTo(cx, toY(c.high));
+                ctx.lineTo(cx, toY(c.low));
+                ctx.stroke();
+
+                // body
+                const bodyTop = toY(Math.max(c.open, c.close));
+                const bodyH   = Math.max(1, Math.abs(toY(c.open) - toY(c.close)));
+                ctx.fillRect(x, bodyTop, cw * 0.8, bodyH);
             });
         }
 
-        function changeSymbol(symbol, btn) {
+        function tickChart() {
+            const last = candles[candles.length - 1];
+            const newClose = last.close * (1 + (Math.random() - 0.49) * 0.003);
+            last.close = newClose;
+            last.high  = Math.max(last.high, newClose);
+            last.low   = Math.min(last.low,  newClose);
+
+            // occasionally add new candle
+            if (Math.random() < 0.04) {
+                candles.push({ open: newClose, close: newClose, high: newClose, low: newClose });
+                if (candles.length > 80) candles.shift();
+            }
+
+            // update topbar price
+            const base = stockData[currentSymbol].basePrice;
+            const pct  = ((newClose - base) / base * 100);
+            document.getElementById('fcPrice').textContent  = '$' + newClose.toFixed(2);
+            const chEl = document.getElementById('fcChange');
+            if (pct >= 0) { chEl.textContent = '▲ +' + pct.toFixed(2) + '%'; chEl.className = 'fc-change up'; }
+            else          { chEl.textContent = '▼ '  + pct.toFixed(2) + '%'; chEl.className = 'fc-change down'; }
+
+            drawChart();
+            animFrame = setTimeout(tickChart, 800 + Math.random() * 700);
+        }
+
+        function loadFakeChart(symbol) {
+            clearTimeout(animFrame);
             currentSymbol = symbol;
-            document.getElementById('chartTitle').textContent = 'Trading Chart - ' + symbol;
-            document.querySelectorAll('.timeframe-btn').forEach(function(b) { b.classList.remove('active'); });
+            document.getElementById('fcSymbol').textContent = symbol;
+            document.getElementById('fcPrice').textContent  = '$' + stockData[symbol].basePrice.toFixed(2);
+            candles = genCandles(stockData[symbol].basePrice, 60);
+            drawChart();
+            tickChart();
+        }
+
+        // crosshair + tooltip
+        document.getElementById('fcCanvas').addEventListener('mousemove', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const ch = document.getElementById('fcCrosshair');
+            const tt = document.getElementById('fcTooltip');
+            ch.style.left   = x + 'px';
+            ch.style.height = canvas.offsetHeight + 'px';
+            const idx = Math.floor(x / (canvas.offsetWidth / candles.length));
+            const c   = candles[Math.min(idx, candles.length - 1)];
+            if (c) {
+                tt.style.display = 'block';
+                tt.style.left    = (x + 12) + 'px';
+                tt.style.top     = (y - 10) + 'px';
+                tt.innerHTML = 'O: $' + c.open.toFixed(2) + '  H: $' + c.high.toFixed(2) + '<br>L: $' + c.low.toFixed(2) + '  C: $' + c.close.toFixed(2);
+            }
+        });
+        document.getElementById('fcCanvas').addEventListener('mouseleave', function() {
+            document.getElementById('fcTooltip').style.display = 'none';
+        });
+
+        function setTf(tf, btn) {
+            document.querySelectorAll('.fc-tf button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            loadTradingViewWidget(symbol);
+            loadFakeChart(currentSymbol);
+        }
+
+        function changeSymbol(symbol, btn) {
+            document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('chartTitle').textContent = 'Trading Chart - ' + symbol;
+            loadFakeChart(symbol);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -619,37 +774,36 @@
                 balanceEl.textContent = '$0.00';
             }
 
-            // Load TradingView chart
-            loadTradingViewWidget('AAPL');
+            // Load fake chart
+            loadFakeChart('AAPL');
 
             // Live market prices
             updateAllPrices();
             setInterval(updateAllPrices, 3000);
 
-            // Symbol select change
             document.getElementById('symbol').addEventListener('change', function() {
                 currentSymbol = this.value;
             });
+
+            window.addEventListener('resize', function() { drawChart(); });
         });
 
         function setOrderSide(side) { orderSide = side; }
 
         function submitOrder(event) {
             event.preventDefault();
-            const symbol = document.getElementById('symbol').value;
-            const orderType = document.getElementById('orderType').value;
+            const symbol   = document.getElementById('symbol').value;
             const quantity = document.getElementById('quantity').value;
-            const price = document.getElementById('price').value;
+            const price    = document.getElementById('price').value;
             if (!quantity || quantity < 1) { alert('Please enter a valid quantity.'); return; }
-            const currentPrice = stockData[symbol].basePrice;
-            const orderPrice = price ? parseFloat(price) : currentPrice;
+            const orderPrice = price ? parseFloat(price) : stockData[symbol].basePrice;
             alert(orderSide.toUpperCase() + ' order placed for ' + quantity + ' shares of ' + symbol + ' at $' + orderPrice.toFixed(2));
             document.getElementById('quantity').value = '';
-            document.getElementById('price').value = '';
+            document.getElementById('price').value    = '';
         }
 
         function updateAllPrices() {
-            document.querySelectorAll('.market-item').forEach(function(item, index) {
+            document.querySelectorAll('.market-item').forEach(function(item) {
                 const priceEl = item.querySelector('.market-price');
                 const changeEl = item.querySelector('.market-change');
                 const currentPrice = parseFloat(priceEl.textContent.replace('$','').replace(',',''));
