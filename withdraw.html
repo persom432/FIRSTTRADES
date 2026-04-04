@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - FIRSTTRADES</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background:#000; color:#fff; }
+        header { background:#0a0a0a !important; border-bottom:1px solid #222; }
+        header .logo { color:#fff !important; }
+        header nav ul li a { color:#ccc !important; }
+
+        .withdraw-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            padding: 120px 20px 80px;
+        }
+
+        .withdraw-container {
+            max-width: 520px;
+            width: 100%;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .withdraw-container h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .withdraw-container p.sub {
+            color: #aaa;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .balance-box {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .balance-box .lbl { color: #aaa; font-size: 0.85rem; }
+        .balance-box .val { font-size: 1.6rem; font-weight: 700; color: #27ae60; }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; color: #ccc; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 13px 16px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group select option { background: #1a1a1a; }
+
+        .quick-btns { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .quick-btn {
+            flex: 1;
+            padding: 8px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #ccc;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover { background: #333; color: #fff; }
+
+        .withdraw-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        .withdraw-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.3); }
+
+        .notice {
+            background: rgba(243,156,18,0.08);
+            border: 1px solid rgba(243,156,18,0.3);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: #f39c12;
+        }
+
+        .success-box {
+            display: none;
+            background: rgba(39,174,96,0.1);
+            border: 1px solid #27ae60;
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .success-box h3 { color: #27ae60; margin-bottom: 0.5rem; }
+        .success-box p  { color: #aaa; font-size: 0.9rem; }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <a href="trading-dashboard.html" style="position:fixed;top:20px;left:20px;z-index:1100;width:44px;height:44px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+
+    <header>
+        <nav class="container">
+            <div class="logo">FIRSTTRADES</div>
+            <ul><li><a href="trading-dashboard.html">Dashboard</a></li></ul>
+        </nav>
+    </header>
+
+    <section class="withdraw-section">
+        <div class="withdraw-container">
+            <h1>💸 Withdraw Funds</h1>
+            <p class="sub">Withdrawals are reviewed and processed by our team</p>
+
+            <div class="balance-box">
+                <div>
+                    <div class="lbl">Available Balance</div>
+                    <div class="val" id="availBal">$0.00</div>
+                </div>
+                <div style="color:#aaa;font-size:0.8rem;text-align:right;">Funds on hold<br>until approved</div>
+            </div>
+
+            <div class="notice">
+                ⏳ Your balance will remain unchanged until your withdrawal is approved by an admin.
+            </div>
+
+            <div id="withdrawForm">
+                <div class="form-group">
+                    <label>Withdrawal Amount (USD)</label>
+                    <input type="number" id="withdrawAmt" placeholder="Enter amount" min="1" step="0.01">
+                    <div class="quick-btns">
+                        <button class="quick-btn" onclick="setAmt(0.25)">25%</button>
+                        <button class="quick-btn" onclick="setAmt(0.50)">50%</button>
+                        <button class="quick-btn" onclick="setAmt(0.75)">75%</button>
+                        <button class="quick-btn" onclick="setAmt(1)">All</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Withdrawal Method</label>
+                    <select id="withdrawMethod">
+                        <option value="btc">Bitcoin (BTC)</option>
+                        <option value="eth">Ethereum (ETH)</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Wallet / Account Address</label>
+                    <input type="text" id="withdrawAddr" placeholder="Enter your wallet or bank details">
+                </div>
+
+                <button class="withdraw-btn" onclick="submitWithdrawal()">Request Withdrawal</button>
+            </div>
+
+            <div class="success-box" id="successBox">
+                <h3>✅ Withdrawal Requested</h3>
+                <p>Your withdrawal request has been submitted.<br>Your balance will be updated once an admin approves it.</p>
+                <a href="trading-dashboard.html" style="display:inline-block;margin-top:1rem;padding:12px 28px;background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff;border-radius:50px;text-decoration:none;font-weight:600;">Back to Dashboard</a>
+            </div>
+
+            <a href="trading-dashboard.html" class="back-link">← Back to Dashboard</a>
+        </div>
+    </section>
+
+    <script>
+        var balance = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            balance = parseFloat(localStorage.getItem('currentBalance') || 0);
+            document.getElementById('availBal').textContent = '$' + balance.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+        });
+
+        function setAmt(pct) {
+            document.getElementById('withdrawAmt').value = (balance * pct).toFixed(2);
+        }
+
+        function submitWithdrawal() {
+            var amt    = parseFloat(document.getElementById('withdrawAmt').value);
+            var method = document.getElementById('withdrawMethod').value;
+            var addr   = document.getElementById('withdrawAddr').value.trim();
+
+            if (!amt || amt <= 0)       { alert('Please enter a valid amount.'); return; }
+            if (amt > balance)          { alert('Amount exceeds your available balance.'); return; }
+            if (!addr)                  { alert('Please enter your wallet or account address.'); return; }
+
+            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            var request = {
+                id:        Date.now().toString(),
+                timestamp: new Date().toISOString(),
+                amount:    amt,
+                method:    method,
+                address:   addr,
+                status:    'pending',
+                user:      userData.fullName || 'Unknown',
+                email:     userData.email    || 'Unknown'
+            };
+
+            var all = JSON.parse(localStorage.getItem('allWithdrawals') || '[]');
+            all.push(request);
+            localStorage.setItem('allWithdrawals', JSON.stringify(all));
+
+            document.getElementById('withdrawForm').style.display = 'none';
+            document.getElementById('successBox').style.display   = 'block';
+        }
+    </script>
+</body>
+</html>

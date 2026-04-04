@@ -162,11 +162,12 @@
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="filterDeposits('all', this)">All</button>
+            <button class="tab active" onclick="filterDeposits('all', this)">All Deposits</button>
             <button class="tab" onclick="filterDeposits('pending', this)">Pending</button>
             <button class="tab" onclick="filterDeposits('approved', this)">Approved</button>
             <button class="tab" onclick="filterDeposits('rejected', this)">Rejected</button>
-            <button class="tab" onclick="toggleUserPanel(this)" style="margin-left:auto;">👤 Manage Users</button>
+            <button class="tab" onclick="showWithdrawals(this)" style="margin-left:auto;">💸 Withdrawals</button>
+            <button class="tab" onclick="toggleUserPanel(this)">👤 Users</button>
         </div>
 
         <!-- User Management Panel -->
@@ -192,6 +193,7 @@
         </div>
 
         <div id="depositsList"></div>
+        <div id="withdrawalsList" style="display:none;"></div>
     </div>
 </div>
 
@@ -290,7 +292,74 @@
         currentFilter = filter;
         document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
         btn.classList.add('active');
+        document.getElementById('withdrawalsList').style.display = 'none';
+        document.getElementById('depositsList').style.display    = 'block';
         renderDeposits();
+    }
+
+    /* ── Withdrawals ── */
+    function getWithdrawals() { return JSON.parse(localStorage.getItem('allWithdrawals') || '[]'); }
+    function saveWithdrawals(w) { localStorage.setItem('allWithdrawals', JSON.stringify(w)); }
+
+    function showWithdrawals(btn) {
+        document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('depositsList').style.display    = 'none';
+        document.getElementById('withdrawalsList').style.display = 'block';
+        renderWithdrawals();
+    }
+
+    function renderWithdrawals() {
+        var list = document.getElementById('withdrawalsList');
+        var withdrawals = getWithdrawals();
+        if (!withdrawals.length) {
+            list.innerHTML = '<div class="empty">No withdrawal requests yet.</div>';
+            return;
+        }
+        list.innerHTML = '<h3 style="color:#f5c856;margin-bottom:1rem;">💸 Withdrawal Requests</h3>' +
+            withdrawals.slice().reverse().map(function(w, ri) {
+                var realIndex = withdrawals.length - 1 - ri;
+                var date = new Date(w.timestamp).toLocaleString();
+                var methodLabel = w.method === 'btc' ? '₿ Bitcoin' : w.method === 'eth' ? 'Ξ Ethereum' : '🏦 Bank Transfer';
+                var isPending = w.status === 'pending';
+                var actions = isPending ?
+                    '<div class="card-actions" style="margin-top:0.75rem;">' +
+                    '<button class="btn-approve" onclick="approveWithdrawal(' + realIndex + ')">✅ Approve</button>' +
+                    '<button class="btn-reject"  onclick="rejectWithdrawal('  + realIndex + ')">❌ Reject</button>' +
+                    '</div>' :
+                    '<div style="margin-top:0.75rem;font-weight:600;color:' + (w.status==='approved'?'#27ae60':'#e74c3c') + ';">' +
+                    (w.status === 'approved' ? '✅ Approved' : '❌ Rejected') + '</div>';
+                return '<div class="deposit-card ' + w.status + '">' +
+                    '<div class="card-top">' +
+                    '<div><div class="card-method">' + methodLabel + '</div><div class="card-time">' + date + '</div></div>' +
+                    '<span class="badge badge-' + w.status + '">' + w.status + '</span>' +
+                    '</div>' +
+                    '<div class="card-details">' +
+                    '<span>User</span><strong>' + w.user + '</strong>' +
+                    '<span>Email</span><strong>' + w.email + '</strong>' +
+                    '<span>Amount</span><strong style="color:#f5c856;">$' + parseFloat(w.amount).toLocaleString() + '</strong>' +
+                    '<span>Address</span><strong style="word-break:break-all;">' + w.address + '</strong>' +
+                    '</div>' +
+                    actions +
+                    '</div>';
+            }).join('');
+    }
+
+    function approveWithdrawal(index) {
+        var withdrawals = getWithdrawals();
+        withdrawals[index].status = 'approved';
+        saveWithdrawals(withdrawals);
+        var currentBal = parseFloat(localStorage.getItem('currentBalance') || 0);
+        var newBal = Math.max(0, currentBal - withdrawals[index].amount);
+        localStorage.setItem('currentBalance', newBal.toFixed(2));
+        renderWithdrawals();
+    }
+
+    function rejectWithdrawal(index) {
+        var withdrawals = getWithdrawals();
+        withdrawals[index].status = 'rejected';
+        saveWithdrawals(withdrawals);
+        renderWithdrawals();
     }
 
     function loadDeposits() {
