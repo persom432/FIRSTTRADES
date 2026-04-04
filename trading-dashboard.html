@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trading Dashboard - FIRSTTRADES</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" crossorigin="anonymous"></script>
     <style>
         .dashboard {
             min-height: 100vh;
@@ -463,10 +464,8 @@
                             <button class="timeframe-btn" onclick="changeSymbol('NVDA', this)">NVDA</button>
                         </div>
                     </div>
-                    <div id="tradingview-widget" style="height:450px; border-radius:15px; overflow:hidden;">
-                        <div class="tradingview-widget-container" style="height:100%;">
-                            <div id="tv-chart" style="height:100%;"></div>
-                        </div>
+                    <div id="tradingview-widget" style="height:450px; border-radius:15px; overflow:hidden; background:#0d1117; padding:10px;">
+                        <canvas id="liveChart" style="width:100%;height:100%;"></canvas>
                     </div>
                 </div>
 
@@ -561,141 +560,129 @@
         </div>
     </section>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        // Login guard
-        if (sessionStorage.getItem('loggedIn') !== 'true') {
-            window.location.href = 'login.html';
-        }
-        var tvWidget = null;
+        if (sessionStorage.getItem('loggedIn') !== 'true') { window.location.href = 'login.html'; }
 
-        function loadTradingViewWidget(symbol) {
-            if (tvWidget) {
-                tvWidget.remove();
-                tvWidget = null;
+        var stockData = { 'AAPL':{base:175}, 'GOOGL':{base:2834}, 'MSFT':{base:335}, 'TSLA':{base:248}, 'AMZN':{base:3245}, 'NVDA':{base:875} };
+        var currentSymbol = 'AAPL';
+        var orderSide = 'buy';
+        var livePrice = 175;
+        var chartLabels = [], chartPrices = [];
+        var chartInstance = null, chartInterval = null;
+
+        function initData(base) {
+            chartLabels = []; chartPrices = []; livePrice = base;
+            var now = new Date();
+            for (var i = 79; i >= 0; i--) {
+                var t = new Date(now - i * 1000);
+                chartLabels.push(t.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+                livePrice += (Math.random()-0.47)*livePrice*0.003;
+                chartPrices.push(+livePrice.toFixed(2));
             }
-            document.getElementById('tv-chart').innerHTML = '';
-            tvWidget = new TradingView.widget({
-                container_id: 'tv-chart',
-                symbol: 'NASDAQ:' + symbol,
-                interval: '1',
-                timezone: 'Etc/UTC',
-                theme: 'light',
-                style: '1',
-                locale: 'en',
-                toolbar_bg: '#f1f3f6',
-                enable_publishing: false,
-                allow_symbol_change: false,
-                save_image: false,
-                hide_top_toolbar: false,
-                hide_side_toolbar: false,
-                withdateranges: true,
-                autosize: true,
-                studies: ['RSI@tv-basicstudies']
+        }
+
+        function buildChart() {
+            var ctx = document.getElementById('liveChart').getContext('2d');
+            if (chartInstance) { chartInstance.destroy(); }
+            var grad = ctx.createLinearGradient(0,0,0,420);
+            grad.addColorStop(0,'rgba(39,174,96,0.4)');
+            grad.addColorStop(1,'rgba(39,174,96,0.01)');
+            chartInstance = new Chart(ctx, {
+                type:'line',
+                data:{ labels:chartLabels, datasets:[{ label:currentSymbol, data:chartPrices, borderColor:'#27ae60', backgroundColor:grad, borderWidth:2, fill:true, tension:0.3, pointRadius:0, pointHoverRadius:4 }] },
+                options:{
+                    responsive:true, maintainAspectRatio:false, animation:{duration:0},
+                    interaction:{mode:'index',intersect:false},
+                    plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'rgba(0,0,0,0.85)', bodyColor:'#27ae60', borderColor:'#27ae60', borderWidth:1, callbacks:{ label:function(c){return ' $'+c.parsed.y.toFixed(2);} } } },
+                    scales:{
+                        x:{ ticks:{color:'#888',font:{size:10},maxTicksLimit:6,maxRotation:0}, grid:{color:'rgba(255,255,255,0.04)'} },
+                        y:{ position:'right', ticks:{color:'#aaa',font:{size:11},callback:function(v){return '$'+v.toFixed(0);}}, grid:{color:'rgba(255,255,255,0.04)'} }
+                    }
+                }
             });
         }
 
-        var currentSymbol = 'AAPL';
-        function showToast(msg, type) {
-            var t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast ' + type + ' show';
-            setTimeout(function() { t.className = 'toast'; }, 3500);
+        function startTick() {
+            if (chartInterval) clearInterval(chartInterval);
+            chartInterval = setInterval(function() {
+                var change = (Math.random()-0.46)*livePrice*0.005;
+                livePrice = Math.max(livePrice+change, 1);
+                var now = new Date();
+                chartLabels.push(now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+                chartPrices.push(+livePrice.toFixed(2));
+                if (chartLabels.length > 80) { chartLabels.shift(); chartPrices.shift(); }
+                var last = chartPrices[chartPrices.length-1];
+                var prev = chartPrices[chartPrices.length-2]||last;
+                var color = last >= prev ? '#27ae60' : '#e74c3c';
+                chartInstance.data.datasets[0].borderColor = color;
+                chartInstance.data.labels = chartLabels;
+                chartInstance.data.datasets[0].data = chartPrices;
+                chartInstance.update('none');
+                document.getElementById('chartTitle').textContent = currentSymbol + '   $' + livePrice.toFixed(2) + (last>=prev?' ▲':' ▼');
+            }, 700);
         }
-
-        var orderSide = 'buy';
-
-        var stockData = {
-            'AAPL': { basePrice: 175 },
-            'GOOGL': { basePrice: 2834 },
-            'MSFT': { basePrice: 335 },
-            'TSLA': { basePrice: 248 },
-            'AMZN': { basePrice: 3245 },
-            'NVDA': { basePrice: 875 }
-        };
 
         function changeSymbol(symbol, btn) {
             currentSymbol = symbol;
-            document.getElementById('chartTitle').textContent = 'Trading Chart - ' + symbol;
-            document.querySelectorAll('.timeframe-btn').forEach(function(b) { b.classList.remove('active'); });
+            document.querySelectorAll('.timeframe-btn').forEach(function(b){b.classList.remove('active');});
             btn.classList.add('active');
-            loadTradingViewWidget(symbol);
+            initData(stockData[symbol].base);
+            buildChart();
+            startTick();
+            document.getElementById('symbol').value = symbol;
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Account badge
-            const accountType = localStorage.getItem('selectedAccountType');
-            const badge = document.getElementById('accountTypeBadge');
-            if (accountType) {
-                badge.textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1) + ' Account';
-                badge.style.display = 'inline-block';
-            }
-
-            // Balance
-            const fundingData = JSON.parse(localStorage.getItem('fundingData') || '{}');
-            const balanceEl = document.getElementById('accountBalance');
-            if (fundingData.status === 'approved') {
-                balanceEl.textContent = '$' + parseFloat(fundingData.approvedAmount).toLocaleString('en-US', {minimumFractionDigits: 2});
-            } else if (fundingData.status === 'pending') {
-                balanceEl.textContent = '$0.00';
-                balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
-            } else {
-                balanceEl.textContent = '$0.00';
-            }
-
-            // Load TradingView chart
-            loadTradingViewWidget('AAPL');
-
-            // Live market prices
-            updateAllPrices();
-            setInterval(updateAllPrices, 3000);
-
-            // Symbol select change
-            document.getElementById('symbol').addEventListener('change', function() {
-                currentSymbol = this.value;
-            });
-        });
+        function showToast(msg, type) {
+            var t = document.getElementById('toast');
+            t.textContent = msg; t.className = 'toast '+type+' show';
+            setTimeout(function(){t.className='toast';}, 3500);
+        }
 
         function setOrderSide(side) { orderSide = side; }
 
         function submitOrder(event) {
             event.preventDefault();
-            var symbol = document.getElementById('symbol').value;
-            var orderType = document.getElementById('orderType').value;
+            var symbol   = document.getElementById('symbol').value;
             var quantity = document.getElementById('quantity').value;
-            var price = document.getElementById('price').value;
-            if (!quantity || quantity < 1) { showToast('Please enter a valid quantity.', 'error'); return; }
-
-            var entryPrice = price ? parseFloat(price) : stockData[symbol].basePrice;
-            var totalCost = entryPrice * parseInt(quantity);
-
-            var fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
-            var balance = fd.status === 'approved' ? parseFloat(fd.approvedAmount || 0) : 0;
-
-            if (balance < totalCost) {
-                showToast('Insufficient funds! Order cost: $' + totalCost.toFixed(2) + ' — Balance: $' + balance.toFixed(2), 'error');
-                return;
-            }
-
+            var price    = document.getElementById('price').value;
+            if (!quantity || quantity < 1) { showToast('Please enter a valid quantity.','error'); return; }
+            var entryPrice = price ? parseFloat(price) : livePrice;
+            var totalCost  = entryPrice * parseInt(quantity);
+            var fd = JSON.parse(localStorage.getItem('fundingData')||'{}');
+            var balance = fd.status==='approved' ? parseFloat(fd.approvedAmount||0) : 0;
+            if (balance < totalCost) { showToast('Insufficient funds! Cost: $'+totalCost.toFixed(2)+' — Balance: $'+balance.toFixed(2),'error'); return; }
             var profit = entryPrice * quantity * 0.40;
-            var exitPrice = entryPrice * 1.40;
-            showToast(orderSide.toUpperCase() + ' order FILLED! ' + quantity + ' ' + symbol + ' — Profit: +$' + profit.toFixed(2) + ' (+40%) ✅', 'success');
+            showToast(orderSide.toUpperCase()+' FILLED — '+quantity+' '+symbol+' | Profit: +$'+profit.toFixed(2)+' (+40%) ✅','success');
             document.getElementById('quantity').value = '';
             document.getElementById('price').value = '';
         }
 
         function updateAllPrices() {
-            document.querySelectorAll('.market-item').forEach(function(item, index) {
-                const priceEl = item.querySelector('.market-price');
-                const changeEl = item.querySelector('.market-change');
-                const currentPrice = parseFloat(priceEl.textContent.replace('$','').replace(',',''));
-                const newPrice = currentPrice * (1 + 0.001 + Math.random() * 0.002);
-                const gain = ((newPrice - currentPrice) / currentPrice * 100);
-                priceEl.textContent = '$' + newPrice.toFixed(2);
-                changeEl.textContent = '+' + gain.toFixed(2) + '%';
-                changeEl.className = 'market-change positive';
+            document.querySelectorAll('.market-item').forEach(function(item) {
+                var priceEl = item.querySelector('.market-price');
+                var changeEl = item.querySelector('.market-change');
+                var cur = parseFloat(priceEl.textContent.replace('$','').replace(',',''));
+                var up  = Math.random() > 0.38;
+                var pct = (0.05 + Math.random()*0.4) * (up?1:-1);
+                priceEl.textContent  = '$'+(cur*(1+pct/100)).toFixed(2);
+                changeEl.textContent = (up?'+':'')+pct.toFixed(2)+'%';
+                changeEl.className   = 'market-change '+(up?'positive':'negative');
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var at = localStorage.getItem('selectedAccountType');
+            if (at) { var b = document.getElementById('accountTypeBadge'); b.textContent = at.charAt(0).toUpperCase()+at.slice(1)+' Account'; }
+            var fd = JSON.parse(localStorage.getItem('fundingData')||'{}');
+            var el = document.getElementById('accountBalance');
+            if (fd.status==='approved') { el.textContent='$'+parseFloat(fd.approvedAmount).toLocaleString('en-US',{minimumFractionDigits:2}); }
+            else if (fd.status==='pending') { el.textContent='$0.00'; el.insertAdjacentHTML('afterend','<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500">⏳ Deposit pending admin approval</div>'); }
+            else { el.textContent='$0.00'; }
+            initData(175); buildChart(); startTick();
+            document.getElementById('symbol').addEventListener('change', function(){ currentSymbol=this.value; });
+            updateAllPrices();
+            setInterval(updateAllPrices, 1200);
+        });
     </script>
 </body>
 </html>
