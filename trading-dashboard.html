@@ -641,7 +641,15 @@
                 <div class="sidebar">
                     <div class="trading-panel">
                         <div class="panel-header">Buy / Sell Panel</div>
-                        <form class="order-form" onsubmit="submitOrder(event)">
+
+                        <!-- Signal lock overlay on panel -->
+                        <div id="panelLock" style="display:none;text-align:center;padding:1.5rem 1rem;">
+                            <div style="font-size:2rem;margin-bottom:0.75rem;">🔒</div>
+                            <p style="color:#8a94a6;font-size:0.85rem;line-height:1.6;margin-bottom:1rem;">AI trading requires an active signals plan.</p>
+                            <a href="signals.html" style="display:inline-block;padding:11px 22px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none;">Activate Signals →</a>
+                        </div>
+
+                        <form class="order-form" id="orderForm" onsubmit="submitOrder(event)">
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="symbol">Symbol</label>
@@ -1120,11 +1128,13 @@
 
             renderTrades();
 
-            // Show floating signals banner if no plan active
+            // Show floating signals banner + lock panel if no plan active
             var plan = localStorage.getItem('signalPlan');
             var skipped = localStorage.getItem('signalSkipped');
-            if (!plan && !skipped) {
-                document.getElementById('signalsBanner').style.display = 'block';
+            if (!plan) {
+                document.getElementById('panelLock').style.display = 'block';
+                document.getElementById('orderForm').style.display = 'none';
+                if (!skipped) document.getElementById('signalsBanner').style.display = 'block';
             }
 
             // Load fake chart
@@ -1194,6 +1204,10 @@
 
         function submitOrder(event) {
             event.preventDefault();
+            if (!localStorage.getItem('signalPlan')) {
+                document.getElementById('signalsBanner').style.display = 'block';
+                return;
+            }
             const symbol      = document.getElementById('symbol').value;
             const quantity    = parseInt(document.getElementById('quantity').value);
             const tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
