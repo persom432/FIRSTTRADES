@@ -641,14 +641,6 @@
                 <div class="sidebar">
                     <div class="trading-panel">
                         <div class="panel-header">Buy / Sell Panel</div>
-
-                        <!-- Signal lock overlay on panel -->
-                        <div id="panelLock" style="display:none;text-align:center;padding:1.5rem 1rem;">
-                            <div style="font-size:2rem;margin-bottom:0.75rem;">🔒</div>
-                            <p style="color:#8a94a6;font-size:0.85rem;line-height:1.6;margin-bottom:1rem;">AI trading requires an active signals plan.</p>
-                            <a href="signals.html" style="display:inline-block;padding:11px 22px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;border-radius:8px;font-weight:700;font-size:0.85rem;text-decoration:none;">Activate Signals →</a>
-                        </div>
-
                         <form class="order-form" id="orderForm" onsubmit="submitOrder(event)">
                             <div class="form-row">
                                 <div class="form-group">
@@ -694,6 +686,11 @@
                                     <option value="1800">30 minutes</option>
                                     <option value="3600">1 hour</option>
                                 </select>
+                            </div>
+
+                            <!-- AI signals lock notice -->
+                            <div id="aiLockNotice" style="display:none;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:10px 14px;font-size:0.82rem;color:#c9a84c;">
+                                🤖 <strong>AI auto-close requires a signals plan.</strong> Your trade will open but won't auto-close. <a href="signals.html" style="color:#e8c96a;font-weight:700;">Activate →</a>
                             </div>
 
                             <div id="balanceWarning" style="display:none;background:rgba(231,76,60,0.1);border:1px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:0.85rem;color:#e74c3c;">
@@ -1128,12 +1125,11 @@
 
             renderTrades();
 
-            // Show floating signals banner + lock panel if no plan active
+            // Show floating signals banner + AI lock notice if no plan active
             var plan = localStorage.getItem('signalPlan');
             var skipped = localStorage.getItem('signalSkipped');
             if (!plan) {
-                document.getElementById('panelLock').style.display = 'block';
-                document.getElementById('orderForm').style.display = 'none';
+                document.getElementById('aiLockNotice').style.display = 'block';
                 if (!skipped) document.getElementById('signalsBanner').style.display = 'block';
             }
 
@@ -1204,39 +1200,25 @@
 
         function submitOrder(event) {
             event.preventDefault();
-            if (!localStorage.getItem('signalPlan')) {
-                document.getElementById('signalsBanner').style.display = 'block';
-                return;
-            }
             const symbol      = document.getElementById('symbol').value;
             const quantity    = parseInt(document.getElementById('quantity').value);
             const tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
-            const duration    = parseInt(document.getElementById('tradeDuration').value); // seconds
+            const duration    = parseInt(document.getElementById('tradeDuration').value);
             const currentBal  = parseFloat(localStorage.getItem('currentBalance') || 0);
+            const hasPlan     = !!localStorage.getItem('signalPlan');
 
-            if (!quantity || quantity < 1)    { alert('Please enter a valid quantity.'); return; }
+            if (!quantity || quantity < 1)       { alert('Please enter a valid quantity.'); return; }
             if (!tradeAmount || tradeAmount <= 0) { alert('Please enter a trade amount.'); return; }
-            if (tradeAmount > currentBal)     { alert('Insufficient balance. Please fund your wallet first.'); return; }
+            if (tradeAmount > currentBal)         { alert('Insufficient balance. Please fund your wallet first.'); return; }
 
             const entryPrice = stockData[symbol].basePrice;
             const now = new Date();
-
-            // Format duration label
             const durLabel = duration < 60 ? duration + 's' : duration < 3600 ? (duration/60) + 'm' : (duration/3600) + 'h';
 
             const trade = {
-                id:        now.getTime(),
-                time:      now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
-                symbol:    symbol,
-                side:      orderSide,
-                qty:       quantity,
-                price:     entryPrice,
-                invested:  tradeAmount,
-                duration:  durLabel,
-                status:    'open',
-                profit:    0,
-                pct:       0,
-                exitPrice: 0
+                id: now.getTime(), time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+                symbol, side: orderSide, qty: quantity, price: entryPrice,
+                invested: tradeAmount, duration: durLabel, status: 'open', profit: 0, pct: 0, exitPrice: 0
             };
 
             const trades = getTrades();
@@ -1248,30 +1230,24 @@
             document.getElementById('tradeAmount').value = '';
             document.getElementById('balanceWarning').style.display = 'none';
 
-            // Close trade after selected duration with 27-35% profit
-            setTimeout(function() {
-                const allTrades = getTrades();
-                const idx = allTrades.findIndex(function(t) { return t.id === trade.id; });
-                if (idx === -1) return;
-
-                const pct       = 27 + Math.random() * 8;
-                const profit    = tradeAmount * (pct / 100);
-                const exitPrice = orderSide === 'buy'
-                    ? entryPrice * (1 + pct / 100)
-                    : entryPrice * (1 - pct / 100);
-
-                allTrades[idx].status    = 'closed';
-                allTrades[idx].pct       = pct;
-                allTrades[idx].profit    = profit;
-                allTrades[idx].exitPrice = exitPrice;
-                saveTrades(allTrades);
-
-                const newBal = parseFloat(localStorage.getItem('currentBalance') || 0) + profit;
-                localStorage.setItem('currentBalance', newBal.toFixed(2));
-                document.getElementById('accountBalance').textContent = '$' + newBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-
-                renderTrades();
-            }, duration * 1000);
+            // Only auto-close with AI if signals plan is active
+            if (hasPlan) {
+                setTimeout(function() {
+                    const allTrades = getTrades();
+                    const idx = allTrades.findIndex(function(t) { return t.id === trade.id; });
+                    if (idx === -1) return;
+                    const pct       = 27 + Math.random() * 8;
+                    const profit    = tradeAmount * (pct / 100);
+                    const exitPrice = orderSide === 'buy' ? entryPrice * (1 + pct/100) : entryPrice * (1 - pct/100);
+                    allTrades[idx].status = 'closed'; allTrades[idx].pct = pct;
+                    allTrades[idx].profit = profit; allTrades[idx].exitPrice = exitPrice;
+                    saveTrades(allTrades);
+                    const newBal = parseFloat(localStorage.getItem('currentBalance') || 0) + profit;
+                    localStorage.setItem('currentBalance', newBal.toFixed(2));
+                    document.getElementById('accountBalance').textContent = '$' + newBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                    renderTrades();
+                }, duration * 1000);
+            }
         }
 
         function updateAllPrices() {
