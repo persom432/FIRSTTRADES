@@ -71,6 +71,8 @@
 
 var verificationCode = '', countdownTime = 300, countdownInterval;
 
+emailjs.init('87Kz9Kn2GUbp7Vqs2');
+
 function generateCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
 
 function showChangeEmail() {
@@ -95,12 +97,16 @@ function sendCode() {
     if (!ud.email) { window.location.href='step2.html'; return; }
     document.getElementById('userEmail').textContent = ud.email;
     verificationCode = generateCode();
-    emailjs.init('87Kz9Kn2GUbp7Vqs2');
     emailjs.send('service_1oywrcn','template_tdlr0oe',{
         to_name:  ud.fullName||'User',
         email:    ud.email,
         code:     verificationCode
-    }).then(function(){console.log('Code sent');},function(e){console.error('EmailJS error',e);});
+    }).then(function(){
+        console.log('Code sent to', ud.email);
+    }, function(err){
+        console.error('EmailJS error', err);
+        alert('Email send failed: ' + JSON.stringify(err));
+    });
 }
 
 function startCountdown() {
