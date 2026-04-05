@@ -724,7 +724,7 @@
             <h2 style="font-family:'Georgia',serif;font-size:1.5rem;color:#fff;margin-bottom:0.75rem;">AI Trading Signals Required</h2>
             <p style="color:#8a94a6;font-size:0.88rem;line-height:1.65;margin-bottom:1.75rem;">To place trades and use the AI trading engine, you need an active signals plan. Choose a plan to unlock full platform access.</p>
             <a href="signals.html" style="display:block;width:100%;padding:14px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;border-radius:10px;font-weight:700;font-size:0.93rem;text-decoration:none;margin-bottom:0.85rem;box-shadow:0 4px 18px rgba(201,168,76,0.25);">View Signal Plans →</a>
-            <button onclick="document.getElementById('signalsOverlay').style.display='none'" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);padding:11px 24px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:inherit;">Skip — explore dashboard only</button>
+            <button onclick="localStorage.setItem('signalSkipped','true');document.getElementById('signalsOverlay').style.display='none'" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);padding:11px 24px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:inherit;">Skip — explore dashboard only</button>
         </div>
     </div>
 
@@ -1061,7 +1061,8 @@
 
             // Show signals lock if no plan active
             var plan = localStorage.getItem('signalPlan');
-            if (!plan) {
+            var skipped = localStorage.getItem('signalSkipped');
+            if (!plan && !skipped) {
                 document.getElementById('signalsOverlay').style.display = 'flex';
             }
 
