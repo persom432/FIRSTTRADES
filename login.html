@@ -567,7 +567,7 @@
         emailjs.init('87Kz9Kn2GUbp7Vqs2');
         emailjs.send('service_1oywrcn','template_tdlr0oe',{
             to_name: matched.fullName||'User',
-            to_email: matched.email,
+            email: matched.email,
             code: 'Your FIRSTTRADES password is: ' + matched.password
         }).then(function(){
             msgEl.style.color='#c9a84c'; msgEl.textContent='Password sent to ' + matched.email;

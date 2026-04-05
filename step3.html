@@ -98,7 +98,7 @@ function sendCode() {
     emailjs.init('87Kz9Kn2GUbp7Vqs2');
     emailjs.send('service_1oywrcn','template_tdlr0oe',{
         to_name:  ud.fullName||'User',
-        to_email: ud.email,
+        email:    ud.email,
         code:     verificationCode
     }).then(function(){console.log('Code sent');},function(e){console.error('EmailJS error',e);});
 }
