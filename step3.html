@@ -96,7 +96,7 @@ function sendCode() {
     document.getElementById('userEmail').textContent = ud.email;
     verificationCode = generateCode();
     emailjs.init('87Kz9Kn2GUbp7Vqs2');
-    emailjs.send('service_1oywrcn','template_rjcvhus',{
+    emailjs.send('service_1oywrcn','template_tdlr0oe',{
         to_name:  ud.fullName||'User',
         to_email: ud.email,
         code:     verificationCode
