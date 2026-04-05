@@ -3,73 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choose Account Type - FIRSTTRADES</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:80px 20px 40px; }
-        .auth-logo { font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:0.5rem; text-align:center; }
-        .auth-logo span { color:#00b386; }
-        .page-title { font-size:1.6rem; font-weight:800; color:#fff; text-align:center; margin-bottom:0.4rem; letter-spacing:-0.5px; }
-        .page-sub { color:#8a94a6; font-size:0.88rem; text-align:center; margin-bottom:2rem; }
-        .options-container { width:100%; max-width:440px; display:flex; flex-direction:column; gap:1rem; }
-        .account-option {
-            background:#111827; border:1.5px solid rgba(255,255,255,0.08);
-            border-radius:12px; padding:1.25rem 1.5rem;
-            cursor:pointer; transition:all 0.2s;
-            display:flex; align-items:center; gap:1rem;
-            text-decoration:none; color:inherit;
-        }
-        .account-option:hover { border-color:rgba(0,179,134,0.4); background:#1a2235; transform:translateY(-2px); }
-        .account-option.tapped { border-color:#00b386; background:rgba(0,179,134,0.08); }
-        .option-icon {
-            width:48px; height:48px; background:rgba(0,179,134,0.1);
-            border-radius:10px; display:flex; align-items:center;
-            justify-content:center; font-size:1.4rem; flex-shrink:0;
-        }
-        .option-text { flex:1; }
-        .option-text h3 { font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:0.25rem; }
-        .option-text p  { font-size:0.8rem; color:#8a94a6; line-height:1.5; }
-        .option-arrow svg { width:16px; height:16px; fill:none; stroke:#8a94a6; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-        .back-link { margin-top:1.5rem; color:#8a94a6; font-size:0.82rem; text-decoration:none; }
-        .back-link:hover { color:#00b386; }
-    </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
+    <title>Choose Account Type — FIRSTTRADES</title>
+    <link rel="stylesheet" href="theme.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
 </head>
 <body>
-    <div class="auth-logo">FIRST<span>TRADES</span></div>
-    <div class="page-title">Choose Account Type</div>
-    <p class="page-sub">Select the account type that best fits your needs</p>
+<div class="pg-bg"><canvas id="pgCanvas"></canvas><div class="pg-grid"></div><div class="pg-orb pg-orb-1"></div><div class="pg-orb pg-orb-2"></div></div>
 
-    <div class="options-container">
-        <div class="account-option" data-type="individual">
-            <div class="option-icon">👤</div>
-            <div class="option-text">
-                <h3>Individual Account</h3>
-                <p>For personal investors seeking direct market access with real-time analytics.</p>
-            </div>
-            <div class="option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+<div class="pg-topbar">
+    <a href="index.html" class="pg-logo">FIRST<span>TRADES</span></a>
+    <a href="login.html" class="pg-topbar-link">Already have an account? Sign in →</a>
+</div>
+
+<div class="pg-wrap">
+    <div class="pg-card">
+        <div class="pg-card-icon">🏛️</div>
+        <h2>Choose Account Type</h2>
+        <p class="pg-sub">Select the account that best fits your trading goals</p>
+        <div class="pg-divider"></div>
+
+        <div class="pg-steps" style="margin-bottom:1.75rem;">
+            <div class="pg-step-dot active">1</div>
+            <div class="pg-step-line"></div>
+            <div class="pg-step-dot">2</div>
+            <div class="pg-step-line"></div>
+            <div class="pg-step-dot">3</div>
+            <div class="pg-step-line"></div>
+            <div class="pg-step-dot">4</div>
+            <div class="pg-step-line"></div>
+            <div class="pg-step-dot">5</div>
         </div>
-        <div class="account-option" data-type="business">
-            <div class="option-icon">🏢</div>
-            <div class="option-text">
-                <h3>Business Account</h3>
-                <p>For businesses and institutions needing advanced trading infrastructure.</p>
+
+        <div class="pg-options">
+            <div class="pg-option" data-type="individual">
+                <div class="pg-option-icon">👤</div>
+                <div class="pg-option-text">
+                    <h3>Individual Account</h3>
+                    <p>For personal investors seeking direct market access with real-time analytics.</p>
+                </div>
+                <div class="pg-option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
             </div>
-            <div class="option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <div class="pg-option" data-type="business">
+                <div class="pg-option-icon">🏢</div>
+                <div class="pg-option-text">
+                    <h3>Business Account</h3>
+                    <p>For businesses and institutions needing advanced trading infrastructure.</p>
+                </div>
+                <div class="pg-option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
         </div>
+
+        <div class="pg-link" style="margin-top:1.5rem;"><a href="index.html">← Back to home</a></div>
     </div>
+</div>
 
-    <a href="index.html" class="back-link">← Back to home</a>
+<script>
+(function(){var c=document.getElementById('pgCanvas'),ctx=c.getContext('2d'),W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);for(var i=0;i<70;i++)pts.push({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.0003,vy:(Math.random()-.5)*.0003,r:Math.random()*1.1+.3,a:Math.random()*.4+.1,g:Math.random()>.6});function draw(){ctx.clearRect(0,0,W,H);pts.forEach(function(p){p.x=(p.x+p.vx+1)%1;p.y=(p.y+p.vy+1)%1;ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.r,0,Math.PI*2);ctx.fillStyle=p.g?'rgba(201,168,76,'+p.a+')':'rgba(255,255,255,'+(p.a*.4)+')';ctx.fill();});for(var a=0;a<pts.length;a++)for(var b=a+1;b<pts.length;b++){var dx=(pts[a].x-pts[b].x)*W,dy=(pts[a].y-pts[b].y)*H,d=Math.sqrt(dx*dx+dy*dy);if(d<90){ctx.beginPath();ctx.moveTo(pts[a].x*W,pts[a].y*H);ctx.lineTo(pts[b].x*W,pts[b].y*H);ctx.strokeStyle='rgba(201,168,76,'+(0.07*(1-d/90))+')';ctx.lineWidth=.5;ctx.stroke();}}requestAnimationFrame(draw);}draw();})();
 
-    <script>
-        document.querySelectorAll('.account-option').forEach(function(option) {
-            option.addEventListener('click', function() {
-                localStorage.setItem('selectedAccountType', this.getAttribute('data-type'));
-                this.classList.add('tapped');
-                setTimeout(function() { window.location.href = 'step2.html'; }, 200);
-            });
-        });
-    </script>
+document.querySelectorAll('.pg-option').forEach(function(o){
+    o.addEventListener('click',function(){
+        localStorage.setItem('selectedAccountType',this.getAttribute('data-type'));
+        this.classList.add('selected');
+        setTimeout(function(){window.location.href='step2.html';},200);
+    });
+});
+</script>
 </body>
 </html>

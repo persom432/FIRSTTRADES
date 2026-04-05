@@ -3,452 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Verify Your Account - FIRSTTRADES</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .verification-form {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0e1a;
-            padding: 120px 20px 80px;
-        }
-
-        .verification-container {
-            max-width: 500px;
-            width: 100%;
-            background: #111827;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 3rem;
-            text-align: center;
-        }
-
-        .verification-header {
-            margin-bottom: 2rem;
-        }
-
-        .verification-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .verification-header p {
-            color: #8a94a6;
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .email-display {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .email-display strong {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .verification-input {
-            margin-bottom: 2rem;
-        }
-
-        .code-inputs {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .code-input {
-            width: 50px;
-            height: 60px;
-            border: 1.5px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s ease;
-            background: #1a2235;
-        }
-
-        .code-input:focus {
-            outline: none;
-            border-color: #00b386;
-            background: white;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
-            transform: scale(1.05);
-        }
-
-        .code-input.filled {
-            border-color: #00b386;
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        .timer {
-            font-size: 0.9rem;
-            color: #8a94a6;
-            margin-bottom: 1rem;
-        }
-
-        .timer.expired {
-            color: #fc8181;
-        }
-
-        .resend-link {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-        }
-
-        .resend-link:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-
-        .resend-link.disabled {
-            color: #ccc;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .error-message {
-            color: #fc8181;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .success-message {
-            color: #00b386;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .progress-indicator {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
-        .progress-step {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .step-circle {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #e9ecef;
-            color: #8a94a6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .step-circle.active {
-            background: #00b386;
-            color: white;
-        }
-
-        .step-line {
-            width: 40px;
-            height: 2px;
-            background: #e9ecef;
-            margin: 0 0.5rem;
-        }
-
-        .step-line.active {
-            background: #00b386;
-        }
-
-        @media (max-width: 768px) {
-            .verification-container {
-                padding: 2rem 1.5rem;
-            }
-
-            .verification-header h1 {
-                font-size: 1.8rem;
-            }
-
-            .code-inputs {
-                gap: 0.25rem;
-            }
-
-            .code-input {
-                width: 45px;
-                height: 55px;
-                font-size: 1.5rem;
-            }
-
-        }
-    </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-WR70LQ6B2D");</script>
-    <style>
-        /* Mobile touch fixes */
-        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
-        button, .btn, .order-btn, .login-btn, .withdraw-btn { min-height: 44px; }
-        * { -webkit-text-size-adjust: 100%; }
-    </style>
+    <title>Verify Account — FIRSTTRADES</title>
+    <link rel="stylesheet" href="theme.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
 </head>
-<body><a href="step2.html" style="position:fixed;top:20px;left:20px;z-index:1100;width:44px;height:44px;background:rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all 0.3s;"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:#2c3e50;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg></a>
-    <header>
-        <nav class="container">
-            <div class="logo">FIRSTTRADES</div>
-            <ul>
-                <li><a href="index.html#home">Home</a></li>
-                <li><a href="index.html#features">Features</a></li>
-                <li><a href="index.html#stats">Statistics</a></li>
-                <li><a href="index.html#about">About</a></li>
-                <li><a href="index.html#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+<body>
+<div class="pg-bg"><canvas id="pgCanvas"></canvas><div class="pg-grid"></div><div class="pg-orb pg-orb-1"></div><div class="pg-orb pg-orb-2"></div></div>
 
-    <section class="verification-form">
-        <div class="verification-container">
-            <div class="progress-indicator">
-                <div class="progress-step">
-                    <div class="step-circle completed">1</div>
-                </div>
-                <div class="step-line completed"></div>
-                <div class="progress-step">
-                    <div class="step-circle completed">2</div>
-                </div>
-                <div class="step-line completed"></div>
-                <div class="progress-step">
-                    <div class="step-circle completed">3</div>
-                </div>
-                <div class="step-line completed"></div>
-                <div class="progress-step">
-                    <div class="step-circle active">4</div>
-                </div>
-                <div class="step-line"></div>
-                <div class="progress-step">
-                    <div class="step-circle">5</div>
-                </div>
-            </div>
+<div class="pg-topbar">
+    <a href="index.html" class="pg-logo">FIRST<span>TRADES</span></a>
+    <a href="step2.html" class="pg-topbar-link">← Back</a>
+</div>
 
-            <div class="verification-header">
-                <h1>Verify Your Account</h1>
-                <p>A 6-digit verification code has been sent to your email</p>
-            </div>
-
-            <div class="email-display">
-                <strong id="userEmail">Loading...</strong>
-                <br>
-                <a href="#" onclick="showChangeEmail()" style="font-size:0.82rem; color:#667eea; text-decoration:none; font-weight:500;">Change email</a>
-            </div>
-
-            <!-- Change Email Panel -->
-            <div id="changeEmailPanel" style="display:none; margin-bottom:1.5rem; background:rgba(102,126,234,0.05); border:1px solid rgba(102,126,234,0.2); border-radius:12px; padding:1rem;">
-                <input type="email" id="newEmailInput" placeholder="Enter new email address" style="width:100%; padding:11px 14px; border:2px solid #e9ecef; border-radius:10px; font-size:0.95rem; font-family:'Poppins',sans-serif; margin-bottom:0.75rem; color:#2c3e50;">
-                <button onclick="updateEmail()" style="width:100%; padding:11px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border:none; border-radius:10px; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:'Poppins',sans-serif;">Update & Resend Code</button>
-            </div>
-
-            <div class="verification-input">
-                <div class="code-inputs">
-                    <input type="text" class="code-input" maxlength="1" id="code1">
-                    <input type="text" class="code-input" maxlength="1" id="code2">
-                    <input type="text" class="code-input" maxlength="1" id="code3">
-                    <input type="text" class="code-input" maxlength="1" id="code4">
-                    <input type="text" class="code-input" maxlength="1" id="code5">
-                    <input type="text" class="code-input" maxlength="1" id="code6">
-                </div>
-
-                <div class="timer" id="timer">Resend code in 05:00</div>
-
-                <a href="#" class="resend-link disabled" id="resendLink" onclick="resendCode()">Resend Code</a>
-            </div>
-
-            <div class="error-message" id="errorMessage">Invalid verification code. Please try again.</div>
-            <div class="success-message" id="successMessage">Verification successful! Redirecting...</div>
-
-            <div style="margin-top: 2rem;">
-                <button class="btn" id="verifyBtn" onclick="verifyCode()" disabled>Verify</button>
-            </div>
+<div class="pg-wrap">
+    <div class="pg-card">
+        <div class="pg-steps">
+            <div class="pg-step-dot done">✓</div><div class="pg-step-line done"></div>
+            <div class="pg-step-dot done">✓</div><div class="pg-step-line done"></div>
+            <div class="pg-step-dot done">✓</div><div class="pg-step-line done"></div>
+            <div class="pg-step-dot active">4</div><div class="pg-step-line"></div>
+            <div class="pg-step-dot">5</div>
         </div>
-    </section>
 
-    <script>
-        // EmailJS config
-        emailjs.init('runwqesYkxfgWYPzf');
+        <div class="pg-card-icon">✉️</div>
+        <h2>Verify Your Account</h2>
+        <p class="pg-sub">A 6-digit code has been sent to your email</p>
+        <div class="pg-divider"></div>
 
-        var verificationCode = '';
-        var countdownTime = 300;
-        var countdownInterval;
+        <div class="pg-email-box">
+            <strong id="userEmail">Loading...</strong>
+            <a href="#" onclick="showChangeEmail();return false;">Change email address</a>
+        </div>
 
-        function generateCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
+        <div id="changeEmailPanel" style="display:none;margin-bottom:1.25rem;">
+            <div class="pg-field">
+                <label>New Email Address</label>
+                <input type="email" id="newEmailInput" placeholder="your@email.com">
+            </div>
+            <button class="pg-btn pg-btn-gold" onclick="updateEmail()">Update & Resend Code</button>
+        </div>
 
-        function showChangeEmail() {
-            var panel = document.getElementById('changeEmailPanel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
+        <div class="pg-code-row">
+            <input type="text" class="pg-code-input" maxlength="1" id="c1">
+            <input type="text" class="pg-code-input" maxlength="1" id="c2">
+            <input type="text" class="pg-code-input" maxlength="1" id="c3">
+            <input type="text" class="pg-code-input" maxlength="1" id="c4">
+            <input type="text" class="pg-code-input" maxlength="1" id="c5">
+            <input type="text" class="pg-code-input" maxlength="1" id="c6">
+        </div>
 
-        function updateEmail() {
-            var newEmail = document.getElementById('newEmailInput').value.trim();
-            if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-                document.getElementById('newEmailInput').style.border = '2px solid #e74c3c';
-                return;
-            }
-            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            userData.email = newEmail;
-            localStorage.setItem('userData', JSON.stringify(userData));
-            document.getElementById('userEmail').textContent = newEmail;
-            document.getElementById('changeEmailPanel').style.display = 'none';
-            document.getElementById('newEmailInput').value = '';
-            document.querySelectorAll('.code-input').forEach(function(i) { i.value = ''; i.classList.remove('filled'); });
-            document.getElementById('verifyBtn').disabled = true;
-            document.getElementById('errorMessage').style.display = 'none';
-            sendCode();
-            startCountdown();
-        }
+        <div style="text-align:center;margin-bottom:1.5rem;">
+            <div class="pg-timer" id="timer">Resend code in 05:00</div>
+            <a href="#" class="pg-resend disabled" id="resendLink" onclick="resendCode();return false;">Resend Code</a>
+        </div>
 
-        function sendCode() {
-            var userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            var userEmail = userData.email;
-            var userName = userData.fullName || 'User';
+        <div class="pg-alert pg-alert-err" id="errMsg">Invalid code. Please try again.</div>
+        <div class="pg-alert pg-alert-ok" id="okMsg">✓ Verified! Redirecting...</div>
 
-            if (!userEmail) {
-                window.location.href = 'step2.html';
-                return;
-            }
+        <button class="pg-btn pg-btn-gold" id="verifyBtn" onclick="verifyCode()" disabled>Verify Account</button>
+    </div>
+</div>
 
-            document.getElementById('userEmail').textContent = userEmail;
-            verificationCode = generateCode();
+<script>
+(function(){var c=document.getElementById('pgCanvas'),ctx=c.getContext('2d'),W,H,pts=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);for(var i=0;i<70;i++)pts.push({x:Math.random(),y:Math.random(),vx:(Math.random()-.5)*.0003,vy:(Math.random()-.5)*.0003,r:Math.random()*1.1+.3,a:Math.random()*.4+.1,g:Math.random()>.6});function draw(){ctx.clearRect(0,0,W,H);pts.forEach(function(p){p.x=(p.x+p.vx+1)%1;p.y=(p.y+p.vy+1)%1;ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.r,0,Math.PI*2);ctx.fillStyle=p.g?'rgba(201,168,76,'+p.a+')':'rgba(255,255,255,'+(p.a*.4)+')';ctx.fill();});requestAnimationFrame(draw);}draw();})();
 
-            fetch('https://api.brevo.com/v3/smtp/email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'api-key': 'xsmtpsib-dc67bffa2a08755f900819f5eda0cce7102d721abf94c5f14749363516c13fc0-VR800vil90GGEi5w'
-                },
-                body: JSON.stringify({
-                    sender: { name: 'FIRSTTRADES', email: 'tradefirst100@outlook.com' },
-                    to: [{ email: userEmail, name: userName }],
-                    subject: 'Your FIRSTTRADES Verification Code',
-                    htmlContent: '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#0d1117;padding:32px;border-radius:12px;border:1px solid rgba(201,168,76,0.2);">' +
-                        '<h2 style="color:#c9a84c;margin-bottom:8px;">FIRSTTRADES</h2>' +
-                        '<p style="color:#fff;font-size:16px;">Hi ' + userName + ',</p>' +
-                        '<p style="color:#8a94a6;">Your verification code is:</p>' +
-                        '<div style="font-size:36px;font-weight:800;letter-spacing:10px;color:#fff;background:#131a27;padding:20px;border-radius:10px;text-align:center;margin:20px 0;">' + verificationCode + '</div>' +
-                        '<p style="color:#8a94a6;font-size:13px;">This code expires in 5 minutes. Do not share it with anyone.</p>' +
-                        '</div>'
-                })
-            }).then(function(r){ console.log('Code sent', r.status); })
-              .catch(function(e){ console.error('Send error', e); });
-        }
+var verificationCode = '', countdownTime = 300, countdownInterval;
 
-        function startCountdown() {
-            var timerEl   = document.getElementById('timer');
-            var resendBtn = document.getElementById('resendLink');
-            countdownTime = 300;
-            clearInterval(countdownInterval);
-            resendBtn.classList.add('disabled');
-            timerEl.classList.remove('expired');
+function generateCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
 
-            countdownInterval = setInterval(function() {
-                var m = Math.floor(countdownTime / 60);
-                var s = countdownTime % 60;
-                timerEl.textContent = 'Resend code in ' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-                countdownTime--;
-                if (countdownTime < 0) {
-                    clearInterval(countdownInterval);
-                    timerEl.textContent = 'You can now resend the code';
-                    timerEl.classList.add('expired');
-                    resendBtn.classList.remove('disabled');
-                }
-            }, 1000);
-        }
+function showChangeEmail() {
+    var p = document.getElementById('changeEmailPanel');
+    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
 
-        function resendCode() {
-            document.querySelectorAll('.code-input').forEach(function(i) { i.value = ''; i.classList.remove('filled'); });
-            document.getElementById('verifyBtn').disabled = true;
-            document.getElementById('errorMessage').style.display = 'none';
-            sendCode();
-            startCountdown();
-        }
+function updateEmail() {
+    var e = document.getElementById('newEmailInput').value.trim();
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return;
+    var ud = JSON.parse(localStorage.getItem('userData')||'{}');
+    ud.email = e; localStorage.setItem('userData', JSON.stringify(ud));
+    document.getElementById('userEmail').textContent = e;
+    document.getElementById('changeEmailPanel').style.display = 'none';
+    document.querySelectorAll('.pg-code-input').forEach(function(i){i.value='';i.classList.remove('filled');});
+    document.getElementById('verifyBtn').disabled = true;
+    sendCode(); startCountdown();
+}
 
-        function verifyCode() {
-            var inputs = document.querySelectorAll('.code-input');
-            var entered = Array.from(inputs).map(function(i) { return i.value; }).join('');
+function sendCode() {
+    var ud = JSON.parse(localStorage.getItem('userData')||'{}');
+    if (!ud.email) { window.location.href='step2.html'; return; }
+    document.getElementById('userEmail').textContent = ud.email;
+    verificationCode = generateCode();
+    fetch('https://api.brevo.com/v3/smtp/email', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','api-key':'xsmtpsib-dc67bffa2a08755f900819f5eda0cce7102d721abf94c5f14749363516c13fc0-VR800vil90GGEi5w'},
+        body:JSON.stringify({
+            sender:{name:'FIRSTTRADES',email:'tradefirst100@outlook.com'},
+            to:[{email:ud.email,name:ud.fullName||'User'}],
+            subject:'Your FIRSTTRADES Verification Code',
+            htmlContent:'<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#0d1117;padding:32px;border-radius:12px;border:1px solid rgba(201,168,76,0.2);"><h2 style="color:#c9a84c;margin-bottom:8px;">FIRSTTRADES</h2><p style="color:#fff;">Hi '+(ud.fullName||'User')+',</p><p style="color:#8a94a6;">Your verification code is:</p><div style="font-size:36px;font-weight:800;letter-spacing:10px;color:#fff;background:#131a27;padding:20px;border-radius:10px;text-align:center;margin:20px 0;">'+verificationCode+'</div><p style="color:#8a94a6;font-size:13px;">Expires in 5 minutes. Do not share.</p></div>'
+        })
+    }).then(function(r){console.log('sent',r.status);}).catch(function(e){console.error(e);});
+}
 
-            document.getElementById('errorMessage').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'none';
+function startCountdown() {
+    var timerEl=document.getElementById('timer'), resendBtn=document.getElementById('resendLink');
+    countdownTime=300; clearInterval(countdownInterval);
+    resendBtn.classList.add('disabled'); timerEl.classList.remove('expired');
+    countdownInterval = setInterval(function(){
+        var m=Math.floor(countdownTime/60), s=countdownTime%60;
+        timerEl.textContent='Resend code in '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        countdownTime--;
+        if (countdownTime<0) { clearInterval(countdownInterval); timerEl.textContent='You can now resend the code'; timerEl.classList.add('expired'); resendBtn.classList.remove('disabled'); }
+    },1000);
+}
 
-            if (entered === verificationCode) {
-                document.getElementById('successMessage').style.display = 'block';
-                document.getElementById('verifyBtn').disabled = true;
-                var userData = JSON.parse(localStorage.getItem('userData') || '{}');
-                userData.verified = true;
-                localStorage.setItem('userData', JSON.stringify(userData));
-                // sync verified flag to allUsers
-                var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-                var ui = allUsers.findIndex(function(u){ return u.email === userData.email; });
-                if (ui >= 0) { allUsers[ui].verified = true; localStorage.setItem('allUsers', JSON.stringify(allUsers)); }
-                setTimeout(function() {
-                    window.location.href = 'step6.html';
-                }, 1500);
-            } else {
-                document.getElementById('errorMessage').style.display = 'block';
-                inputs.forEach(function(input) {
-                    input.style.animation = 'shake 0.5s ease-in-out';
-                    setTimeout(function() { input.style.animation = ''; }, 500);
-                });
-            }
-        }
+function resendCode() {
+    document.querySelectorAll('.pg-code-input').forEach(function(i){i.value='';i.classList.remove('filled');});
+    document.getElementById('verifyBtn').disabled=true;
+    document.getElementById('errMsg').style.display='none';
+    sendCode(); startCountdown();
+}
 
-        // Setup inputs
-        document.addEventListener('DOMContentLoaded', function() {
-            sendCode();
-            startCountdown();
+function verifyCode() {
+    var inputs=document.querySelectorAll('.pg-code-input');
+    var entered=Array.from(inputs).map(function(i){return i.value;}).join('');
+    document.getElementById('errMsg').style.display='none';
+    document.getElementById('okMsg').style.display='none';
+    if (entered===verificationCode) {
+        document.getElementById('okMsg').style.display='block';
+        document.getElementById('verifyBtn').disabled=true;
+        var ud=JSON.parse(localStorage.getItem('userData')||'{}');
+        ud.verified=true; localStorage.setItem('userData',JSON.stringify(ud));
+        var allUsers=JSON.parse(localStorage.getItem('allUsers')||'[]');
+        var ui=allUsers.findIndex(function(u){return u.email===ud.email;});
+        if (ui>=0){allUsers[ui].verified=true;localStorage.setItem('allUsers',JSON.stringify(allUsers));}
+        setTimeout(function(){window.location.href='step6.html';},1500);
+    } else {
+        document.getElementById('errMsg').style.display='block';
+        inputs.forEach(function(i){i.style.animation='shake 0.35s ease';setTimeout(function(){i.style.animation='';},400);});
+    }
+}
 
-            var inputs = document.querySelectorAll('.code-input');
-            inputs.forEach(function(input, index) {
-                input.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    this.classList.toggle('filled', !!this.value);
-                    if (this.value && index < inputs.length - 1) inputs[index + 1].focus();
-                    document.getElementById('verifyBtn').disabled = !Array.from(inputs).every(function(i) { return i.value; });
-                });
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && !this.value && index > 0) inputs[index - 1].focus();
-                });
-                input.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    var digits = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,6);
-                    digits.split('').forEach(function(d, i) { if (inputs[i]) { inputs[i].value = d; inputs[i].classList.add('filled'); } });
-                    setTimeout(function() {
-                        document.getElementById('verifyBtn').disabled = !Array.from(inputs).every(function(i) { return i.value; });
-                    }, 100);
-                });
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    sendCode(); startCountdown();
+    var inputs=document.querySelectorAll('.pg-code-input');
+    inputs.forEach(function(input,idx){
+        input.addEventListener('input',function(){
+            this.value=this.value.replace(/[^0-9]/g,'');
+            this.classList.toggle('filled',!!this.value);
+            if (this.value && idx<inputs.length-1) inputs[idx+1].focus();
+            document.getElementById('verifyBtn').disabled=!Array.from(inputs).every(function(i){return i.value;});
         });
-
-        var style = document.createElement('style');
-        style.textContent = '@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }';
-        document.head.appendChild(style);
-    </script>
+        input.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&idx>0)inputs[idx-1].focus();});
+        input.addEventListener('paste',function(e){
+            e.preventDefault();
+            var d=(e.clipboardData||window.clipboardData).getData('text').replace(/[^0-9]/g,'').slice(0,6);
+            d.split('').forEach(function(ch,i){if(inputs[i]){inputs[i].value=ch;inputs[i].classList.add('filled');}});
+            setTimeout(function(){document.getElementById('verifyBtn').disabled=!Array.from(inputs).every(function(i){return i.value;});},100);
+        });
+    });
+});
+</script>
+<style>@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}</style>
 </body>
 </html>
-
