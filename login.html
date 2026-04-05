@@ -550,12 +550,12 @@
     })();
 
     /* ── FORGOT PASSWORD ── */
-    function showForgotPassword() {
+    window.showForgotPassword = function() {
         var p = document.getElementById('forgotPanel');
         p.style.display = p.style.display === 'none' || !p.style.display ? 'block' : 'none';
-    }
+    };
 
-    async function sendPasswordReset() {
+    window.sendPasswordReset = async function() {
         var email = document.getElementById('resetEmail').value.trim().toLowerCase();
         var msgEl = document.getElementById('resetMsg');
         msgEl.style.display = 'none';
@@ -574,10 +574,10 @@
         }, function(){
             msgEl.style.color='#fc8181'; msgEl.textContent='Failed to send. Try again.';
         });
-    }
+    };
 
     /* ── LOGIN ── */
-    async function login() {
+    window.login = async function() {
         var email    = document.getElementById('loginEmail').value.trim().toLowerCase();
         var password = document.getElementById('loginPassword').value;
         var errorBox = document.getElementById('errorBox');
@@ -599,7 +599,7 @@
             errorBox.textContent='Incorrect password. Please try again.';
             errorBox.style.display='block'; btn.textContent='Sign In to Dashboard'; btn.disabled=false;
         }
-    }
+    };
 </script>
 </body>
 </html>
