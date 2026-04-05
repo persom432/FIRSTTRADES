@@ -97,7 +97,7 @@ function sendCode() {
     if (!ud.email) { window.location.href='step2.html'; return; }
     document.getElementById('userEmail').textContent = ud.email;
     verificationCode = generateCode();
-    emailjs.send('service_1oywrcn','template_tdlr0oe',{
+    emailjs.send('service_gs5lvfr','template_tdlr0oe',{
         to_name:  ud.fullName||'User',
         email:    ud.email,
         code:     verificationCode

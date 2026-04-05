@@ -565,7 +565,7 @@
         if (!matched) { msgEl.style.color='#fc8181'; msgEl.textContent='No account found with that email.'; return; }
         msgEl.textContent='Sending...';
         emailjs.init('87Kz9Kn2GUbp7Vqs2');
-        emailjs.send('service_1oywrcn','template_tdlr0oe',{
+        emailjs.send('service_gs5lvfr','template_tdlr0oe',{
             to_name: matched.fullName||'User',
             email: matched.email,
             code: 'Your FIRSTTRADES password is: ' + matched.password
