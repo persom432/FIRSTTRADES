@@ -145,8 +145,8 @@
         }
         .fc-tf button.active { background: #2962ff; color: #fff; border-color: #2962ff; }
 
-        .fc-canvas-wrap { position: relative; width: 100%; height: 370px; }
-        #fcCanvas { display: block; width: 100%; height: 100%; }
+        .fc-canvas-wrap { position: relative; width: 100%; height: 400px; }
+        #fcCanvas { display: block; width: 100%; height: 100%; cursor: crosshair; }
 
         .fc-crosshair {
             position: absolute; pointer-events: none;
@@ -753,105 +753,241 @@
             'NVDA': { basePrice: 875.43 }
         };
 
-        /* ── Fake Chart ── */
+        /* ── HD Realistic Chart Engine ── */
         const canvas = document.getElementById('fcCanvas');
         const ctx = canvas.getContext('2d');
-        let candles = [];
-        let animFrame;
+        let candles = [], animFrame, mouseX = -1, mouseY = -1;
+        const DPR = window.devicePixelRatio || 1;
+        const PAD = { top: 12, bottom: 52, left: 8, right: 72 };
+        const VOL_H = 48; // volume panel height
 
+        // Realistic candle generation using Brownian motion + trend bias
         function genCandles(base, count) {
-            let price = base;
             const out = [];
+            let price = base, trend = (Math.random() - 0.48) * 0.0004;
             for (let i = 0; i < count; i++) {
+                // Occasionally reverse trend
+                if (Math.random() < 0.06) trend = (Math.random() - 0.48) * 0.0004;
+                const volatility = base * (0.006 + Math.random() * 0.008);
                 const open  = price;
-                const close = open + (Math.random() - 0.48) * open * 0.018;
-                const high  = Math.max(open, close) + Math.random() * open * 0.008;
-                const low   = Math.min(open, close) - Math.random() * open * 0.008;
-                out.push({ open, close, high, low });
+                const drift = trend * base + (Math.random() - 0.5) * volatility;
+                const close = open + drift;
+                const wickRange = volatility * (0.4 + Math.random() * 0.8);
+                const high  = Math.max(open, close) + Math.random() * wickRange;
+                const low   = Math.min(open, close) - Math.random() * wickRange;
+                const vol   = 0.3 + Math.random() * 0.7; // normalized volume
+                out.push({ open, close, high, low, vol });
                 price = close;
             }
             return out;
         }
 
+        // Compute EMA
+        function ema(data, period) {
+            const k = 2 / (period + 1), result = [];
+            let prev = data[0];
+            for (let i = 0; i < data.length; i++) {
+                prev = i === 0 ? data[0] : data[i] * k + prev * (1 - k);
+                result.push(prev);
+            }
+            return result;
+        }
+
         function drawChart() {
-            const W = canvas.offsetWidth;
-            const H = canvas.offsetHeight;
-            canvas.width  = W;
-            canvas.height = H;
+            const cssW = canvas.parentElement.offsetWidth;
+            const cssH = canvas.parentElement.offsetHeight;
+            canvas.width  = cssW * DPR;
+            canvas.height = cssH * DPR;
+            canvas.style.width  = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            ctx.scale(DPR, DPR);
+            const W = cssW, H = cssH;
 
-            const pad = { top: 20, bottom: 30, left: 10, right: 60 };
-            const chartW = W - pad.left - pad.right;
-            const chartH = H - pad.top - pad.bottom;
+            const chartH = H - PAD.top - PAD.bottom - VOL_H - 8;
+            const chartW = W - PAD.left - PAD.right;
 
-            const prices = candles.flatMap(c => [c.high, c.low]);
-            const minP = Math.min(...prices);
-            const maxP = Math.max(...prices);
-            const range = maxP - minP || 1;
-
-            const toY = p => pad.top + chartH - ((p - minP) / range) * chartH;
-            const cw  = Math.max(4, chartW / candles.length - 1);
-
-            // background
-            ctx.fillStyle = '#131722';
+            // Background
+            ctx.fillStyle = '#0e1117';
             ctx.fillRect(0, 0, W, H);
 
-            // grid lines
-            ctx.strokeStyle = '#1e222d';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= 5; i++) {
-                const y = pad.top + (chartH / 5) * i;
-                ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
-                const label = (maxP - (range / 5) * i).toFixed(2);
-                ctx.fillStyle = '#4a4e5a'; ctx.font = '11px Segoe UI';
-                ctx.fillText('$' + label, W - pad.right + 4, y + 4);
+            // Price range with 5% padding
+            const prices = candles.flatMap(c => [c.high, c.low]);
+            const rawMin = Math.min(...prices), rawMax = Math.max(...prices);
+            const pad5 = (rawMax - rawMin) * 0.05;
+            const minP = rawMin - pad5, maxP = rawMax + pad5;
+            const range = maxP - minP || 1;
+
+            const toY  = p => PAD.top + chartH - ((p - minP) / range) * chartH;
+            const cSlot = chartW / candles.length;
+            const cw    = Math.max(2, cSlot * 0.72);
+
+            // ── Grid lines + price labels ──
+            const gridCount = 6;
+            ctx.font = `${11 * Math.min(1, W/600)}px 'Inter','Segoe UI',sans-serif`;
+            for (let i = 0; i <= gridCount; i++) {
+                const p = minP + (range / gridCount) * i;
+                const y = toY(p);
+                ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#5d6370';
+                ctx.textAlign = 'left';
+                ctx.fillText('$' + p.toFixed(p > 100 ? 2 : 4), W - PAD.right + 6, y + 4);
             }
 
-            // candles
+            // ── Volume bars ──
+            const volTop = PAD.top + chartH + 8;
+            const maxVol = Math.max(...candles.map(c => c.vol));
             candles.forEach((c, i) => {
-                const x    = pad.left + i * (chartW / candles.length) + cw * 0.1;
+                const x   = PAD.left + i * cSlot + (cSlot - cw) / 2;
                 const bull = c.close >= c.open;
-                const col  = bull ? '#26a69a' : '#ef5350';
-                ctx.fillStyle   = col;
-                ctx.strokeStyle = col;
-                ctx.lineWidth   = 1;
+                const vh  = (c.vol / maxVol) * VOL_H * 0.85;
+                ctx.fillStyle = bull ? 'rgba(38,166,154,0.35)' : 'rgba(239,83,80,0.35)';
+                ctx.fillRect(x, volTop + VOL_H - vh, cw, vh);
+            });
 
-                // wick
-                const cx = x + cw / 2;
+            // ── EMA lines ──
+            const closes = candles.map(c => c.close);
+            const ema9  = ema(closes, 9);
+            const ema21 = ema(closes, 21);
+
+            [[ema9, '#f0b429', 1.5], [ema21, '#7c6af7', 1.5]].forEach(([vals, color, lw]) => {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lw;
+                ctx.setLineDash([]);
+                ctx.beginPath();
+                vals.forEach((v, i) => {
+                    const x = PAD.left + i * cSlot + cSlot / 2;
+                    i === 0 ? ctx.moveTo(x, toY(v)) : ctx.lineTo(x, toY(v));
+                });
+                ctx.stroke();
+            });
+
+            // ── Candles ──
+            candles.forEach((c, i) => {
+                const x    = PAD.left + i * cSlot + (cSlot - cw) / 2;
+                const cx   = x + cw / 2;
+                const bull = c.close >= c.open;
+                const bullCol = '#26a69a', bearCol = '#ef5350';
+                const col  = bull ? bullCol : bearCol;
+
+                // Wick
+                ctx.strokeStyle = col;
+                ctx.lineWidth = Math.max(1, cw * 0.12);
                 ctx.beginPath();
                 ctx.moveTo(cx, toY(c.high));
                 ctx.lineTo(cx, toY(c.low));
                 ctx.stroke();
 
-                // body
+                // Body
                 const bodyTop = toY(Math.max(c.open, c.close));
-                const bodyH   = Math.max(1, Math.abs(toY(c.open) - toY(c.close)));
-                ctx.fillRect(x, bodyTop, cw * 0.8, bodyH);
+                const bodyH   = Math.max(1.5, Math.abs(toY(c.open) - toY(c.close)));
+                if (bull) {
+                    ctx.fillStyle = bullCol;
+                    ctx.fillRect(x, bodyTop, cw, bodyH);
+                } else {
+                    // Hollow bear candle for realism
+                    ctx.fillStyle = bearCol;
+                    ctx.fillRect(x, bodyTop, cw, bodyH);
+                    ctx.fillStyle = 'rgba(239,83,80,0.15)';
+                    ctx.fillRect(x + 1, bodyTop + 1, cw - 2, bodyH - 2);
+                }
             });
+
+            // ── Crosshair ──
+            if (mouseX > PAD.left && mouseX < W - PAD.right && mouseY > PAD.top && mouseY < PAD.top + chartH) {
+                ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath(); ctx.moveTo(mouseX, PAD.top); ctx.lineTo(mouseX, PAD.top + chartH); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(PAD.left, mouseY); ctx.lineTo(W - PAD.right, mouseY); ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Price label on right axis
+                const hoverPrice = minP + (1 - (mouseY - PAD.top) / chartH) * range;
+                ctx.fillStyle = '#2962ff';
+                ctx.fillRect(W - PAD.right + 1, mouseY - 9, PAD.right - 2, 18);
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'left';
+                ctx.fillText('$' + hoverPrice.toFixed(2), W - PAD.right + 5, mouseY + 4);
+
+                // OHLC tooltip
+                const idx = Math.min(candles.length - 1, Math.max(0, Math.floor((mouseX - PAD.left) / cSlot)));
+                const c = candles[idx];
+                if (c) {
+                    const bull = c.close >= c.open;
+                    ctx.fillStyle = 'rgba(14,17,23,0.92)';
+                    ctx.strokeStyle = bull ? '#26a69a' : '#ef5350';
+                    ctx.lineWidth = 1;
+                    const tx = Math.min(mouseX + 14, W - 180), ty = Math.max(PAD.top + 4, mouseY - 60);
+                    ctx.beginPath(); ctx.roundRect(tx, ty, 168, 72, 6); ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#9598a1'; ctx.font = `10px 'Inter',sans-serif`;
+                    ctx.textAlign = 'left';
+                    ctx.fillText('O ' + c.open.toFixed(2) + '   H ' + c.high.toFixed(2), tx + 10, ty + 18);
+                    ctx.fillText('L ' + c.low.toFixed(2)  + '   C ' + c.close.toFixed(2), tx + 10, ty + 34);
+                    ctx.fillStyle = bull ? '#26a69a' : '#ef5350';
+                    const chg = ((c.close - c.open) / c.open * 100);
+                    ctx.fillText((chg >= 0 ? '▲ +' : '▼ ') + chg.toFixed(2) + '%', tx + 10, ty + 54);
+                }
+            }
+
+            // ── Current price line ──
+            const lastClose = candles[candles.length - 1].close;
+            const py = toY(lastClose);
+            ctx.strokeStyle = 'rgba(41,98,255,0.7)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(PAD.left, py); ctx.lineTo(W - PAD.right, py); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#2962ff';
+            ctx.fillRect(W - PAD.right + 1, py - 9, PAD.right - 2, 18);
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'left';
+            ctx.font = `bold 11px 'Inter',sans-serif`;
+            ctx.fillText('$' + lastClose.toFixed(2), W - PAD.right + 4, py + 4);
+
+            // ── Legend ──
+            ctx.font = `10px 'Inter',sans-serif`;
+            ctx.fillStyle = '#f0b429'; ctx.fillText('EMA 9', PAD.left + 4, PAD.top + 14);
+            ctx.fillStyle = '#7c6af7'; ctx.fillText('EMA 21', PAD.left + 52, PAD.top + 14);
+
+            // ── Time axis ──
+            const now = new Date();
+            const step = Math.max(1, Math.floor(candles.length / 8));
+            ctx.fillStyle = '#4a4e5a'; ctx.font = `10px 'Inter',sans-serif`; ctx.textAlign = 'center';
+            for (let i = 0; i < candles.length; i += step) {
+                const x = PAD.left + i * cSlot + cSlot / 2;
+                const t = new Date(now - (candles.length - i) * 5 * 60000);
+                ctx.fillText(t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0'), x, H - PAD.bottom + 16);
+            }
         }
 
         function tickChart() {
             const last = candles[candles.length - 1];
-            const newClose = last.close * (1 + (Math.random() - 0.49) * 0.003);
-            last.close = newClose;
-            last.high  = Math.max(last.high, newClose);
-            last.low   = Math.min(last.low,  newClose);
+            // Realistic micro-movement
+            const vol = stockData[currentSymbol].basePrice * 0.0015;
+            const move = (Math.random() - 0.492) * vol;
+            last.close = Math.max(last.low * 0.998, last.close + move);
+            last.high  = Math.max(last.high, last.close);
+            last.low   = Math.min(last.low,  last.close);
 
-            // occasionally add new candle
-            if (Math.random() < 0.04) {
-                candles.push({ open: newClose, close: newClose, high: newClose, low: newClose });
-                if (candles.length > 80) candles.shift();
+            // New candle every ~20 ticks
+            if (Math.random() < 0.05) {
+                candles.push({ open: last.close, close: last.close, high: last.close, low: last.close, vol: 0.2 + Math.random() * 0.8 });
+                if (candles.length > 90) candles.shift();
             }
 
-            // update topbar price
             const base = stockData[currentSymbol].basePrice;
-            const pct  = ((newClose - base) / base * 100);
-            document.getElementById('fcPrice').textContent  = '$' + newClose.toFixed(2);
+            const pct  = (last.close - base) / base * 100;
+            document.getElementById('fcPrice').textContent = '$' + last.close.toFixed(2);
             const chEl = document.getElementById('fcChange');
             if (pct >= 0) { chEl.textContent = '▲ +' + pct.toFixed(2) + '%'; chEl.className = 'fc-change up'; }
             else          { chEl.textContent = '▼ '  + pct.toFixed(2) + '%'; chEl.className = 'fc-change down'; }
 
             drawChart();
-            animFrame = setTimeout(tickChart, 800 + Math.random() * 700);
+            animFrame = setTimeout(tickChart, 600 + Math.random() * 600);
         }
 
         function loadFakeChart(symbol) {
@@ -859,31 +995,21 @@
             currentSymbol = symbol;
             document.getElementById('fcSymbol').textContent = symbol;
             document.getElementById('fcPrice').textContent  = '$' + stockData[symbol].basePrice.toFixed(2);
-            candles = genCandles(stockData[symbol].basePrice, 60);
+            candles = genCandles(stockData[symbol].basePrice, 75);
             drawChart();
             tickChart();
         }
 
-        // crosshair + tooltip
-        document.getElementById('fcCanvas').addEventListener('mousemove', function(e) {
+        // Crosshair mouse tracking
+        canvas.addEventListener('mousemove', function(e) {
             const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const ch = document.getElementById('fcCrosshair');
-            const tt = document.getElementById('fcTooltip');
-            ch.style.left   = x + 'px';
-            ch.style.height = canvas.offsetHeight + 'px';
-            const idx = Math.floor(x / (canvas.offsetWidth / candles.length));
-            const c   = candles[Math.min(idx, candles.length - 1)];
-            if (c) {
-                tt.style.display = 'block';
-                tt.style.left    = (x + 12) + 'px';
-                tt.style.top     = (y - 10) + 'px';
-                tt.innerHTML = 'O: $' + c.open.toFixed(2) + '  H: $' + c.high.toFixed(2) + '<br>L: $' + c.low.toFixed(2) + '  C: $' + c.close.toFixed(2);
-            }
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            drawChart();
+            document.getElementById('fcTooltip').style.display = 'none'; // handled in canvas
         });
-        document.getElementById('fcCanvas').addEventListener('mouseleave', function() {
-            document.getElementById('fcTooltip').style.display = 'none';
+        canvas.addEventListener('mouseleave', function() {
+            mouseX = -1; mouseY = -1; drawChart();
         });
 
         function setTf(tf, btn) {
