@@ -463,11 +463,63 @@
             .trade-table th, .trade-table td { padding: 7px 8px; }
         }
 
-        @media (max-width: 480px) {
-            .market-grid { grid-template-columns: repeat(2, 1fr); }
-            .dashboard-header h1 { font-size: 1.1rem; }
-            #fakeChart { height: 240px; }
-            .fc-canvas-wrap { height: 190px; }
+        /* Chart expand */
+        .main-chart.expanded {
+            position: fixed;
+            inset: 64px 0 0 0;
+            z-index: 400;
+            border-radius: 0;
+            padding: 1rem;
+            margin: 0;
+        }
+        .main-chart.expanded .fc-canvas-wrap { height: calc(100vh - 180px) !important; }
+        .expand-btn {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #fff;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-left: 0.5rem;
+        }
+        .expand-btn:hover { background: rgba(255,255,255,0.14); }
+
+        /* Floating signals banner */
+        #signalsBanner {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            z-index: 450;
+            background: rgba(13,17,23,0.95);
+            border: 1px solid rgba(201,168,76,0.35);
+            border-radius: 14px;
+            padding: 14px 16px;
+            max-width: 280px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            backdrop-filter: blur(12px);
+            animation: bannerIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+        }
+        @keyframes bannerIn {
+            from { opacity:0; transform:translateY(20px) scale(0.95); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        #signalsBanner .sb-close {
+            position: absolute; top: 8px; right: 10px;
+            background: none; border: none; color: rgba(255,255,255,0.3);
+            font-size: 1rem; cursor: pointer; line-height: 1;
+        }
+        #signalsBanner .sb-close:hover { color: #fff; }
+        #signalsBanner .sb-icon { font-size: 1.3rem; margin-bottom: 6px; display: block; }
+        #signalsBanner h4 { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        #signalsBanner p  { font-size: 0.75rem; color: #8a94a6; line-height: 1.45; margin-bottom: 10px; }
+        #signalsBanner a  {
+            display: block; text-align: center;
+            background: linear-gradient(135deg,#c9a84c,#e8c96a);
+            color: #07090f; border-radius: 8px;
+            padding: 8px; font-size: 0.8rem; font-weight: 700;
+            text-decoration: none;
         }
     </style>
 
@@ -555,12 +607,15 @@
                 <div class="main-chart">
                     <div class="chart-header">
                         <h2 class="chart-title" id="chartTitle">Trading Chart - AAPL</h2>
-                        <div class="timeframe-buttons">
-                            <button class="timeframe-btn active" onclick="changeSymbol('AAPL',this)">AAPL</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('GOOGL',this)">GOOGL</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('MSFT',this)">MSFT</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('TSLA',this)">TSLA</button>
-                            <button class="timeframe-btn" onclick="changeSymbol('NVDA',this)">NVDA</button>
+                        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                            <div class="timeframe-buttons">
+                                <button class="timeframe-btn active" onclick="changeSymbol('AAPL',this)">AAPL</button>
+                                <button class="timeframe-btn" onclick="changeSymbol('GOOGL',this)">GOOGL</button>
+                                <button class="timeframe-btn" onclick="changeSymbol('MSFT',this)">MSFT</button>
+                                <button class="timeframe-btn" onclick="changeSymbol('TSLA',this)">TSLA</button>
+                                <button class="timeframe-btn" onclick="changeSymbol('NVDA',this)">NVDA</button>
+                            </div>
+                            <button class="expand-btn" id="expandBtn" onclick="toggleExpand()">⛶ Expand</button>
                         </div>
                     </div>
                     <div id="fakeChart">
@@ -717,18 +772,24 @@
         </div>
     </section>
 
-    <!-- SIGNALS LOCK OVERLAY -->
-    <div id="signalsOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(7,9,15,0.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;">
-        <div style="background:#0d1117;border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:2.5rem 2rem;max-width:480px;width:100%;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.7);">
-            <div style="font-size:2.5rem;margin-bottom:1rem;">🔒</div>
-            <h2 style="font-family:'Georgia',serif;font-size:1.5rem;color:#fff;margin-bottom:0.75rem;">AI Trading Signals Required</h2>
-            <p style="color:#8a94a6;font-size:0.88rem;line-height:1.65;margin-bottom:1.75rem;">To place trades and use the AI trading engine, you need an active signals plan. Choose a plan to unlock full platform access.</p>
-            <a href="signals.html" style="display:block;width:100%;padding:14px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;border-radius:10px;font-weight:700;font-size:0.93rem;text-decoration:none;margin-bottom:0.85rem;box-shadow:0 4px 18px rgba(201,168,76,0.25);">View Signal Plans →</a>
-            <button onclick="localStorage.setItem('signalSkipped','true');document.getElementById('signalsOverlay').style.display='none'" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);padding:11px 24px;border-radius:8px;font-size:0.8rem;cursor:pointer;font-family:inherit;">Skip — explore dashboard only</button>
-        </div>
+    <!-- FLOATING SIGNALS BANNER -->
+    <div id="signalsBanner" style="display:none;">
+        <button class="sb-close" onclick="localStorage.setItem('signalSkipped','true');document.getElementById('signalsBanner').style.display='none'">&times;</button>
+        <span class="sb-icon">🤖</span>
+        <h4>Activate AI Signals</h4>
+        <p>Unlock intelligent trade signals to start profiting with the AI engine.</p>
+        <a href="signals.html">View Plans &rarr;</a>
     </div>
 
     <script>
+        function toggleExpand() {
+            var chart = document.querySelector('.main-chart');
+            var btn   = document.getElementById('expandBtn');
+            var isExp = chart.classList.toggle('expanded');
+            btn.textContent = isExp ? '✕ Collapse' : '⛶ Expand';
+            setTimeout(function() { drawChart(); }, 50);
+        }
+
         function toggleNav() {
             var menu = document.getElementById('navMenu');
             var btn  = document.getElementById('hamburger');
@@ -1059,11 +1120,11 @@
 
             renderTrades();
 
-            // Show signals lock if no plan active
+            // Show floating signals banner if no plan active
             var plan = localStorage.getItem('signalPlan');
             var skipped = localStorage.getItem('signalSkipped');
             if (!plan && !skipped) {
-                document.getElementById('signalsOverlay').style.display = 'flex';
+                document.getElementById('signalsBanner').style.display = 'block';
             }
 
             // Load fake chart
