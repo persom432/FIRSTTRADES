@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — FIRSTTRADES</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <style>
@@ -546,18 +547,14 @@
         if (!matched && userData.email && userData.email.toLowerCase() === email) matched = userData;
         if (!matched) { msgEl.style.color='#fc8181'; msgEl.textContent='No account found with that email.'; msgEl.style.display='block'; return; }
         msgEl.style.color='#8a94a6'; msgEl.textContent='Sending...'; msgEl.style.display='block';
-        fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'api-key': 'xsmtpsib-dc67bffa2a08755f900819f5eda0cce7102d721abf94c5f14749363516c13fc0-VR800vil90GGEi5w' },
-            body: JSON.stringify({
-                sender: { name: 'FIRSTTRADES', email: 'tradefirst100@outlook.com' },
-                to: [{ email: matched.email, name: matched.fullName||'User' }],
-                subject: 'Your FIRSTTRADES Password',
-                htmlContent: '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#0d1117;padding:32px;border-radius:12px;border:1px solid rgba(201,168,76,0.2);"><h2 style="color:#c9a84c;">FIRSTTRADES</h2><p style="color:#fff;">Hi ' + (matched.fullName||'User') + ',</p><p style="color:#8a94a6;">Your password is:</p><div style="font-size:22px;font-weight:800;color:#fff;background:#131a27;padding:16px;border-radius:10px;text-align:center;margin:20px 0;">' + matched.password + '</div><p style="color:#8a94a6;font-size:13px;">Keep this safe and do not share it.</p></div>'
-            })
+        emailjs.init('87Kz9Kn2GUbp7Vqs2');
+        emailjs.send('service_1oywrcn','template_rjcvhus',{
+            to_name: matched.fullName||'User',
+            to_email: matched.email,
+            code: 'Your FIRSTTRADES password is: ' + matched.password
         }).then(function(){
             msgEl.style.color='#c9a84c'; msgEl.textContent='Password sent to ' + matched.email;
-        }).catch(function(){
+        }, function(){
             msgEl.style.color='#fc8181'; msgEl.textContent='Failed to send. Try again.';
         });
     }
