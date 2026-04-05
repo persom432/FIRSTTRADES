@@ -675,7 +675,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" id="durationGroup">
                                 <label for="tradeDuration">⏱ Trade Duration (AI closes after)</label>
                                 <select id="tradeDuration" required>
                                     <option value="30">30 seconds</option>
@@ -690,7 +690,7 @@
 
                             <!-- AI signals lock notice -->
                             <div id="aiLockNotice" style="display:none;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:10px 14px;font-size:0.82rem;color:#c9a84c;">
-                                🤖 <strong>AI auto-close requires a signals plan.</strong> Your trade will open but won't auto-close. <a href="signals.html" style="color:#e8c96a;font-weight:700;">Activate →</a>
+                                🤖 <strong>AI auto-close locked.</strong> <a href="signals.html" style="color:#e8c96a;font-weight:700;">Activate a signals plan</a> to enable AI trading.
                             </div>
 
                             <div id="balanceWarning" style="display:none;background:rgba(231,76,60,0.1);border:1px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:0.85rem;color:#e74c3c;">
@@ -1130,6 +1130,7 @@
             var skipped = localStorage.getItem('signalSkipped');
             if (!plan) {
                 document.getElementById('aiLockNotice').style.display = 'block';
+                document.getElementById('durationGroup').style.display = 'none';
                 if (!skipped) document.getElementById('signalsBanner').style.display = 'block';
             }
 
