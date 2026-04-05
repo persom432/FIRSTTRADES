@@ -105,7 +105,6 @@ function sendCode() {
         console.log('Code sent to', ud.email);
     }, function(err){
         console.error('EmailJS error', err);
-        alert('Email send failed: ' + JSON.stringify(err));
     });
 }
 
