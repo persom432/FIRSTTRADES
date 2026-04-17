@@ -511,11 +511,16 @@
                 }
             }
 
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
             const fundingData = {
                 method: selectedMethod,
                 amount: selectedMethod === 'btc' ? (document.getElementById('btcUsdAmount').value || '0') : (document.getElementById('ethUsdAmount').value || '0'),
                 timestamp: new Date().toISOString(),
-                status: 'pending'
+                status: 'pending',
+                user: userData.fullName || 'Unknown',
+                email: userData.email || currentEmail || 'Unknown'
             };
             localStorage.setItem('fundingData', JSON.stringify(fundingData));
             const allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
@@ -542,7 +547,18 @@
             if (!code) { document.getElementById('appleCode').style.border = '2px solid #e74c3c'; return; }
             if (!amount || parseFloat(amount) < 100) { document.getElementById('appleAmount').style.border = '2px solid #e74c3c'; alert('Minimum deposit is $100.'); return; }
 
-            var fundingData = { method: 'apple', code, amount, timestamp: new Date().toISOString(), status: 'pending' };
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
+            var fundingData = {
+                method: 'apple',
+                code,
+                amount,
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                user: userData.fullName || 'Unknown',
+                email: userData.email || currentEmail || 'Unknown'
+            };
             localStorage.setItem('fundingData', JSON.stringify(fundingData));
             var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
             fundingData.id = fundingData.timestamp;

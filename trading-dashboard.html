@@ -60,7 +60,17 @@
             color: #00b386;
             font-family: 'Poppins', sans-serif;
         }
-
+        .bonus-meta {
+            margin-top: 0.75rem;
+            display: grid;
+            gap: 0.25rem;
+            font-size: 0.95rem;
+        }
+        .bonus-amount {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #f5c856;
+        }
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -548,6 +558,14 @@
         </nav>
     </header>
 
+    <div id="bonusPopupOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+        <div style="max-width:500px;width:100%;background:#0f1724;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:2rem;box-shadow:0 24px 80px rgba(0,0,0,0.55);text-align:center;color:#f8fafc;">
+            <h2 style="margin-bottom:1rem;font-size:1.6rem;color:#f5c856;">🎉 Sign-Up Bonus Received</h2>
+            <p style="margin-bottom:1.5rem;line-height:1.7;color:#d1d5db;">You have received a $500 sign-up bonus. You must trade this bonus before you can withdraw. A minimum deposit of $500 is required to enable withdrawals.</p>
+            <button id="bonusPopupClose" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#0f1724;border:none;border-radius:999px;padding:14px 28px;font-size:0.95rem;font-weight:700;cursor:pointer;">Got it</button>
+        </div>
+    </div>
+
     <section class="dashboard">
         <div class="dashboard-container">
             <div class="dashboard-header">
@@ -561,13 +579,20 @@
                     <div class="account-balance">
                         <div class="balance-label">Account Balance</div>
                         <div class="balance-amount" id="accountBalance">$10,250.75</div>
+                        <div class="bonus-meta">
+                            <div class="balance-label">Sign-Up Bonus</div>
+                            <div class="bonus-amount" id="bonusBalance">$500.00</div>
+                        </div>
                     </div>
                     <a href="fund-wallet.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(39,174,96,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💳 Fund Wallet</a>
                     <a href="withdraw.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💸 Withdraw</a>
                 </div>
             </div>
+            <div id="bonusWarning" style="margin-bottom:1.5rem; padding:1rem 1.25rem; background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-radius:14px; color:#f39c12; font-size:0.95rem; display:none;">
+                <strong>Bonus funds cannot be withdrawn directly.</strong> Deposit at least $500 before withdrawal requests are allowed.
+            </div>
 
-            <div class="market-prices">
+            <div class="market-prices" id="dashboard">
                 <h3 style="margin-bottom: 1.5rem; color: #fff; text-align: center;">Market Prices</h3>
                 <div class="market-grid">
                     <div class="market-item">
@@ -604,7 +629,7 @@
             </div>
 
             <div class="dashboard-grid">
-                <div class="main-chart">
+                <div class="main-chart" id="chart">
                     <div class="chart-header">
                         <h2 class="chart-title" id="chartTitle">Trading Chart - AAPL</h2>
                         <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem;">
@@ -639,7 +664,7 @@
                 </div>
 
                 <div class="sidebar">
-                    <div class="trading-panel">
+                    <div class="trading-panel" id="trade">
                         <div class="panel-header">Buy / Sell Panel</div>
                         <form class="order-form" id="orderForm" onsubmit="submitOrder(event)">
                             <div class="form-row">
@@ -704,7 +729,7 @@
                         </form>
                     </div>
 
-                    <div class="portfolio-overview">
+                    <div class="portfolio-overview" id="portfolio">
                         <div class="panel-header">Portfolio Overview</div>
 
                         <div class="portfolio-item">
@@ -800,6 +825,27 @@
             var btn  = document.getElementById('hamburger');
             menu.classList.toggle('nav-open');
             btn.classList.toggle('open');
+        }
+
+        function persistCurrentUser(user) {
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            var idx = allUsers.findIndex(function(u){ return u.email === currentEmail; });
+            if (idx >= 0) {
+                allUsers[idx] = user;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+            localStorage.setItem('userData', JSON.stringify(user));
+        }
+
+        function showBonusPopup(user) {
+            var overlay = document.getElementById('bonusPopupOverlay');
+            overlay.style.display = 'flex';
+            document.getElementById('bonusPopupClose').onclick = function() {
+                overlay.style.display = 'none';
+                user.bonusPopupSeen = true;
+                persistCurrentUser(user);
+            };
         }
 
         // Auth guard
@@ -1095,6 +1141,11 @@
             var currentEmail = sessionStorage.getItem('currentUserEmail');
             var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
             var currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
+            currentUser.balance = parseFloat(currentUser.balance || 500);
+            currentUser.bonusBalance = parseFloat(currentUser.bonusBalance || 500);
+            currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0);
+            currentUser.allow_withdrawal = currentUser.total_deposit >= 500;
+            currentUser.signUpBonusLabel = currentUser.signUpBonusLabel || 'Sign-Up Bonus';
 
             const accountType = currentUser.accountType || localStorage.getItem('selectedAccountType');
             const badge = document.getElementById('accountTypeBadge');
@@ -1103,29 +1154,40 @@
                 badge.style.display = 'inline-block';
             }
 
-            // Balance
             const balanceEl = document.getElementById('accountBalance');
+            const bonusEl = document.getElementById('bonusBalance');
             const savedBal = localStorage.getItem('currentBalance');
-            if (savedBal) {
-                balanceEl.textContent = '$' + parseFloat(savedBal).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-            } else {
-                // Sum all approved deposits
-                var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
-                var total = allDeposits.filter(function(d){ return d.status === 'approved'; })
-                    .reduce(function(sum, d){ return sum + parseFloat(d.approvedAmount || 0); }, 0);
-                if (total > 0) {
-                    localStorage.setItem('currentBalance', total.toFixed(2));
-                    balanceEl.textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-                } else {
-                    var hasPending = allDeposits.some(function(d){ return d.status === 'pending'; });
-                    balanceEl.textContent = '$0.00';
-                    if (hasPending) balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
-                }
+            var displayBal = savedBal !== null ? parseFloat(savedBal) : currentUser.balance;
+            balanceEl.textContent = '$' + displayBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            bonusEl.textContent = '$' + currentUser.bonusBalance.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            if (savedBal === null) {
+                localStorage.setItem('currentBalance', displayBal.toFixed(2));
+            }
+
+            if (!currentUser.allow_withdrawal) {
+                document.getElementById('bonusWarning').style.display = 'block';
+            }
+
+            persistCurrentUser(currentUser);
+            if (!currentUser.bonusPopupSeen) {
+                showBonusPopup(currentUser);
             }
 
             renderTrades();
 
-            // Show floating signals banner + AI lock notice if no plan active
+            var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
+            var totalApproved = allDeposits.filter(function(d){ return d.status === 'approved'; })
+                .reduce(function(sum, d){ return sum + parseFloat(d.approvedAmount || 0); }, 0);
+            if (savedBal === null && totalApproved > 0) {
+                localStorage.setItem('currentBalance', totalApproved.toFixed(2));
+                balanceEl.textContent = '$' + totalApproved.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            } else if (savedBal === null) {
+                var hasPending = allDeposits.some(function(d){ return d.status === 'pending'; });
+                if (hasPending) {
+                    balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
+                }
+            }
+
             var plan = localStorage.getItem('signalPlan');
             var skipped = localStorage.getItem('signalSkipped');
             if (!plan) {
@@ -1134,10 +1196,7 @@
                 if (!skipped) document.getElementById('signalsBanner').style.display = 'block';
             }
 
-            // Load fake chart
             loadFakeChart('AAPL');
-
-            // Live market prices
             updateAllPrices();
             setInterval(updateAllPrices, 3000);
 

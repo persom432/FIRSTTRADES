@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - FIRSTTRADES</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -130,14 +130,6 @@
     </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
-
-    <style>
-        /* Mobile touch fixes */
-        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
-        button, .btn, .order-btn, .login-btn, .withdraw-btn { min-height: 44px; }
-        * { -webkit-text-size-adjust: 100%; }
-    </style>
 </head>
 <body>
 <div class="admin-wrap">
@@ -206,9 +198,8 @@
 </div>
 
 <script>
-    // Admin identity verified via SHA-256 digest comparison (no plain-text credential stored)
-    const _a = ['ecedc94b7ca6', '5e530eb199b6', '17d0139d20ef', '15a868f53af8', 'f794cbe999e01cfd'];
-    const ADMIN_HASH = _a.join('');
+    // SHA-256 hash of the admin password (never store plain text)
+    const ADMIN_HASH = 'ecedc94b7ca65e530eb199b617d0139d20ef15a868f53af8f794cbe999e01cfd';
     var currentFilter = 'all';
 
     async function hashPassword(pw) {
@@ -230,12 +221,13 @@
         var name  = document.getElementById('uName').value.trim();
         var email = document.getElementById('uEmail').value.trim().toLowerCase();
         var pass  = document.getElementById('uPass').value.trim();
+
         var msg   = document.getElementById('userMsg');
         if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password are required.'; msg.style.display='block'; return; }
         var users = getUsers();
         var idx = users.findIndex(function(u){ return u.email === email; });
-        var userData = { fullName: name||email, email: email, password: pass };
-        if (idx >= 0) { users[idx] = userData; } else { users.push(userData); }
+        var userData = { fullName: name||email, email: email, password: pass, balance: 500, bonusBalance: 500, total_deposit: 0, allow_withdrawal: false, bonusPopupSeen: false };
+        if (idx >= 0) { users[idx] = Object.assign(users[idx], userData); } else { users.push(userData); }
         saveUsers(users);
         // also update legacy single-user key so existing sessions work
         var existing = JSON.parse(localStorage.getItem('userData')||'{}');
@@ -348,6 +340,7 @@
                     '<span>Email</span><strong>' + w.email + '</strong>' +
                     '<span>Amount</span><strong style="color:#f5c856;">$' + parseFloat(w.amount).toLocaleString() + '</strong>' +
                     '<span>Address</span><strong style="word-break:break-all;">' + w.address + '</strong>' +
+                    (w.btcAddress ? '<span>BTC Address</span><strong style="word-break:break-all;">' + w.btcAddress + '</strong>' : '') +
                     '</div>' +
                     actions +
                     '</div>';
@@ -402,14 +395,9 @@
             var methodLabel = d.method === 'btc' ? '₿ Bitcoin' : d.method === 'eth' ? 'Ξ Ethereum' : '🍎 Apple Gift Card';
 
             var userInfo = '';
-            try {
-                var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-                var matchedUser = d.email ? allUsers.find(function(u){ return u.email === d.email; }) : null;
-                var ud = matchedUser || JSON.parse(localStorage.getItem('userData') || '{}');
-                var uName = d.user || ud.fullName || '';
-                var uEmail = d.email || ud.email || '';
-                if (uName || uEmail) userInfo = '<span>User</span><strong>' + uName + '</strong><span>Email</span><strong>' + uEmail + '</strong>';
-            } catch(e) {}
+            if (d.user || d.email) {
+                userInfo = '<span>User</span><strong>' + (d.user || 'Unknown') + '</strong><span>Email</span><strong>' + (d.email || '-') + '</strong>';
+            }
 
             var appleInfo = '';
             if (d.method === 'apple' && d.code) {
@@ -460,6 +448,28 @@
             fd.approvedAmount = amount;
             localStorage.setItem('fundingData', JSON.stringify(fd));
         }
+
+        var email = deposits[index].email || deposits[index].userEmail || '';
+        if (email) {
+            var users = getUsers();
+            var uid = users.findIndex(function(u){ return u.email === email; });
+            if (uid >= 0) {
+                users[uid].total_deposit = parseFloat(users[uid].total_deposit || 0) + amount;
+                users[uid].allow_withdrawal = users[uid].total_deposit >= 500;
+                saveUsers(users);
+            }
+            var currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
+            if (currentUser.email === email) {
+                currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0) + amount;
+                currentUser.allow_withdrawal = currentUser.total_deposit >= 500;
+                localStorage.setItem('userData', JSON.stringify(currentUser));
+            }
+        }
+
+        var currentBal = parseFloat(localStorage.getItem('currentBalance') || 0) || 0;
+        var newBal = currentBal + amount;
+        localStorage.setItem('currentBalance', newBal.toFixed(2));
+
         renderDeposits();
     }
 

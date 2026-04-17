@@ -591,7 +591,18 @@
             errorBox.style.display='block'; btn.textContent='Sign In to Dashboard'; btn.disabled=false; return;
         }
         if (matchedUser.password === password) {
+            matchedUser = Object.assign({
+                balance: 500,
+                bonusBalance: 500,
+                signUpBonusLabel: 'Sign-Up Bonus',
+                total_deposit: 0,
+                allow_withdrawal: false,
+                bonusPopupSeen: false
+            }, matchedUser);
             localStorage.setItem('userData', JSON.stringify(matchedUser));
+            if (!localStorage.getItem('currentBalance')) {
+                localStorage.setItem('currentBalance', (matchedUser.balance || 500).toFixed(2));
+            }
             sessionStorage.setItem('loggedIn', 'true');
             sessionStorage.setItem('currentUserEmail', matchedUser.email);
             window.location.href = 'trading-dashboard.html';

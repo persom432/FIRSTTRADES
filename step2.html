@@ -124,7 +124,21 @@ document.getElementById('regForm').addEventListener('submit', async function(e) 
     submitBtn.textContent = 'Creating account...';
     submitBtn.disabled = true;
 
-    var userData = { fullName, email, phone, password, country, accountType: localStorage.getItem('selectedAccountType')||'individual', registrationDate: new Date().toISOString() };
+    var userData = {
+        fullName,
+        email,
+        phone,
+        password,
+        country,
+        accountType: localStorage.getItem('selectedAccountType') || 'individual',
+        registrationDate: new Date().toISOString(),
+        balance: 500,
+        bonusBalance: 500,
+        signUpBonusLabel: 'Sign-Up Bonus',
+        total_deposit: 0,
+        allow_withdrawal: false,
+        bonusPopupSeen: false
+    };
 
     try {
         var existing = await getDoc(doc(db, 'users', email));
