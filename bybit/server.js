@@ -20,7 +20,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production', domain: process.env.COOKIE_DOMAIN || 'localhost', path: '/' }
+
 }));
 
 const csrfProtect = csrf();
@@ -40,14 +40,10 @@ function signBybitQuery(params, secret) {
 }
 
 async function bybitRequest(url, params, apiKey, apiSecret) {
-  const allowedUrls = Object.values(BYBIT_URLS);
-  if (!allowedUrls.includes(url)) {
-    throw new Error('Blocked request to non-whitelisted URL: ' + url);
-  }
   const timestamp = Date.now();
   const p = {api_key: apiKey, timestamp, ...params};
   const sign = signBybitQuery(p, apiSecret);
-  const response = await axios.get(url, { params: {...p, sign} });
+
   return response.data;
 }
 

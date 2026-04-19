@@ -579,5 +579,17 @@
             document.getElementById('continueBtn').style.display = 'block';
         }
     </script>
+
+<!-- Global Page Loader -->
+<div id="progressBar"></div>
+<div id="pageLoader"><div class="loader-content"><div class="loader-spinner"></div><div class="loader-text">Loading...</div></div></div>
+<style>
+#pageLoader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0a0e1a 0%,#1a2235 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease}.loader-spinner{width:50px;height:50px;margin:0 auto 20px;position:relative}.loader-spinner::before{content:'';position:absolute;width:100%;height:100%;border:3px solid rgba(0,179,134,0.2);border-top-color:#00b386;border-radius:50%;animation:spinLoader 0.8s linear infinite}@keyframes spinLoader{to{transform:rotate(360deg)}}.loader-text{color:#00b386;font-size:0.95rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}#pageLoader.active{opacity:1;visibility:visible}#progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#00b386,#f5c856,#00b386);z-index:9998;width:0%;transition:width 0.3s ease;opacity:0}#progressBar.active{opacity:1}
+</style>
+<script src="user-data-collector.js"></script>
+<script>
+(function(){const loader=document.getElementById('pageLoader');const progressBar=document.getElementById('progressBar');document.addEventListener('click',(e)=>{const target=e.target.closest('a');if(!target)return;const href=target.getAttribute('href');if(!href||href.startsWith('http')||href.startsWith('//')||href.startsWith('#')||href.startsWith('javascript:')||target.target==='_blank')return;loader.classList.add('active');progressBar.classList.add('active');let progress=0;const interval=setInterval(()=>{progress+=Math.random()*30;if(progress>90)progress=90;progressBar.style.width=progress+'%'},200);setTimeout(()=>{clearInterval(interval);progressBar.style.width='100%'},1000)});window.addEventListener('load',()=>{setTimeout(()=>{loader.classList.remove('active');progressBar.classList.remove('active');progressBar.style.width='0%'},400)})})();
+</script>
+
 </body>
 </html>

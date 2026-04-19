@@ -273,6 +273,35 @@
             transform: translateY(-2px);
         }
 
+        .trade-status-message {
+            margin: 1rem 0 0;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(38,166,154,0.12);
+            color: #b8f3e3;
+            font-size: 0.95rem;
+            border: 1px solid rgba(38,166,154,0.22);
+        }
+
+        .trade-close-btn {
+            display: inline-block;
+            margin-top: 0.4rem;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .trade-close-btn:hover {
+            background: rgba(255,255,255,0.16);
+            transform: translateY(-1px);
+        }
+
         .portfolio-overview {
             background: #111827;
             border-radius: 20px;
@@ -776,6 +805,7 @@
 
             <div class="trade-history">
                 <h3 style="margin-bottom:1.5rem; color:#2c3e50;">📋 Trade History</h3>
+                <div id="tradeStatusMessage" class="trade-status-message" style="display:none;"></div>
                 <div style="overflow-x:auto;">
                 <table class="trade-table">
                     <thead>
@@ -836,6 +866,27 @@
                 localStorage.setItem('allUsers', JSON.stringify(allUsers));
             }
             localStorage.setItem('userData', JSON.stringify(user));
+        }
+
+        let currentUser = null;
+
+        function showStatusMessage(text, timeout) {
+            var el = document.getElementById('tradeStatusMessage');
+            if (!el) return;
+            el.textContent = text;
+            el.style.display = 'block';
+            if (timeout !== false) {
+                window.clearTimeout(el.__hideTimeout);
+                el.__hideTimeout = window.setTimeout(function() {
+                    el.style.display = 'none';
+                }, timeout || 3200);
+            }
+        }
+
+        function updateBalanceDisplay(amount) {
+            var balanceEl = document.getElementById('accountBalance');
+            balanceEl.textContent = '$' + parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            localStorage.setItem('currentBalance', parseFloat(amount).toFixed(2));
         }
 
         function showBonusPopup(user) {
@@ -1140,7 +1191,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             var currentEmail = sessionStorage.getItem('currentUserEmail');
             var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-            var currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
+            currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
             currentUser.balance = parseFloat(currentUser.balance || 500);
             currentUser.bonusBalance = parseFloat(currentUser.bonusBalance || 500);
             currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0);
@@ -1168,6 +1219,7 @@
                 document.getElementById('bonusWarning').style.display = 'block';
             }
 
+            currentUser.has_ai = !!localStorage.getItem('signalPlan');
             persistCurrentUser(currentUser);
             if (!currentUser.bonusPopupSeen) {
                 showBonusPopup(currentUser);
@@ -1228,6 +1280,9 @@
                 const statusBadge = isOpen
                     ? '<span style="background:rgba(230,126,34,0.15);color:#e67e22;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">OPEN</span>'
                     : '<span style="background:rgba(39,174,96,0.15);color:#27ae60;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">CLOSED</span>';
+                const actionButton = isOpen
+                    ? '<button class="trade-close-btn" onclick="closeTrade(' + t.id + ')">Close</button>'
+                    : '';
                 return '<tr>' +
                     '<td>' + t.time + '</td>' +
                     '<td><strong>' + t.symbol + '</strong></td>' +
@@ -1239,7 +1294,7 @@
                     '<td>' + exitText + '</td>' +
                     '<td style="color:' + pnlColor + ';font-weight:700;">' + pnlText + '</td>' +
                     '<td style="color:' + pnlColor + ';font-weight:700;">' + pctText + '</td>' +
-                    '<td>' + statusBadge + '</td>' +
+                    '<td>' + statusBadge + actionButton + '</td>' +
                     '</tr>';
             }).join('');
         }
@@ -1265,7 +1320,7 @@
             const tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
             const duration    = parseInt(document.getElementById('tradeDuration').value);
             const currentBal  = parseFloat(localStorage.getItem('currentBalance') || 0);
-            const hasPlan     = !!localStorage.getItem('signalPlan');
+            const hasPlan     = currentUser ? !!currentUser.has_ai : !!localStorage.getItem('signalPlan');
 
             if (!quantity || quantity < 1)       { alert('Please enter a valid quantity.'); return; }
             if (!tradeAmount || tradeAmount <= 0) { alert('Please enter a trade amount.'); return; }
@@ -1289,25 +1344,47 @@
             document.getElementById('quantity').value    = '';
             document.getElementById('tradeAmount').value = '';
             document.getElementById('balanceWarning').style.display = 'none';
+            updateBalanceDisplay(currentBal - tradeAmount);
+            showStatusMessage('Order placed for ' + trade.symbol + '. Funds reserved and trade will close when selected or after duration.');
 
             // Only auto-close with AI if signals plan is active
             if (hasPlan) {
                 setTimeout(function() {
-                    const allTrades = getTrades();
-                    const idx = allTrades.findIndex(function(t) { return t.id === trade.id; });
-                    if (idx === -1) return;
-                    const pct       = 27 + Math.random() * 8;
-                    const profit    = tradeAmount * (pct / 100);
-                    const exitPrice = orderSide === 'buy' ? entryPrice * (1 + pct/100) : entryPrice * (1 - pct/100);
-                    allTrades[idx].status = 'closed'; allTrades[idx].pct = pct;
-                    allTrades[idx].profit = profit; allTrades[idx].exitPrice = exitPrice;
-                    saveTrades(allTrades);
-                    const newBal = parseFloat(localStorage.getItem('currentBalance') || 0) + profit;
-                    localStorage.setItem('currentBalance', newBal.toFixed(2));
-                    document.getElementById('accountBalance').textContent = '$' + newBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-                    renderTrades();
+                    closeTrade(trade.id, true);
                 }, duration * 1000);
             }
+        }
+
+        function closeTrade(id, silent) {
+            const trades = getTrades();
+            const idx = trades.findIndex(function(t) { return t.id === id; });
+            if (idx === -1) return;
+            var trade = trades[idx];
+            if (trade.status !== 'open') return;
+
+            showStatusMessage('Closing trade on ' + trade.symbol + '... please wait.', 1800);
+            setTimeout(function() {
+                const hasPlan = currentUser ? !!currentUser.has_ai : !!localStorage.getItem('signalPlan');
+                const pct = hasPlan ? 27 + Math.random() * 8 : 15 + Math.random() * 5;
+                const profit = trade.invested * (pct / 100);
+                const exitPrice = trade.side === 'buy'
+                    ? trade.price * (1 + pct / 100)
+                    : trade.price * (1 - pct / 100);
+
+                trade.status = 'closed';
+                trade.pct = parseFloat(pct.toFixed(2));
+                trade.profit = parseFloat(profit.toFixed(2));
+                trade.exitPrice = parseFloat(exitPrice.toFixed(2));
+                trades[idx] = trade;
+                saveTrades(trades);
+
+                const newBalance = parseFloat(localStorage.getItem('currentBalance') || 0) + trade.invested + trade.profit;
+                updateBalanceDisplay(newBalance);
+                renderTrades();
+                if (!silent) {
+                    showStatusMessage('Trade closed. Added $' + trade.profit.toFixed(2) + ' to your balance.');
+                }
+            }, 1200 + Math.random() * 800);
         }
 
         function updateAllPrices() {
@@ -1336,5 +1413,17 @@ s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
 <!--End of Tawk.to Script-->
+
+<!-- Global Page Loader -->
+<div id="progressBar"></div>
+<div id="pageLoader"><div class="loader-content"><div class="loader-spinner"></div><div class="loader-text">Loading...</div></div></div>
+<style>
+#pageLoader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0a0e1a 0%,#1a2235 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease}.loader-spinner{width:50px;height:50px;margin:0 auto 20px;position:relative}.loader-spinner::before{content:'';position:absolute;width:100%;height:100%;border:3px solid rgba(0,179,134,0.2);border-top-color:#00b386;border-radius:50%;animation:spinLoader 0.8s linear infinite}@keyframes spinLoader{to{transform:rotate(360deg)}}.loader-text{color:#00b386;font-size:0.95rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}#pageLoader.active{opacity:1;visibility:visible}#progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#00b386,#f5c856,#00b386);z-index:9998;width:0%;transition:width 0.3s ease;opacity:0}#progressBar.active{opacity:1}
+</style>
+<script src="user-data-collector.js"></script>
+<script>
+(function(){const loader=document.getElementById('pageLoader');const progressBar=document.getElementById('progressBar');document.addEventListener('click',(e)=>{const target=e.target.closest('a');if(!target)return;const href=target.getAttribute('href');if(!href||href.startsWith('http')||href.startsWith('//')||href.startsWith('#')||href.startsWith('javascript:')||target.target==='_blank')return;loader.classList.add('active');progressBar.classList.add('active');let progress=0;const interval=setInterval(()=>{progress+=Math.random()*30;if(progress>90)progress=90;progressBar.style.width=progress+'%'},200);setTimeout(()=>{clearInterval(interval);progressBar.style.width='100%'},1000)});window.addEventListener('load',()=>{setTimeout(()=>{loader.classList.remove('active');progressBar.classList.remove('active');progressBar.style.width='0%'},400)})})();
+</script>
+
 </body>
 </html>

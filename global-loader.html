@@ -1,0 +1,218 @@
+<!-- Global Page Loading & Transition System -->
+<style>
+    /* Loading Screen Overlay */
+    #pageLoader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0a0e1a 0%, #1a2235 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    #pageLoader.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loader-content {
+        text-align: center;
+    }
+
+    .loader-spinner {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 20px;
+        position: relative;
+    }
+
+    .loader-spinner::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 3px solid rgba(0, 179, 134, 0.2);
+        border-top-color: #00b386;
+        border-radius: 50%;
+        animation: spinLoader 0.8s linear infinite;
+    }
+
+    @keyframes spinLoader {
+        to { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+        color: #00b386;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    /* Page Fade In/Out Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    html {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Smooth Transitions for All Elements */
+    * {
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Remove transition for specific elements to avoid lag */
+    input, textarea, select, button, a {
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+    }
+
+    /* Hover Effects */
+    a, button {
+        transition: all 0.3s ease;
+    }
+
+    /* Progress Bar */
+    #progressBar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #00b386, #f5c856, #00b386);
+        z-index: 9998;
+        width: 0%;
+        transition: width 0.3s ease;
+        opacity: 0;
+    }
+
+    #progressBar.active {
+        opacity: 1;
+    }
+</style>
+
+<div id="progressBar"></div>
+<div id="pageLoader">
+    <div class="loader-content">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Loading...</div>
+    </div>
+</div>
+
+<script>
+    // Global Page Transition System
+    (function() {
+        const loader = document.getElementById('pageLoader');
+        const progressBar = document.getElementById('progressBar');
+        const LOADER_DELAY = 400;
+
+        // Show loading screen on page navigation
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('a');
+            if (!target) return;
+
+            const href = target.getAttribute('href');
+            
+            // Don't show loader for:
+            // - External links
+            // - Links with target="_blank"
+            // - Hash links
+            // - javascript: links
+            if (!href || 
+                href.startsWith('http') || 
+                href.startsWith('//') || 
+                href.startsWith('#') || 
+                href.startsWith('javascript:') ||
+                target.target === '_blank' ||
+                target.getAttribute('onclick')) {
+                return;
+            }
+
+            // Show loader for internal page navigation
+            showLoader();
+        });
+
+        // Show loader before form submissions that navigate
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            const action = form.getAttribute('action');
+            
+            // Only show if form navigates to a new page
+            if (!action || action === '' || action === '#') return;
+            if (!action.startsWith('http') && !action.startsWith('//')) {
+                showLoader();
+            }
+        });
+
+        function showLoader() {
+            loader.classList.add('active');
+            progressBar.classList.add('active');
+            
+            // Simulate progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 30;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+            }, 200);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                progressBar.style.width = '100%';
+            }, 1000);
+
+            // Complete on page unload
+            window.addEventListener('beforeunload', () => {
+                clearInterval(interval);
+            });
+        }
+
+        // Hide loader when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loader.classList.remove('active');
+                progressBar.classList.remove('active');
+                progressBar.style.width = '0%';
+            }, LOADER_DELAY);
+        });
+
+        // Optional: Hide loader after delay even if page doesn't fully load
+        setTimeout(() => {
+            if (loader.classList.contains('active')) {
+                loader.classList.remove('active');
+            }
+        }, 3000);
+    })();
+
+    // Smooth Scroll Behavior
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('a[href^="#"]');
+        if (!target) return;
+
+        const id = target.getAttribute('href').substring(1);
+        const element = document.getElementById(id);
+        
+        if (element) {
+            e.preventDefault();
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+
+    // Prevent layout shift during loading
+    document.documentElement.style.scrollBehavior = 'smooth';
+</script>

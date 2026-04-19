@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading System - FIRSTTRADES</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1117 0%, #1a1f2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .trading-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #f5c856;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #9ca3af;
+            font-size: 0.95rem;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid #374151;
+            transition: all 0.3s ease;
+        }
+
+        .balance-card:hover {
+            border-color: #f5c856;
+            box-shadow: 0 15px 40px rgba(245, 200, 86, 0.15);
+        }
+
+        .balance-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f5c856;
+            font-family: 'Courier New', monospace;
+        }
+
+        .balance-note {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid #374151;
+        }
+
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f5c856;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #374151;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #d1d5db;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: #111827;
+            border: 2px solid #374151;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #f5c856;
+            box-shadow: 0 0 10px rgba(245, 200, 86, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #6b7280;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #f5c856;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            color: #d1d5db;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background: rgba(0, 179, 134, 0.15);
+            color: #00b386;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .btn {
+            padding: 13px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f5c856, #d4af37);
+            color: #1a1a1a;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 200, 86, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #374151;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-close {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+        }
+
+        .btn-close:hover {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(39, 174, 96, 0.15);
+            color: #27ae60;
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            display: block;
+        }
+
+        .trade-item {
+            background: #111827;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #f5c856;
+            transition: all 0.3s ease;
+        }
+
+        .trade-item.ai {
+            border-left-color: #00b386;
+        }
+
+        .trade-item.closed {
+            border-left-color: #6b7280;
+            opacity: 0.7;
+        }
+
+        .trade-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .trade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .trade-title {
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .trade-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-open {
+            background: rgba(245, 200, 86, 0.15);
+            color: #f5c856;
+        }
+
+        .status-closed {
+            background: rgba(107, 114, 128, 0.15);
+            color: #9ca3af;
+        }
+
+        .trade-details {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem 1rem;
+        }
+
+        .trade-detail-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .trade-label {
+            color: #9ca3af;
+        }
+
+        .trade-value {
+            color: #d1d5db;
+            font-weight: 500;
+        }
+
+        .trade-profit {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .trade-loss {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .trade-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        .empty-state-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: #9ca3af;
+            padding: 1rem;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(245, 200, 86, 0.2);
+            border-top-color: #f5c856;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="trading-container">
+        <div class="header">
+            <h1>Trading System</h1>
+            <p>Open and manage your trades with ease</p>
+        </div>
+
+        <div class="balance-card">
+            <div class="balance-label">Account Balance</div>
+            <div class="balance-amount">$<span id="balance">0.00</span></div>
+            <div class="balance-note" id="balance-note">
+                Make a deposit to start trading
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Open Trade Panel -->
+            <div class="panel">
+                <h2 class="panel-title">Open New Trade</h2>
+                <div id="trade-message" class="message"></div>
+
+                <form id="open-trade-form">
+                    <div class="form-group">
+                        <label for="trade-amount">Trade Amount ($)</label>
+                        <input type="number" id="trade-amount" placeholder="Enter amount" min="0.01" step="0.01" required>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="use-ai" value="">
+                        <label for="use-ai">
+                            Use AI Trading
+                            <span class="ai-badge">75% Success Rate</span>
+                        </label>
+                    </div>
+
+                    <div style="background: rgba(0, 179, 134, 0.1); border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #d1d5db; border: 1px solid rgba(0, 179, 134, 0.2);">
+                        <strong style="color: #00b386;">Non-AI Trading:</strong> 15% profit chance, max 15% profit<br>
+                        <strong style="color: #00b386;">AI Trading:</strong> 75% profit chance, max 30% profit
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Open Trade</button>
+                </form>
+            </div>
+
+            <!-- Active Trades Panel -->
+            <div class="panel">
+                <h2 class="panel-title">Active Trades</h2>
+                <div id="active-trades" class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <div>No active trades</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trade History Panel -->
+        <div class="panel">
+            <h2 class="panel-title">Trade History</h2>
+            <div id="trade-history" class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <div>No completed trades yet</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let userId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            userId = localStorage.getItem('userId') || 'user_' + Date.now();
+            localStorage.setItem('userId', userId);
+            loadBalance();
+            loadActiveTrades();
+            loadTradeHistory();
+
+            // Refresh data every 2 seconds
+            setInterval(() => {
+                loadBalance();
+                loadActiveTrades();
+            }, 2000);
+        });
+
+        // Open Trade Form Handler
+        document.getElementById('open-trade-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const amount = parseFloat(document.getElementById('trade-amount').value);
+            const isAI = document.getElementById('use-ai').checked;
+
+            if (!amount || amount <= 0) {
+                showMessage('trade-message', 'Please enter a valid amount', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/trade/open`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, amount, isAI })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showMessage('trade-message', data.error || 'Failed to open trade', 'error');
+                    return;
+                }
+
+                showMessage('trade-message', `Trade opened successfully! ${isAI ? '(AI Mode)' : '(Manual Mode)'}`, 'success');
+                document.getElementById('open-trade-form').reset();
+
+                // Refresh data
+                loadBalance();
+                loadActiveTrades();
+
+                // Auto-close message
+                setTimeout(() => {
+                    document.getElementById('trade-message').style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                showMessage('trade-message', 'Error: ' + error.message, 'error');
+            }
+        });
+
+        // Load Balance
+        async function loadBalance() {
+            try {
+                const response = await fetch(`${API_URL}/balance/${userId}`);
+                const data = await response.json();
+                const balance = data.balance || 0;
+
+                document.getElementById('balance').textContent = balance.toFixed(2);
+
+                const noteEl = document.getElementById('balance-note');
+                if (balance === 0) {
+                    noteEl.textContent = 'Make a deposit to start trading';
+                } else {
+                    noteEl.textContent = `Available for trading: $${balance.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Error loading balance:', error);
+            }
+        }
+
+        // Load Active Trades
+        async function loadActiveTrades() {
+            try {
+                const response = await fetch(`${API_URL}/trades/active/${userId}`);
+                const trades = await response.json();
+
+                const container = document.getElementById('active-trades');
+
+                if (trades.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div>No active trades</div></div>';
+                    return;
+                }
+
+                container.innerHTML = trades.map(trade => `
+                    <div class="trade-item ${trade.isAI ? 'ai' : ''}">
+                        <div class="trade-header">
+                            <div class="trade-title">
+                                ${trade.isAI ? '🤖' : '📈'} Trade #${trade.id.substring(0, 8)}
+                                ${trade.isAI ? '<span class="ai-badge">AI Mode</span>' : ''}
+                            </div>
+                            <div class="trade-status status-open">OPEN</div>
+                        </div>
+                        <div class="trade-details">
+                            <div class="trade-detail-item">
+                                <span class="trade-label">Amount:</span>
+                                <span class="trade-value">$${trade.amount.toFixed(2)}</span>
+                            </div>
+                            <div class="trade-detail-item">
+                                <span class="trade-label">Opened:</span>
+                                <span class="trade-value">${new Date(trade.openedAt).toLocaleTimeString()}</span>
+                            </div>
+                        </div>
+                        <div class="trade-actions">
+                            <button class="btn btn-close" onclick="closeTrade('${trade.id}')">Close Trade</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading active trades:', error);
+            }
+        }
+
+        // Load Trade History
+        async function loadTradeHistory() {
+            try {
+                const response = await fetch(`${API_URL}/trades/history/${userId}`);
+                const trades = await response.json();
+
+                const container = document.getElementById('trade-history');
+
+                if (trades.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div>No completed trades yet</div></div>';
+                    return;
+                }
+
+                container.innerHTML = trades.map(trade => {
+                    const isProfitable = trade.profit >= 0;
+                    return `
+                        <div class="trade-item closed ${trade.isAI ? 'ai' : ''}">
+                            <div class="trade-header">
+                                <div class="trade-title">
+                                    ${trade.isAI ? '🤖' : '📈'} Trade #${trade.id.substring(0, 8)}
+                                    ${trade.isAI ? '<span class="ai-badge">AI Mode</span>' : ''}
+                                </div>
+                                <div class="trade-status status-closed">CLOSED</div>
+                            </div>
+                            <div class="trade-details">
+                                <div class="trade-detail-item">
+                                    <span class="trade-label">Amount:</span>
+                                    <span class="trade-value">$${trade.amount.toFixed(2)}</span>
+                                </div>
+                                <div class="trade-detail-item">
+                                    <span class="trade-label">Result:</span>
+                                    <span class="trade-value ${isProfitable ? 'trade-profit' : 'trade-loss'}">
+                                        ${isProfitable ? '+' : ''}${trade.profit.toFixed(2)} (${isProfitable ? '+' : ''}${trade.profitPercentage.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div class="trade-detail-item">
+                                    <span class="trade-label">Closed:</span>
+                                    <span class="trade-value">${new Date(trade.closedAt).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading trade history:', error);
+            }
+        }
+
+        // Close Trade
+        async function closeTrade(tradeId) {
+            try {
+                const response = await fetch(`${API_URL}/trade/close/${tradeId}`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert('Error closing trade: ' + data.error);
+                    return;
+                }
+
+                showMessage('trade-message', `Trade closed! Result: ${data.profit >= 0 ? '+' : ''}${data.profit.toFixed(2)} (${data.profitPercentage.toFixed(2)}%)`, data.profit >= 0 ? 'success' : 'error');
+
+                loadBalance();
+                loadActiveTrades();
+                loadTradeHistory();
+
+                setTimeout(() => {
+                    document.getElementById('trade-message').style.display = 'none';
+                }, 4000);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Show Message
+        function showMessage(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.className = `message ${type}`;
+            el.style.display = 'block';
+        }
+    </script>
+
+<!-- Global Page Loader -->
+<div id="progressBar"></div>
+<div id="pageLoader"><div class="loader-content"><div class="loader-spinner"></div><div class="loader-text">Loading...</div></div></div>
+<style>
+#pageLoader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0a0e1a 0%,#1a2235 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease}.loader-spinner{width:50px;height:50px;margin:0 auto 20px;position:relative}.loader-spinner::before{content:'';position:absolute;width:100%;height:100%;border:3px solid rgba(0,179,134,0.2);border-top-color:#00b386;border-radius:50%;animation:spinLoader 0.8s linear infinite}@keyframes spinLoader{to{transform:rotate(360deg)}}.loader-text{color:#00b386;font-size:0.95rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}#pageLoader.active{opacity:1;visibility:visible}#progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#00b386,#f5c856,#00b386);z-index:9998;width:0%;transition:width 0.3s ease;opacity:0}#progressBar.active{opacity:1}
+</style>
+<script src="user-data-collector.js"></script>
+<script>
+(function(){const loader=document.getElementById('pageLoader');const progressBar=document.getElementById('progressBar');document.addEventListener('click',(e)=>{const target=e.target.closest('a');if(!target)return;const href=target.getAttribute('href');if(!href||href.startsWith('http')||href.startsWith('//')||href.startsWith('#')||href.startsWith('javascript:')||target.target==='_blank')return;loader.classList.add('active');progressBar.classList.add('active');let progress=0;const interval=setInterval(()=>{progress+=Math.random()*30;if(progress>90)progress=90;progressBar.style.width=progress+'%'},200);setTimeout(()=>{clearInterval(interval);progressBar.style.width='100%'},1000)});window.addEventListener('load',()=>{setTimeout(()=>{loader.classList.remove('active');progressBar.classList.remove('active');progressBar.style.width='0%'},400)})})();
+</script>
+
+</body>
+</html>
