@@ -4,6 +4,11 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname)));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 const dataFile = path.join(__dirname, 'transactions.json');
 const tradesFile = path.join(__dirname, 'trades.json');
@@ -266,13 +271,18 @@ app.get('/balance/:userId', (req, res, next) => {
   }
 });
 
+app.get('/healthz', (req, res) => {
+  res.status(200).send('ok');
+});
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
+const PORT = parseInt(process.env.PORT, 10) || 8080;
+app.listen(PORT, '0.0.0.0', () => {
   ensureDataFile();
-  console.log(`Transaction server listening on http://localhost:${PORT}`);
+  console.log(`PORT env: ${process.env.PORT}`);
+  console.log(`Transaction server listening on http://0.0.0.0:${PORT}`);
 });

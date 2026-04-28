@@ -132,8 +132,10 @@ document.getElementById('regForm').addEventListener('submit', async function(e) 
         country,
         accountType: localStorage.getItem('selectedAccountType') || 'individual',
         registrationDate: new Date().toISOString(),
-            balance: 0,
-        var existing = await getDoc(doc(db, 'users', email));
+            balance: 0
+    };
+
+    var existing = await getDoc(doc(db, 'users', email));
         if (existing.exists()) {
             document.getElementById('emailErr').textContent = 'An account with this email already exists.';
             document.getElementById('emailErr').style.display='block';
