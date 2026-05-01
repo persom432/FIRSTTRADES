@@ -89,6 +89,39 @@
         }
     </style>
 </head>
+<style>
+    #adminLogin{position:fixed;inset:0;background:#07090f;z-index:9999;display:flex;align-items:center;justify-content:center;}
+    .login-box{background:#0d1117;border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:380px;text-align:center;}
+    .login-box h2{font-size:1.4rem;margin-bottom:0.4rem;color:#fff;}
+    .login-box p{color:#8a94a6;font-size:0.85rem;margin-bottom:1.5rem;}
+    .login-box input{width:100%;padding:13px 16px;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.08);border-radius:10px;color:#fff;font-size:1rem;margin-bottom:1rem;box-sizing:border-box;}
+    .login-box input:focus{outline:none;border-color:#c9a84c;}
+    .login-box button{width:100%;padding:13px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;}
+    .login-box .err{color:#fc8181;font-size:0.82rem;margin-top:0.5rem;display:none;}
+</style>
+
+<div id="adminLogin">
+    <div class="login-box">
+        <div style="font-size:2rem;margin-bottom:1rem;">🔒</div>
+        <h2>Admin Access</h2>
+        <p>Enter your admin password to continue</p>
+        <input type="password" id="adminPass" placeholder="Password" onkeypress="if(event.key==='Enter')checkAdmin()">
+        <button onclick="checkAdmin()">Enter Admin Panel</button>
+        <div class="err" id="adminErr">Incorrect password. Try again.</div>
+    </div>
+</div>
+
+<script>
+    function checkAdmin() {
+        if (document.getElementById('adminPass').value === 'Firsttrades@admin1') {
+            document.getElementById('adminLogin').style.display = 'none';
+        } else {
+            document.getElementById('adminErr').style.display = 'block';
+            document.getElementById('adminPass').value = '';
+        }
+    }
+</script>
+
 <body>
 
 <div class="topbar">
