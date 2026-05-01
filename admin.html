@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel — FIRSTTRADES</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        var fsdb = firebase.firestore();
+    </script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #07090f; color: #fff; min-height: 100vh; }
@@ -116,9 +123,15 @@
 
 <script>
     var currentTab = 'pending';
+    var allDeposits = [];
 
-    function getDeposits() { return JSON.parse(localStorage.getItem('allDeposits') || '[]'); }
-    function saveDeposits(d) { localStorage.setItem('allDeposits', JSON.stringify(d)); }
+    // Listen to Firestore in real-time
+    fsdb.collection('deposits').orderBy('timestamp', 'desc').onSnapshot(function(snapshot) {
+        allDeposits = snapshot.docs.map(function(doc) { return doc.data(); });
+        render();
+    }, function(err) {
+        console.warn('Firestore error:', err);
+    });
 
     function setTab(tab, btn) {
         currentTab = tab;
@@ -128,17 +141,15 @@
     }
 
     function render() {
-        var deposits = getDeposits();
-        var pending  = deposits.filter(function(d){ return d.status === 'pending'; });
-        var approved = deposits.filter(function(d){ return d.status === 'approved'; });
-        var rejected = deposits.filter(function(d){ return d.status === 'rejected'; });
+        var pending  = allDeposits.filter(function(d){ return d.status === 'pending'; });
+        var approved = allDeposits.filter(function(d){ return d.status === 'approved'; });
+        var rejected = allDeposits.filter(function(d){ return d.status === 'rejected'; });
 
         document.getElementById('statPending').textContent  = pending.length;
         document.getElementById('statApproved').textContent = approved.length;
         document.getElementById('statRejected').textContent = rejected.length;
 
-        var filtered = currentTab === 'all' ? deposits : deposits.filter(function(d){ return d.status === currentTab; });
-        filtered = filtered.slice().reverse();
+        var filtered = currentTab === 'all' ? allDeposits : allDeposits.filter(function(d){ return d.status === currentTab; });
 
         var list = document.getElementById('depositList');
         if (!filtered.length) {
@@ -183,54 +194,35 @@
     }
 
     function approveDeposit(id) {
-        var deposits = getDeposits();
-        var idx = deposits.findIndex(function(d){ return d.id === id; });
-        if (idx === -1) return;
-
+        var deposit = allDeposits.find(function(d){ return d.id === id; });
+        if (!deposit) return;
         var amtInput = document.getElementById('amt_' + id);
-        var approvedAmount = amtInput ? parseFloat(amtInput.value) : parseFloat(deposits[idx].amount);
+        var approvedAmount = amtInput ? parseFloat(amtInput.value) : parseFloat(deposit.amount);
         if (!approvedAmount || approvedAmount <= 0) { alert('Enter a valid amount to approve.'); return; }
 
-        deposits[idx].status = 'approved';
-        deposits[idx].approvedAmount = approvedAmount;
-        saveDeposits(deposits);
-
-        // Credit user balance
-        var email = deposits[idx].email;
-        var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-        var uidx = allUsers.findIndex(function(u){ return u.email === email; });
-        if (uidx >= 0) {
-            allUsers[uidx].balance = (parseFloat(allUsers[uidx].balance) || 0) + approvedAmount;
-            allUsers[uidx].total_deposit = (parseFloat(allUsers[uidx].total_deposit) || 0) + approvedAmount;
-            allUsers[uidx].allow_withdrawal = allUsers[uidx].total_deposit >= 500;
-            if (deposits[idx].signalPlan) {
-                allUsers[uidx].signalPlan = deposits[idx].signalPlan;
-            }
-            localStorage.setItem('allUsers', JSON.stringify(allUsers));
-        }
-
-        // Update currentBalance if this is the logged-in user
-        var userData = JSON.parse(localStorage.getItem('userData') || '{}');
-        if (userData.email === email) {
-            var newBal = (parseFloat(localStorage.getItem('currentBalance')) || 0) + approvedAmount;
-            localStorage.setItem('currentBalance', newBal.toFixed(2));
-            userData.balance = newBal;
-            userData.total_deposit = (parseFloat(userData.total_deposit) || 0) + approvedAmount;
-            if (deposits[idx].signalPlan) userData.signalPlan = deposits[idx].signalPlan;
-            localStorage.setItem('userData', JSON.stringify(userData));
-        }
-
-        render();
+        fsdb.collection('deposits').doc(id).update({ status: 'approved', approvedAmount: approvedAmount })
+            .then(function() {
+                // Also update user record in Firestore
+                return fsdb.collection('users').where('email', '==', deposit.email).get();
+            })
+            .then(function(snap) {
+                if (!snap.empty) {
+                    var userDoc = snap.docs[0];
+                    var data = userDoc.data();
+                    var newBal = (parseFloat(data.balance) || 0) + approvedAmount;
+                    var newTotal = (parseFloat(data.total_deposit) || 0) + approvedAmount;
+                    var update = { balance: newBal, total_deposit: newTotal, allow_withdrawal: newTotal >= 500 };
+                    if (deposit.signalPlan) update.signalPlan = deposit.signalPlan;
+                    return userDoc.ref.update(update);
+                }
+            })
+            .catch(function(e){ console.warn('Approve error:', e); });
     }
 
     function rejectDeposit(id) {
         if (!confirm('Reject this deposit?')) return;
-        var deposits = getDeposits();
-        var idx = deposits.findIndex(function(d){ return d.id === id; });
-        if (idx === -1) return;
-        deposits[idx].status = 'rejected';
-        saveDeposits(deposits);
-        render();
+        fsdb.collection('deposits').doc(id).update({ status: 'rejected' })
+            .catch(function(e){ console.warn('Reject error:', e); });
     }
 
     function openLightbox(url) {
@@ -243,9 +235,6 @@
     document.getElementById('lightbox').addEventListener('click', function(e){
         if (e.target === this) closeLightbox();
     });
-
-    render();
-    setInterval(render, 5000); // auto-refresh every 5s
 </script>
 </body>
 </html>
