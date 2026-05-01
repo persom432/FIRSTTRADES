@@ -449,6 +449,10 @@
 
             var amountInfo = d.amount && d.amount !== '0' ? '<span>Deposit Amount</span><strong style="color:#f5c856;">$' + parseFloat(d.amount).toLocaleString() + '</strong>' : '';
 
+            var proofHtml = d.proofImage
+                ? '<div style="margin-bottom:0.75rem;"><div style="font-size:0.78rem;color:#9ca3af;margin-bottom:0.4rem;">📸 Proof of Payment</div><img src="' + d.proofImage + '" style="max-width:100%;max-height:260px;border-radius:10px;border:1px solid #374151;cursor:pointer;" onclick="window.open(this.src,\'_blank\')"></div>'
+                : '';
+
             var actions = isPending ? (
                 '<div class="card-actions">' +
                 '<input class="amt-input" type="number" id="amt-' + realIndex + '" placeholder="Approve $" min="1" step="0.01">' +
@@ -468,6 +472,7 @@
                 '</div>' +
                 (userInfo || amountInfo ? '<div class="card-details">' + userInfo + amountInfo + '</div>' : '') +
                 appleInfo +
+                proofHtml +
                 actions +
                 '</div>';
         }).join('');
