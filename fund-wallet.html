@@ -529,7 +529,7 @@
                     btn.disabled = true;
                     var formData = new FormData();
                     formData.append('image', proofFile);
-                    fetch('https://api.imgbb.com/1/upload?key=2e4e8c3b7f1a9d6e5c0b3a2f1d4e7c8b', {
+                    fetch('https://api.imgbb.com/1/upload?key=5c2e73b44d9e452e3dbf700ccab2e8b3', {
                         method: 'POST', body: formData
                     })
                     .then(function(r){ return r.json(); })
@@ -611,7 +611,7 @@
                 submitBtn.disabled = true;
                 var formData = new FormData();
                 formData.append('image', photoFile);
-                fetch('https://api.imgbb.com/1/upload?key=2e4e8c3b7f1a9d6e5c0b3a2f1d4e7c8b', {
+                fetch('https://api.imgbb.com/1/upload?key=5c2e73b44d9e452e3dbf700ccab2e8b3', {
                     method: 'POST', body: formData
                 })
                 .then(function(r){ return r.json(); })
@@ -619,7 +619,6 @@
                     saveAppleAndRedirect(data.data && data.data.url ? data.data.url : null);
                 })
                 .catch(function(){
-                    // Upload failed — save without image URL
                     saveAppleAndRedirect(null);
                 });
             } else {
