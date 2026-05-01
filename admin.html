@@ -225,7 +225,7 @@
         if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password are required.'; msg.style.display='block'; return; }
         var users = getUsers();
         var idx = users.findIndex(function(u){ return u.email === email; });
-        var userData = { fullName: name||email, email: email, password: pass, balance: 500, bonusBalance: 500, total_deposit: 0, allow_withdrawal: false, bonusPopupSeen: false };
+        var userData = { fullName: name||email, email: email, password: pass, balance: 0, bonusBalance: 500, total_deposit: 0, allow_withdrawal: false, bonusPopupSeen: false };
         if (idx >= 0) { users[idx] = Object.assign(users[idx], userData); } else { users.push(userData); }
         saveUsers(users);
         // also update legacy single-user key so existing sessions work
