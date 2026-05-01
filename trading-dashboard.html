@@ -577,11 +577,11 @@
         </nav>
     </header>
 
-    <div id="bonusPopupOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+    <div id="fundingPopupOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
         <div style="max-width:500px;width:100%;background:#0f1724;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:2rem;box-shadow:0 24px 80px rgba(0,0,0,0.55);text-align:center;color:#f8fafc;">
             <h2 style="margin-bottom:1rem;font-size:1.6rem;color:#f5c856;">💰 Fund Your Account</h2>
             <p style="margin-bottom:1.5rem;line-height:1.7;color:#d1d5db;">Your account balance is $0.00. Fund your wallet to start trading and access all platform features.</p>
-            <button id="bonusPopupClose" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#0f1724;border:none;border-radius:999px;padding:14px 28px;font-size:0.95rem;font-weight:700;cursor:pointer;">Fund Wallet</button>
+            <button id="fundingPopupClose" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#0f1724;border:none;border-radius:999px;padding:14px 28px;font-size:0.95rem;font-weight:700;cursor:pointer;">Fund Wallet</button>
         </div>
     </div>
 
@@ -603,7 +603,7 @@
                     <a href="withdraw.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💸 Withdraw</a>
                 </div>
             </div>
-            <div id="bonusWarning" style="margin-bottom:1.5rem; padding:1rem 1.25rem; background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-radius:14px; color:#f39c12; font-size:0.95rem; display:none;">
+            <div id="fundingWarning" style="margin-bottom:1.5rem; padding:1rem 1.25rem; background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-radius:14px; color:#f39c12; font-size:0.95rem; display:none;">
                 <strong>Fund your account to start trading. Deposit funds via BTC, ETH or Apple Gift Card.</strong>
             </div>
 
@@ -825,8 +825,12 @@
     </section>
 
     <!-- FLOATING SIGNALS BANNER -->
-    <div id="signalsBanner" style="display:none;">
-        <button class="sb-close" onclick="localStorage.setItem('signalSkipped','true');document.getElementById('signalsBanner').style.display='none'">&times;</button>
+        // Signals banner close — per user
+        document.getElementById('signalsBanner').querySelector('.sb-close').onclick = function() {
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            localStorage.setItem('signalSkipped_' + currentEmail, 'true');
+            document.getElementById('signalsBanner').style.display = 'none';
+        };
         <span class="sb-icon">🤖</span>
         <h4>Activate AI Signals</h4>
         <p>Unlock intelligent trade signals to start profiting with the AI engine.</p>
@@ -878,13 +882,15 @@
         function updateBalanceDisplay(amount) {
             var balanceEl = document.getElementById('accountBalance');
             balanceEl.textContent = '$' + parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
             localStorage.setItem('currentBalance', parseFloat(amount).toFixed(2));
+            if (currentEmail) localStorage.setItem('balance_' + currentEmail, parseFloat(amount).toFixed(2));
         }
 
         function showFundingPopup(user) {
-            var overlay = document.getElementById('bonusPopupOverlay');
+            var overlay = document.getElementById('fundingPopupOverlay');
             overlay.style.display = 'flex';
-            document.getElementById('bonusPopupClose').onclick = function() {
+            document.getElementById('fundingPopupClose').onclick = function() {
                 window.location.href = 'fund-wallet.html';
             };
         }
@@ -1184,7 +1190,6 @@
             currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
             currentUser.balance = 0;
             currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0);
-            currentUser.allow_withdrawal = currentUser.total_deposit >= 500;
 
             const accountType = currentUser.accountType || localStorage.getItem('selectedAccountType');
             const badge = document.getElementById('accountTypeBadge');
@@ -1193,39 +1198,33 @@
                 badge.style.display = 'inline-block';
             }
 
+            // Per-user balance
+            var userBalKey = 'balance_' + currentEmail;
+            var userBal = parseFloat(localStorage.getItem(userBalKey) || 0);
+            localStorage.setItem('currentBalance', userBal.toFixed(2));
             const balanceEl = document.getElementById('accountBalance');
-            const savedBal = localStorage.getItem('currentBalance');
-            var displayBal = savedBal !== null ? parseFloat(savedBal) : 0;
-            balanceEl.textContent = '$' + displayBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-            if (savedBal === null) {
-                localStorage.setItem('currentBalance', '0.00');
-            }
+            balanceEl.textContent = '$' + userBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 
-            if (displayBal === 0) {
-                document.getElementById('bonusWarning').style.display = 'block';
+            if (userBal === 0) {
+                document.getElementById('fundingWarning').style.display = 'block';
                 showFundingPopup(currentUser);
             }
 
-            currentUser.has_ai = !!localStorage.getItem('signalPlan');
+            // AI access: only if user has an approved signal plan
+            var userPlanKey = 'signalPlan_' + currentEmail;
+            var plan = localStorage.getItem(userPlanKey) || localStorage.getItem('signalPlan');
+            currentUser.has_ai = !!plan;
             persistCurrentUser(currentUser);
 
             renderTrades();
 
             var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
-            var totalApproved = allDeposits.filter(function(d){ return d.status === 'approved'; })
-                .reduce(function(sum, d){ return sum + parseFloat(d.approvedAmount || 0); }, 0);
-            if (savedBal === null && totalApproved > 0) {
-                localStorage.setItem('currentBalance', totalApproved.toFixed(2));
-                balanceEl.textContent = '$' + totalApproved.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-            } else if (savedBal === null) {
-                var hasPending = allDeposits.some(function(d){ return d.status === 'pending'; });
-                if (hasPending) {
-                    balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
-                }
+            var hasPending = allDeposits.some(function(d){ return d.email === currentEmail && d.status === 'pending'; });
+            if (userBal === 0 && hasPending) {
+                balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
             }
 
-            var plan = localStorage.getItem('signalPlan');
-            var skipped = localStorage.getItem('signalSkipped');
+            var skipped = localStorage.getItem('signalSkipped_' + currentEmail);
             if (!plan) {
                 document.getElementById('aiLockNotice').style.display = 'block';
                 document.getElementById('durationGroup').style.display = 'none';
@@ -1242,13 +1241,29 @@
                 currentSymbol = this.value;
             });
 
+            // Per-user signals banner close
+            var sbClose = document.querySelector('#signalsBanner .sb-close');
+            if (sbClose) sbClose.onclick = function() {
+                var em = sessionStorage.getItem('currentUserEmail');
+                localStorage.setItem('signalSkipped_' + em, 'true');
+                document.getElementById('signalsBanner').style.display = 'none';
+            };
+
             window.addEventListener('resize', function() { drawChart(); });
         });
 
         function setOrderSide(side) { orderSide = side; }
 
-        function getTrades() { return JSON.parse(localStorage.getItem('tradeHistory') || '[]'); }
-        function saveTrades(t) { localStorage.setItem('tradeHistory', JSON.stringify(t)); }
+        function getTrades() {
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var key = currentEmail ? 'tradeHistory_' + currentEmail : 'tradeHistory';
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+        function saveTrades(t) {
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var key = currentEmail ? 'tradeHistory_' + currentEmail : 'tradeHistory';
+            localStorage.setItem(key, JSON.stringify(t));
+        }
 
         function renderTrades() {
             const trades = getTrades();
@@ -1306,7 +1321,7 @@
             const tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
             const duration    = parseInt(document.getElementById('tradeDuration').value);
             const currentBal  = parseFloat(localStorage.getItem('currentBalance') || 0);
-            const hasPlan     = currentUser ? !!currentUser.has_ai : !!localStorage.getItem('signalPlan');
+            var hasPlan = currentUser ? !!currentUser.has_ai : !!(localStorage.getItem('signalPlan_' + sessionStorage.getItem('currentUserEmail')) || localStorage.getItem('signalPlan'));
 
             if (!quantity || quantity < 1)       { alert('Please enter a valid quantity.'); return; }
             if (!tradeAmount || tradeAmount <= 0) { alert('Please enter a trade amount.'); return; }
@@ -1350,7 +1365,7 @@
 
             showStatusMessage('Closing trade on ' + trade.symbol + '... please wait.', 1800);
             setTimeout(function() {
-                const hasPlan = currentUser ? !!currentUser.has_ai : !!localStorage.getItem('signalPlan');
+                const hasPlan = currentUser ? !!currentUser.has_ai : !!(localStorage.getItem('signalPlan_' + sessionStorage.getItem('currentUserEmail')) || localStorage.getItem('signalPlan'));
                 var pct, profit, exitPrice;
                 
                 if (hasPlan) {
@@ -1434,7 +1449,7 @@
                 var idx = allTrades.findIndex(function(t){ return t.id === trade.id; });
                 if (idx === -1 || allTrades[idx].status !== 'open') return;
 
-                var plan = localStorage.getItem('signalPlan');
+                var plan = localStorage.getItem('signalPlan_' + sessionStorage.getItem('currentUserEmail')) || localStorage.getItem('signalPlan');
                 var pct  = plan === 'Elite' ? 30 + Math.random() * 12 : 25 + Math.random() * 10;
                 var profit    = tradeAmount * (pct / 100);
                 var exitPrice = entryPrice * (1 + pct / 100);

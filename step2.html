@@ -181,7 +181,9 @@ document.getElementById('regForm').addEventListener('submit', async function(e) 
         fullName, email, phone, password, country,
         accountType: localStorage.getItem('selectedAccountType') || 'individual',
         registrationDate: new Date().toISOString(),
-        balance: 0
+        balance: 0,
+        total_deposit: 0,
+        allow_withdrawal: false
     };
 
     try {

@@ -389,10 +389,13 @@
     })();
 
     function selectTier(amount, name) {
-        // Store selected plan
-        localStorage.setItem('signalPlan', name);
-        localStorage.setItem('signalAmount', amount);
-        // Go to fund wallet with pre-filled amount
+        var currentEmail = sessionStorage.getItem('currentUserEmail');
+        // Store pending plan per-user (activated only after admin approval)
+        if (currentEmail) {
+            localStorage.setItem('pendingSignalPlan_' + currentEmail, name);
+            localStorage.setItem('pendingSignalAmount_' + currentEmail, amount);
+        }
+        // Go to fund wallet — payment is separate from balance
         window.location.href = 'fund-wallet.html?signal=' + amount + '&plan=' + encodeURIComponent(name);
     }
 </script>

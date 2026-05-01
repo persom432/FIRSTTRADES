@@ -167,6 +167,7 @@
             <button class="tab" onclick="filterDeposits('approved', this)">Approved</button>
             <button class="tab" onclick="filterDeposits('rejected', this)">Rejected</button>
             <button class="tab" onclick="showWithdrawals(this)" style="margin-left:auto;">💸 Withdrawals</button>
+            <button class="tab" onclick="showSignalPackages(this)">🤖 Signal Plans</button>
             <button class="tab" onclick="toggleUserPanel(this)">👤 Users</button>
         </div>
 
@@ -194,6 +195,7 @@
 
         <div id="depositsList"></div>
         <div id="withdrawalsList" style="display:none;"></div>
+        <div id="signalPackagesList" style="display:none;"></div>
     </div>
 </div>
 
@@ -225,7 +227,7 @@
         if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password are required.'; msg.style.display='block'; return; }
         var users = getUsers();
         var idx = users.findIndex(function(u){ return u.email === email; });
-        var userData = { fullName: name||email, email: email, password: pass, balance: 0, bonusBalance: 500, total_deposit: 0, allow_withdrawal: false, bonusUsedInTrading: false, bonusPopupSeen: false };
+        var userData = { fullName: name||email, email: email, password: pass, balance: 0, total_deposit: 0, allow_withdrawal: false };
         if (idx >= 0) { users[idx] = Object.assign(users[idx], userData); } else { users.push(userData); }
         saveUsers(users);
         // also update legacy single-user key so existing sessions work
@@ -295,6 +297,48 @@
         document.getElementById('withdrawalsList').style.display = 'none';
         document.getElementById('depositsList').style.display    = 'block';
         renderDeposits();
+    }
+
+    /* ── Signal Packages ── */
+    function showSignalPackages(btn) {
+        document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('depositsList').style.display = 'none';
+        document.getElementById('withdrawalsList').style.display = 'none';
+        document.getElementById('signalPackagesList').style.display = 'block';
+        renderSignalPackages();
+    }
+
+    function renderSignalPackages() {
+        var list = document.getElementById('signalPackagesList');
+        var deposits = getDeposits().filter(function(d){ return d.signalPlan; });
+        if (!deposits.length) { list.innerHTML = '<div class="empty">No signal package payments yet.</div>'; return; }
+        list.innerHTML = '<h3 style="color:#f5c856;margin-bottom:1rem;">🤖 Signal Package Payments</h3>' +
+            deposits.slice().reverse().map(function(d) {
+                var realIndex = getDeposits().indexOf(d);
+                var isPending = d.status === 'pending';
+                var date = new Date(d.timestamp).toLocaleString();
+                var actions = isPending ?
+                    '<div class="card-actions"><button class="btn-approve" onclick="approveSignalPlan(' + realIndex + ')">✅ Approve Plan</button><button class="btn-reject" onclick="rejectDeposit(' + realIndex + ')">❌ Reject</button></div>' :
+                    '<div style="margin-top:0.75rem;font-weight:600;color:' + (d.status==='approved'?'#27ae60':'#e74c3c') + ';">' + (d.status==='approved'?'✅ Plan Activated':'❌ Rejected') + '</div>';
+                return '<div class="deposit-card ' + d.status + '"><div class="card-top"><div><div class="card-method">🤖 ' + d.signalPlan + ' Plan</div><div class="card-time">' + date + '</div></div><span class="badge badge-' + d.status + '">' + d.status + '</span></div><div class="card-details"><span>User</span><strong>' + (d.user||'Unknown') + '</strong><span>Email</span><strong>' + (d.email||'-') + '</strong><span>Payment</span><strong style="color:#f5c856;">$' + parseFloat(d.amount||0).toLocaleString() + '</strong></div>' + actions + '</div>';
+            }).join('');
+    }
+
+    function approveSignalPlan(index) {
+        var deposits = getDeposits();
+        deposits[index].status = 'approved';
+        saveDeposits(deposits);
+        // Activate plan for user — does NOT add to balance
+        var email = deposits[index].email;
+        var plan = deposits[index].signalPlan;
+        if (email && plan) {
+            var users = getUsers();
+            var uid = users.findIndex(function(u){ return u.email === email; });
+            if (uid >= 0) { users[uid].signalPlan = plan; saveUsers(users); }
+            localStorage.setItem('signalPlan_' + email, plan);
+        }
+        renderSignalPackages();
     }
 
     /* ── Withdrawals ── */
@@ -449,25 +493,41 @@
         }
 
         var email = deposits[index].email || deposits[index].userEmail || '';
+        // Signal plan payments: activate plan, do NOT add to balance
+        if (deposits[index].isSignalPayment && deposits[index].signalPlan) {
+            if (email) {
+                var users = getUsers();
+                var uid = users.findIndex(function(u){ return u.email === email; });
+                if (uid >= 0) { users[uid].signalPlan = deposits[index].signalPlan; saveUsers(users); }
+                localStorage.setItem('signalPlan_' + email, deposits[index].signalPlan);
+            }
+            renderDeposits();
+            return;
+        }
         if (email) {
             var users = getUsers();
             var uid = users.findIndex(function(u){ return u.email === email; });
             if (uid >= 0) {
                 users[uid].total_deposit = parseFloat(users[uid].total_deposit || 0) + amount;
-                users[uid].allow_withdrawal = users[uid].total_deposit > parseFloat(users[uid].bonusBalance || 0);
+                users[uid].allow_withdrawal = true;
                 saveUsers(users);
             }
             var currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
             if (currentUser.email === email) {
                 currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0) + amount;
-                currentUser.allow_withdrawal = currentUser.total_deposit > parseFloat(currentUser.bonusBalance || 0);
+                currentUser.allow_withdrawal = true;
                 localStorage.setItem('userData', JSON.stringify(currentUser));
             }
+            // Per-user balance
+            var userBalKey = 'balance_' + email;
+            var userBal = parseFloat(localStorage.getItem(userBalKey) || 0);
+            localStorage.setItem(userBalKey, (userBal + amount).toFixed(2));
+            // Update currentBalance only if this user is currently logged in
+            var loggedInUser = JSON.parse(localStorage.getItem('userData') || '{}');
+            if (loggedInUser.email === email) {
+                localStorage.setItem('currentBalance', (userBal + amount).toFixed(2));
+            }
         }
-
-        var currentBal = parseFloat(localStorage.getItem('currentBalance') || 0) || 0;
-        var newBal = currentBal + amount;
-        localStorage.setItem('currentBalance', newBal.toFixed(2));
 
         renderDeposits();
     }

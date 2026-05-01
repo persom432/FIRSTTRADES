@@ -593,16 +593,16 @@
         if (matchedUser.password === password) {
             matchedUser = Object.assign({
                 balance: 0,
-                bonusBalance: 500,
-                signUpBonusLabel: 'Sign-Up Bonus',
                 total_deposit: 0,
-                allow_withdrawal: false,
-                bonusPopupSeen: false
+                allow_withdrawal: false
             }, matchedUser);
             localStorage.setItem('userData', JSON.stringify(matchedUser));
-            if (!localStorage.getItem('currentBalance')) {
-                localStorage.setItem('currentBalance', (matchedUser.balance || 500).toFixed(2));
+            // Per-user balance key
+            var userBalKey = 'balance_' + matchedUser.email;
+            if (!localStorage.getItem(userBalKey)) {
+                localStorage.setItem(userBalKey, '0.00');
             }
+            localStorage.setItem('currentBalance', localStorage.getItem(userBalKey));
             sessionStorage.setItem('loggedIn', 'true');
             sessionStorage.setItem('currentUserEmail', matchedUser.email);
             window.location.href = 'trading-dashboard.html';

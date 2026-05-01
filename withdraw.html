@@ -236,26 +236,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             balance = parseFloat(localStorage.getItem('currentBalance') || 0);
             document.getElementById('availBal').textContent = '$' + balance.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-
-            // Show bonus info if applicable
-            var currentEmail = sessionStorage.getItem('currentUserEmail');
-            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
-            var bonusAmt   = parseFloat(userData.bonusBalance || 0);
-            var totalDep   = parseFloat(userData.total_deposit || 0);
-            var bonusUsed  = userData.bonusUsedInTrading === true;
-
-            if (bonusAmt > 0) {
-                var bonusInfo = document.createElement('div');
-                bonusInfo.style.cssText = 'background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:0.85rem;color:#e8c96a;';
-                var canWithdraw = totalDep > bonusAmt;
-                bonusInfo.innerHTML = '<strong>🎁 Sign-Up Bonus: $' + bonusAmt.toFixed(2) + '</strong><br>' +
-                    'Total deposited: <strong>$' + totalDep.toFixed(2) + '</strong><br>' +
-                    (canWithdraw
-                        ? '<span style="color:#27ae60;">✅ Withdrawal eligible — deposit exceeds bonus amount.</span>'
-                        : '<span style="color:#fc8181;">⚠️ Deposit more than $' + bonusAmt.toFixed(2) + ' to unlock withdrawals.</span>');
-                document.querySelector('.withdraw-container').insertBefore(bonusInfo, document.getElementById('withdrawFeedback'));
-            }
         });
 
         function setAmt(pct) {
@@ -287,32 +267,10 @@
                 feedback.style.display = 'block'; return;
             }
 
-            // ── Bonus validation ──
+            // Save withdrawal request
             var currentEmail = sessionStorage.getItem('currentUserEmail');
             var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
             var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
-
-            var bonusAmt  = parseFloat(userData.bonusBalance || 0);
-            var totalDep  = parseFloat(userData.total_deposit || 0);
-            var bonusUsed = userData.bonusUsedInTrading === true;
-
-            // Block if bonus was used in trading AND deposit doesn't exceed bonus
-            if (bonusUsed && bonusAmt > 0 && totalDep <= bonusAmt) {
-                feedback.style.background = 'rgba(229,62,62,0.08)';
-                feedback.style.borderColor = 'rgba(229,62,62,0.3)';
-                feedback.style.color = '#fc8181';
-                feedback.textContent = 'You must deposit more than your bonus amount before withdrawing funds.';
-                feedback.style.display = 'block'; return;
-            }
-
-            // Also block if no deposit at all and has bonus
-            if (bonusAmt > 0 && totalDep === 0) {
-                feedback.style.background = 'rgba(229,62,62,0.08)';
-                feedback.style.borderColor = 'rgba(229,62,62,0.3)';
-                feedback.style.color = '#fc8181';
-                feedback.textContent = 'You must deposit more than your bonus amount before withdrawing funds.';
-                feedback.style.display = 'block'; return;
-            }
 
             userData.allow_withdrawal = true;
             var idx = allUsers.findIndex(function(u){ return u.email === currentEmail; });

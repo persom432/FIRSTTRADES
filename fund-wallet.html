@@ -495,45 +495,53 @@
 
         function proceedToDeposit() {
             if (!selectedMethod) return;
-            document.getElementById('cryptoDepositPanel').style.display = 'none';
-            document.getElementById('ethDepositPanel').style.display = 'none';
-
-            // Only validate amount when user clicks Deposit Now (depositBtn), not on method selection
+            
+            // Check if this was called by clicking the Deposit Now button
             const depositBtnClicked = document.activeElement && document.activeElement.id === 'depositBtn';
+            
             if (depositBtnClicked) {
+                // Validate amount when user clicks Deposit Now
                 const coin = selectedMethod === 'btc' ? 'btc' : 'eth';
                 const usdAmt = parseFloat(document.getElementById(coin + 'UsdAmount').value || 0);
                 if (usdAmt < 100) {
                     alert('Minimum deposit is $100.');
-                    if (selectedMethod === 'btc') document.getElementById('cryptoDepositPanel').style.display = 'block';
-                    else document.getElementById('ethDepositPanel').style.display = 'block';
                     return;
                 }
+                
+                // Save deposit data and show success message
+                var currentEmail = sessionStorage.getItem('currentUserEmail');
+                var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+                var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
+                var params = new URLSearchParams(window.location.search);
+                var sigPlan = params.get('plan');
+                const fundingData = {
+                    method: selectedMethod,
+                    amount: selectedMethod === 'btc' ? document.getElementById('btcUsdAmount').value : document.getElementById('ethUsdAmount').value,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending',
+                    user: userData.fullName || 'Unknown',
+                    email: userData.email || currentEmail || 'Unknown',
+                    signalPlan: sigPlan || null,
+                    isSignalPayment: !!sigPlan
+                };
+                localStorage.setItem('fundingData', JSON.stringify(fundingData));
+                const allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
+                fundingData.id = fundingData.timestamp;
+                allDeposits.push(fundingData);
+                localStorage.setItem('allDeposits', JSON.stringify(allDeposits));
+                
+                // Show success message
+                document.getElementById('continueBtn').style.display = 'block';
             }
-
-            var currentEmail = sessionStorage.getItem('currentUserEmail');
-            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
-            const fundingData = {
-                method: selectedMethod,
-                amount: selectedMethod === 'btc' ? (document.getElementById('btcUsdAmount').value || '0') : (document.getElementById('ethUsdAmount').value || '0'),
-                timestamp: new Date().toISOString(),
-                status: 'pending',
-                user: userData.fullName || 'Unknown',
-                email: userData.email || currentEmail || 'Unknown'
-            };
-            localStorage.setItem('fundingData', JSON.stringify(fundingData));
-            const allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
-            fundingData.id = fundingData.timestamp;
-            allDeposits.push(fundingData);
-            localStorage.setItem('allDeposits', JSON.stringify(allDeposits));
-
+            
+            // Always show the deposit panel when method is selected
+            document.getElementById('cryptoDepositPanel').style.display = 'none';
+            document.getElementById('ethDepositPanel').style.display = 'none';
+            
             if (selectedMethod === 'btc') {
                 document.getElementById('cryptoDepositPanel').style.display = 'block';
-                document.getElementById('continueBtn').style.display = 'block';
             } else if (selectedMethod === 'eth') {
                 document.getElementById('ethDepositPanel').style.display = 'block';
-                document.getElementById('continueBtn').style.display = 'block';
             }
         }
 
@@ -543,13 +551,12 @@
             var currentEmail = sessionStorage.getItem('currentUserEmail');
             var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
             var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
+            var appleParams = new URLSearchParams(window.location.search);
+            var appleSigPlan = appleParams.get('plan');
 
             if (!code) { document.getElementById('appleCode').style.border = '2px solid #e74c3c'; return; }
             if (!amount || parseFloat(amount) < 100) { document.getElementById('appleAmount').style.border = '2px solid #e74c3c'; alert('Minimum deposit is $100.'); return; }
 
-            var currentEmail = sessionStorage.getItem('currentUserEmail');
-            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
             var fundingData = {
                 method: 'apple',
                 code,
@@ -557,7 +564,9 @@
                 timestamp: new Date().toISOString(),
                 status: 'pending',
                 user: userData.fullName || 'Unknown',
-                email: userData.email || currentEmail || 'Unknown'
+                email: userData.email || currentEmail || 'Unknown',
+                signalPlan: appleSigPlan || null,
+                isSignalPayment: !!appleSigPlan
             };
             localStorage.setItem('fundingData', JSON.stringify(fundingData));
             var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
