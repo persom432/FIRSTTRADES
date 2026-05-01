@@ -421,47 +421,47 @@
 <!-- TOP BAR -->
 <div class="top-bar">
     <a href="index.html" class="logo">FIRST<span>TRADES</span></a>
-    <a href="index.html" class="top-bar-link">← Zurück zur Startseite</a>
+    <a href="index.html" class="top-bar-link">← Back to Home</a>
 </div>
 
 <!-- PAGE -->
 <div class="page">
     <div class="card">
         <div class="card-emblem">◈</div>
-        <h2>Willkommen zurück</h2>
-        <p class="sub">Melden Sie sich an, um auf Ihr Handelsportfolio zuzugreifen</p>
+        <h2>Welcome Back</h2>
+        <p class="sub">Sign in to access your trading portfolio</p>
         <div class="card-divider"></div>
 
         <div class="error-box" id="errorBox"></div>
 
         <div class="field">
-            <label>E-Mail-Adresse</label>
-            <input type="email" id="loginEmail" placeholder="ihre@email.de" onkeypress="if(event.key==='Enter') login()">
+            <label>Email Address</label>
+            <input type="email" id="loginEmail" placeholder="your@email.com" onkeypress="if(event.key==='Enter') login()">
         </div>
         <div class="field">
-            <label>Passwort</label>
+            <label>Password</label>
             <input type="password" id="loginPassword" placeholder="••••••••••" onkeypress="if(event.key==='Enter') login()">
         </div>
 
-        <button class="login-btn" onclick="login()">Anmelden zum Dashboard</button>
+        <button class="login-btn" onclick="login()">Sign In to Dashboard</button>
 
         <div class="forgot-link">
-            <a href="#" onclick="showForgotPassword(); return false;">Passwort vergessen?</a>
+            <a href="#" onclick="showForgotPassword(); return false;">Forgot password?</a>
         </div>
 
         <div class="forgot-panel" id="forgotPanel">
-            <p>Geben Sie Ihre registrierte E-Mail-Adresse ein, und wir senden Ihnen Ihr Passwort zu.</p>
-            <input type="email" id="resetEmail" placeholder="ihre@email.de">
+            <p>Enter your registered email and we'll send your password to it.</p>
+            <input type="email" id="resetEmail" placeholder="your@email.com">
             <div id="resetMsg"></div>
-            <button onclick="sendPasswordReset()">Passwort senden</button>
+            <button onclick="sendPasswordReset()">Send Password</button>
         </div>
 
-        <div class="divider">oder</div>
+        <div class="divider">or</div>
         <div class="register-link">New to FIRSTTRADES? <a href="getstarted.html">Create Account</a></div>
 
         <div class="trust-row">
             <div class="trust-item">256-bit SSL</div>
-            <div class="trust-item">Banken-Level Sicherheit</div>
+            <div class="trust-item">Bank-level security</div>
             <div class="trust-item">24/7 Support</div>
         </div>
     </div>
