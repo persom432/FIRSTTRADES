@@ -912,8 +912,8 @@
         };
 
         /* ── HD Realistic Chart Engine ── */
-        const canvas = document.getElementById('fcCanvas');
-        const ctx = canvas.getContext('2d');
+        // canvas initialized in DOMContentLoaded
+        // ctx initialized in DOMContentLoaded
         let candles = [], animFrame, mouseX = -1, mouseY = -1;
         const DPR = window.devicePixelRatio || 1;
         const PAD = { top: 12, bottom: 52, left: 8, right: 72 };
@@ -1158,17 +1158,6 @@
             tickChart();
         }
 
-        // Crosshair mouse tracking
-        canvas.addEventListener('mousemove', function(e) {
-            const rect = canvas.getBoundingClientRect();
-            mouseX = e.clientX - rect.left;
-            mouseY = e.clientY - rect.top;
-            drawChart();
-            document.getElementById('fcTooltip').style.display = 'none'; // handled in canvas
-        });
-        canvas.addEventListener('mouseleave', function() {
-            mouseX = -1; mouseY = -1; drawChart();
-        });
 
         function setTf(tf, btn) {
             document.querySelectorAll('.fc-tf button').forEach(b => b.classList.remove('active'));
@@ -1184,6 +1173,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            canvas = document.getElementById('fcCanvas');
+            ctx = canvas.getContext('2d');
             var currentEmail = sessionStorage.getItem('currentUserEmail');
             var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
             currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
@@ -1226,7 +1217,17 @@
             var skipped = localStorage.getItem('signalSkipped_' + currentEmail);
             if (!plan) { document.getElementById('aiLockNotice').style.display='block'; document.getElementById('durationGroup').style.display='none'; if (!skipped) document.getElementById('signalsBanner').style.display='block'; }
             else if (plan==='Pro'||plan==='Elite') { document.getElementById('aiAutoTradeWrap').style.display='block'; }
-            loadFakeChart('AAPL');
+            // Crosshair mouse tracking
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                mouseX = e.clientX - rect.left;
+                mouseY = e.clientY - rect.top;
+                drawChart();
+            });
+            canvas.addEventListener('mouseleave', function() {
+                mouseX = -1; mouseY = -1; drawChart();
+            });
+                        loadFakeChart('AAPL');
             updateAllPrices();
             setInterval(updateAllPrices, 3000);
             document.getElementById('symbol').addEventListener('change', function() { currentSymbol = this.value; });
