@@ -12,7 +12,7 @@
 <div class="pg-bg"><canvas id="pgCanvas"></canvas><div class="pg-grid"></div><div class="pg-orb pg-orb-1"></div><div class="pg-orb pg-orb-2"></div></div>
 
 <!-- BONUS POPUP -->
-<div id="bonusModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(7,9,15,0.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;">
+<div id="bonusModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(7,9,15,0.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;">
     <div style="background:#0d1117;border:1px solid rgba(201,168,76,0.35);border-radius:20px;padding:2.5rem 2rem;max-width:420px;width:100%;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.7);animation:bonusIn 0.5s cubic-bezier(0.22,1,0.36,1) both;">
         <div style="font-size:2.8rem;margin-bottom:0.75rem;">🎁</div>
         <div style="display:inline-block;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;font-size:0.72rem;font-weight:800;letter-spacing:1.5px;padding:4px 14px;border-radius:20px;margin-bottom:1rem;text-transform:uppercase;">Welcome Bonus</div>
@@ -115,7 +115,12 @@
     var ud = JSON.parse(localStorage.getItem('userData') || '{}');
     var seen = localStorage.getItem('bonusPopupSeen_' + (ud.email || 'guest'));
     if (!seen) {
-        document.getElementById('bonusModal').style.display = 'flex';
+        var modal = document.getElementById('bonusModal');
+        modal.style.display = 'flex';
+        var inner = modal.firstElementChild;
+        inner.style.animation = 'none';
+        inner.offsetHeight; // reflow
+        inner.style.animation = '';
         // Set bonusBalance on user if not already set
         if (!ud.bonusBalance) {
             ud.bonusBalance = 500;

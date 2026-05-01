@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" translate="no">
 <head>
     <meta charset="UTF-8">
@@ -512,6 +512,7 @@
             margin: 0;
         }
         .main-chart.expanded .fc-canvas-wrap { height: calc(100vh - 180px) !important; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .expand-btn {
             background: rgba(255,255,255,0.07);
             border: 1px solid rgba(255,255,255,0.12);
@@ -602,51 +603,51 @@
                     <div class="account-type-badge" id="accountTypeBadge">
                         <!-- Will be populated by JavaScript -->
                     </div>
-                    <h1 style="margin: 0; color: #fff;">Handel-Dashboard</h1>
+                    <h1 style="margin: 0; color: #fff;">Trading Dashboard</h1>
                 </div>
                 <div style="display:flex; align-items:center; gap:1.5rem;">
                     <div class="account-balance">
                         <div class="balance-label">Account Balance</div>
-                        <div class="balance-amount" id="accountBalance">9.482,70 €</div>
+                        <div class="balance-amount" id="accountBalance">9.482,70 €.00</div>
                         <div class="bonus-meta">
-                            <div class="balance-label">Anmeldebonus</div>
-                            <div class="bonus-amount" id="bonusBalance">463,00 €</div>
+                            <div class="balance-label">Sign-Up Bonus</div>
+                            <div class="bonus-amount" id="bonusBalance">$500.00</div>
                         </div>
                     </div>
-                    <a href="fund-wallet.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(39,174,96,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💳 Konto aufladen</a>
-                    <a href="withdraw.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💸 Auszahlen</a>
+                    <a href="fund-wallet.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(39,174,96,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💳 Fund Wallet</a>
+                    <a href="withdraw.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💸 Withdraw</a>
                 </div>
             </div>
             <div id="bonusWarning" style="margin-bottom:1.5rem; padding:1rem 1.25rem; background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-radius:14px; color:#f39c12; font-size:0.95rem; display:none;">
-                <strong>Bonuszinsen können nicht direkt ausgezahlt werden.</strong> Tätigen Sie mindestens eine Einzahlung von 500 €, bevor Auszahlungsanfragen gestellt werden können.
+                <strong>Bonus funds cannot be withdrawn directly. You must deposit more than your bonus amount before withdrawals are allowed.</strong> Tätigen Sie mindestens eine Einzahlung von 500 €, bevor Auszahlungsanfragen gestellt werden können.
             </div>
 
             <div class="market-prices" id="dashboard">
-                <h3 style="margin-bottom: 1.5rem; color: #fff; text-align: center;">Marktpreise</h3>
+                <h3 style="margin-bottom: 1.5rem; color: #fff; text-align: center;">Market Prices</h3>
                 <div class="market-grid">
                     <div class="market-item">
                         <div class="market-symbol">AAPL</div>
-                        <div class="market-price">162,23 €</div>
+                        <div class="market-price">$175.23</div>
                         <div class="market-change positive">+2,45%</div>
                     </div>
                     <div class="market-item">
                         <div class="market-symbol">GOOGL</div>
-                        <div class="market-price">2.634,12 €</div>
+                        <div class="market-price">$2,834.12</div>
                         <div class="market-change negative">-1,23%</div>
                     </div>
                     <div class="market-item">
                         <div class="market-symbol">MSFT</div>
-                        <div class="market-price">311,67 €</div>
+                        <div class="market-price">$335.67</div>
                         <div class="market-change positive">+1,87%</div>
                     </div>
                     <div class="market-item">
                         <div class="market-symbol">TSLA</div>
-                        <div class="market-price">231,20 €</div>
+                        <div class="market-price">$248.90</div>
                         <div class="market-change positive">+3,21%</div>
                     </div>
                     <div class="market-item">
                         <div class="market-symbol">AMZN</div>
-                        <div class="market-price">3.012,80 €</div>
+                        <div class="market-price">$3,245.80</div>
                         <div class="market-change negative">-0,89%</div>
                     </div>
                     <div class="market-item">
@@ -754,6 +755,12 @@
                             <div class="order-buttons">
                                 <button type="submit" class="order-btn buy-btn" onclick="setOrderSide('buy')">Buy</button>
                                 <button type="submit" class="order-btn sell-btn" onclick="setOrderSide('sell')">Sell</button>
+                            </div>
+
+                            <!-- AI AUTO-TRADE BUTTON (Pro / Elite only) -->
+                            <div id="aiAutoTradeWrap" style="display:none;margin-top:1rem;">
+                                <button type="button" id="aiAutoTradeBtn" onclick="startAiAutoTrade()" style="width:100%;padding:14px;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;box-shadow:0 4px 18px rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;gap:8px;">🤖 Let AI Trade For Me</button>
+                                <p style="margin-top:0.5rem;font-size:0.74rem;color:#8a94a6;text-align:center;">AI will place & close a trade automatically using your entered amount.</p>
                             </div>
                         </form>
                     </div>
@@ -1246,6 +1253,8 @@
                 document.getElementById('aiLockNotice').style.display = 'block';
                 document.getElementById('durationGroup').style.display = 'none';
                 if (!skipped) document.getElementById('signalsBanner').style.display = 'block';
+            } else if (plan === 'Pro' || plan === 'Elite') {
+                document.getElementById('aiAutoTradeWrap').style.display = 'block';
             }
 
             loadFakeChart('AAPL');
@@ -1398,6 +1407,64 @@
             }, 1200 + Math.random() * 800);
         }
 
+        function startAiAutoTrade() {
+            var symbol     = document.getElementById('symbol').value;
+            var tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
+            var quantity   = parseInt(document.getElementById('quantity').value) || 1;
+            var currentBal = parseFloat(localStorage.getItem('currentBalance') || 0);
+
+            if (!tradeAmount || tradeAmount <= 0) { alert('Enter a trade amount first.'); return; }
+            if (tradeAmount > currentBal)          { alert('Insufficient balance.'); return; }
+
+            var btn = document.getElementById('aiAutoTradeBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;">⚙️</span>&nbsp; AI is analyzing market...';
+
+            var entryPrice = stockData[symbol].basePrice;
+            var now = new Date();
+            var trade = {
+                id: now.getTime(),
+                time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+                symbol: symbol, side: 'buy', qty: quantity,
+                price: entryPrice, invested: tradeAmount,
+                duration: 'AI', status: 'open', profit: 0, pct: 0, exitPrice: 0
+            };
+
+            var trades = getTrades();
+            trades.push(trade);
+            saveTrades(trades);
+            updateBalanceDisplay(currentBal - tradeAmount);
+            renderTrades();
+            showStatusMessage('🤖 AI entered a ' + symbol + ' position. Monitoring market for optimal exit...');
+
+            // AI closes with profit after 8–14 seconds
+            var closeDelay = 8000 + Math.random() * 6000;
+            setTimeout(function() {
+                var allTrades = getTrades();
+                var idx = allTrades.findIndex(function(t){ return t.id === trade.id; });
+                if (idx === -1 || allTrades[idx].status !== 'open') return;
+
+                var plan = localStorage.getItem('signalPlan');
+                var pct  = plan === 'Elite' ? 30 + Math.random() * 12 : 25 + Math.random() * 10;
+                var profit    = tradeAmount * (pct / 100);
+                var exitPrice = entryPrice * (1 + pct / 100);
+
+                allTrades[idx].status    = 'closed';
+                allTrades[idx].pct       = parseFloat(pct.toFixed(2));
+                allTrades[idx].profit    = parseFloat(profit.toFixed(2));
+                allTrades[idx].exitPrice = parseFloat(exitPrice.toFixed(2));
+                saveTrades(allTrades);
+
+                var newBal = parseFloat(localStorage.getItem('currentBalance') || 0) + tradeAmount + profit;
+                updateBalanceDisplay(newBal);
+                renderTrades();
+                showStatusMessage('🤖 AI closed trade. Profit: +$' + profit.toFixed(2) + ' (' + pct.toFixed(2) + '%) added to your balance.');
+
+                btn.disabled = false;
+                btn.innerHTML = '🤖 Let AI Trade For Me';
+            }, closeDelay);
+        }
+
         function updateAllPrices() {
             document.querySelectorAll('.market-item').forEach(function(item) {
                 const priceEl = item.querySelector('.market-price');
@@ -1438,3 +1505,5 @@ s0.parentNode.insertBefore(s1,s0);
 
 </body>
 </html>
+
+
