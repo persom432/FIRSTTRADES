@@ -20,7 +20,7 @@
 <div class="pg-wrap">
     <div class="pg-card pg-card-wide">
         <div class="pg-card-icon">💳</div>
-        <h2>Fund Your Account</h2>
+        <h2>Fund Account</h2>
         <p class="pg-sub">Choose your preferred deposit method to start trading</p>
         <div class="pg-divider"></div>
 
@@ -39,7 +39,7 @@
             </div>
             <div class="pg-option" id="appleOpt" onclick="selectMethod('apple')">
                 <div class="pg-option-icon">🍎</div>
-                <div class="pg-option-text"><h3>Apple Gift Card</h3><p>Fund using an Apple Gift Card code</p></div>
+                <div class="pg-option-text"><h3>Apple Gift Card</h3><p>Top up with an Apple Gift Card code</p></div>
                 <div class="pg-option-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
             </div>
         </div>
@@ -47,18 +47,18 @@
         <!-- BTC Panel -->
         <div class="pg-deposit-panel" id="btcPanel">
             <h3>₿ Bitcoin Deposit</h3>
-            <p>Send BTC to the address below. Enter the USD amount you wish to deposit.</p>
+            <p>Send BTC to the address below. Enter the EUR amount you wish to deposit.</p>
             <div class="pg-field">
-                <label>Amount (USD)</label>
-                <input type="number" id="btcUsd" placeholder="Minimum $100" min="100" oninput="convert('btc')">
+                <label>Amount (EUR)</label>
+                <input type="number" id="btcUsd" placeholder="Minimum €100" min="100" oninput="convert('btc')">
                 <div class="pg-convert" id="btcConvert"></div>
             </div>
             <p><strong>Address:</strong></p>
             <div class="pg-address-box">bc1qe3dxay03xs0ck4xhug6snjttcqf04c3ntpmkp7</div>
             <img src="btc.jpeg" class="pg-qr" alt="BTC QR">
-            <p style="font-size:0.75rem;color:#8a94a6;margin-top:0.5rem;">Expires in 30 minutes. Generate a new request after expiry.</p>
+            <p style="font-size:0.75rem;color:#8a94a6;margin-top:0.5rem;">Expires in 30 minutes. Create a new request after expiry.</p>
             <div class="pg-field" style="margin-top:1rem;">
-                <label>Upload Proof of Payment</label>
+                <label>Upload payment proof</label>
                 <input type="file" id="btcProof" accept="image/*" style="background:rgba(255,255,255,0.04);border:1.5px dashed rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:#8a94a6;cursor:pointer;">
             </div>
         </div>
@@ -66,18 +66,18 @@
         <!-- ETH Panel -->
         <div class="pg-deposit-panel" id="ethPanel">
             <h3>Ξ Ethereum Deposit</h3>
-            <p>Send ETH to the address below. Enter the USD amount you wish to deposit.</p>
+            <p>Send ETH to the address below. Enter the EUR amount you wish to deposit.</p>
             <div class="pg-field">
-                <label>Amount (USD)</label>
-                <input type="number" id="ethUsd" placeholder="Minimum $100" min="100" oninput="convert('eth')">
+                <label>Amount (EUR)</label>
+                <input type="number" id="ethUsd" placeholder="Minimum €100" min="100" oninput="convert('eth')">
                 <div class="pg-convert" id="ethConvert"></div>
             </div>
             <p><strong>Address:</strong></p>
             <div class="pg-address-box">0x2c2F275F650932C19cb03d0D1085b2f8D1b0093B</div>
             <img src="eth.jpeg" class="pg-qr" alt="ETH QR">
-            <p style="font-size:0.75rem;color:#8a94a6;margin-top:0.5rem;">Expires in 30 minutes. Generate a new request after expiry.</p>
+            <p style="font-size:0.75rem;color:#8a94a6;margin-top:0.5rem;">Expires in 30 minutes. Create a new request after expiry.</p>
             <div class="pg-field" style="margin-top:1rem;">
-                <label>Upload Proof of Payment</label>
+                <label>Upload payment proof</label>
                 <input type="file" id="ethProof" accept="image/*" style="background:rgba(255,255,255,0.04);border:1.5px dashed rgba(255,255,255,0.1);border-radius:10px;padding:10px;color:#8a94a6;cursor:pointer;">
             </div>
         </div>

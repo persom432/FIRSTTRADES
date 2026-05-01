@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — FIRSTTRADES</title>
+    <title>Log In — FIRSTTRADES</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -421,47 +421,47 @@
 <!-- TOP BAR -->
 <div class="top-bar">
     <a href="index.html" class="logo">FIRST<span>TRADES</span></a>
-    <a href="index.html" class="top-bar-link">← Back to Home</a>
+    <a href="index.html" class="top-bar-link">← Zurück zur Startseite</a>
 </div>
 
 <!-- PAGE -->
 <div class="page">
     <div class="card">
         <div class="card-emblem">◈</div>
-        <h2>Welcome Back</h2>
-        <p class="sub">Sign in to access your trading portfolio</p>
+        <h2>Willkommen zurück</h2>
+        <p class="sub">Melden Sie sich an, um auf Ihr Handelsportfolio zuzugreifen</p>
         <div class="card-divider"></div>
 
         <div class="error-box" id="errorBox"></div>
 
         <div class="field">
-            <label>Email Address</label>
-            <input type="email" id="loginEmail" placeholder="your@email.com" onkeypress="if(event.key==='Enter') login()">
+            <label>E-Mail-Adresse</label>
+            <input type="email" id="loginEmail" placeholder="ihre@email.de" onkeypress="if(event.key==='Enter') login()">
         </div>
         <div class="field">
-            <label>Password</label>
+            <label>Passwort</label>
             <input type="password" id="loginPassword" placeholder="••••••••••" onkeypress="if(event.key==='Enter') login()">
         </div>
 
-        <button class="login-btn" onclick="login()">Sign In to Dashboard</button>
+        <button class="login-btn" onclick="login()">Anmelden zum Dashboard</button>
 
         <div class="forgot-link">
-            <a href="#" onclick="showForgotPassword(); return false;">Forgot password?</a>
+            <a href="#" onclick="showForgotPassword(); return false;">Passwort vergessen?</a>
         </div>
 
         <div class="forgot-panel" id="forgotPanel">
-            <p>Enter your registered email and we'll send your password to it.</p>
-            <input type="email" id="resetEmail" placeholder="your@email.com">
+            <p>Geben Sie Ihre registrierte E-Mail-Adresse ein, und wir senden Ihnen Ihr Passwort zu.</p>
+            <input type="email" id="resetEmail" placeholder="ihre@email.de">
             <div id="resetMsg"></div>
-            <button onclick="sendPasswordReset()">Send Password</button>
+            <button onclick="sendPasswordReset()">Passwort senden</button>
         </div>
 
-        <div class="divider">or</div>
-        <div class="register-link">New to FIRSTTRADES? <a href="getstarted.html">Open an Account</a></div>
+        <div class="divider">oder</div>
+        <div class="register-link">New to FIRSTTRADES? <a href="getstarted.html">Create Account</a></div>
 
         <div class="trust-row">
             <div class="trust-item">256-bit SSL</div>
-            <div class="trust-item">Bank-level security</div>
+            <div class="trust-item">Banken-Level Sicherheit</div>
             <div class="trust-item">24/7 Support</div>
         </div>
     </div>

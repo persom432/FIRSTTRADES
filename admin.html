@@ -221,7 +221,6 @@
         var name  = document.getElementById('uName').value.trim();
         var email = document.getElementById('uEmail').value.trim().toLowerCase();
         var pass  = document.getElementById('uPass').value.trim();
-
         var msg   = document.getElementById('userMsg');
         if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password are required.'; msg.style.display='block'; return; }
         var users = getUsers();
