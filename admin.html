@@ -3,20 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page Not Found</title>
+    <title>Admin Panel — FIRSTTRADES</title>
     <style>
-        body { font-family:'Inter',sans-serif; background:#07090f; color:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; }
-        .wrap { text-align:center; }
-        h1 { font-size:5rem; color:#c9a84c; margin-bottom:0.5rem; }
-        p  { color:#8a94a6; margin-bottom:1.5rem; }
-        a  { color:#c9a84c; text-decoration:none; font-weight:600; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #07090f; color: #fff; min-height: 100vh; }
+
+        .topbar {
+            background: #0d1117; border-bottom: 1px solid rgba(255,255,255,0.07);
+            padding: 0 2rem; height: 60px; display: flex; align-items: center;
+            justify-content: space-between; position: sticky; top: 0; z-index: 100;
+        }
+        .topbar-logo { font-size: 1.1rem; font-weight: 800; color: #fff; }
+        .topbar-logo span { color: #c9a84c; }
+        .topbar-badge { background: rgba(229,62,62,0.15); border: 1px solid rgba(229,62,62,0.3); color: #fc8181; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+
+        .page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #fff; }
+
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: #0d1117; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 1.25rem 1.5rem; }
+        .stat-label { font-size: 0.78rem; color: #8a94a6; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; }
+        .stat-value.pending { color: #f39c12; }
+        .stat-value.approved { color: #27ae60; }
+        .stat-value.rejected { color: #e74c3c; }
+
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .tab { padding: 8px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #8a94a6; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .tab.active { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.35); color: #e8c96a; }
+
+        .deposit-list { display: flex; flex-direction: column; gap: 1rem; }
+
+        .deposit-card {
+            background: #0d1117; border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px; padding: 1.5rem; transition: border-color 0.2s;
+        }
+        .deposit-card.pending  { border-left: 3px solid #f39c12; }
+        .deposit-card.approved { border-left: 3px solid #27ae60; }
+        .deposit-card.rejected { border-left: 3px solid #e74c3c; }
+
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+        .card-user { font-size: 1rem; font-weight: 700; color: #fff; }
+        .card-email { font-size: 0.82rem; color: #8a94a6; margin-top: 2px; }
+        .card-amount { font-size: 1.5rem; font-weight: 800; color: #e8c96a; }
+
+        .card-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-bottom: 1rem; font-size: 0.82rem; color: #8a94a6; }
+        .card-meta span strong { color: #ccc; }
+
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-badge.pending  { background: rgba(243,156,18,0.12); color: #f39c12; border: 1px solid rgba(243,156,18,0.3); }
+        .status-badge.approved { background: rgba(39,174,96,0.12); color: #27ae60; border: 1px solid rgba(39,174,96,0.3); }
+        .status-badge.rejected { background: rgba(231,76,60,0.12); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
+
+        .proof-img { max-width: 260px; max-height: 180px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; margin-bottom: 1rem; display: block; object-fit: cover; }
+        .no-proof { font-size: 0.8rem; color: #555; margin-bottom: 1rem; font-style: italic; }
+
+        .card-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .btn-approve { padding: 10px 24px; background: linear-gradient(135deg,#27ae60,#2ecc71); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn-approve:hover { opacity: 0.85; }
+        .btn-reject  { padding: 10px 24px; background: linear-gradient(135deg,#e74c3c,#c0392b); color: #fff; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn-reject:hover { opacity: 0.85; }
+
+        .amount-input { padding: 9px 12px; background: #1a2235; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 0.88rem; width: 130px; }
+        .amount-input:focus { outline: none; border-color: #27ae60; }
+
+        .empty { text-align: center; padding: 3rem; color: #555; font-size: 0.9rem; }
+
+        /* Lightbox */
+        #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 999; align-items: center; justify-content: center; }
+        #lightbox.open { display: flex; }
+        #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 12px; }
+        #lightbox-close { position: absolute; top: 20px; right: 24px; font-size: 2rem; color: #fff; cursor: pointer; background: none; border: none; line-height: 1; }
+
+        @media (max-width: 600px) {
+            .stats { grid-template-columns: 1fr 1fr; }
+            .card-amount { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
-<div class="wrap">
-    <h1>404</h1>
-    <p>The page you're looking for doesn't exist.</p>
-    <a href="index.html">← Back to Home</a>
+
+<div class="topbar">
+    <div class="topbar-logo">FIRST<span>TRADES</span> <span style="color:#8a94a6;font-size:0.8rem;font-weight:400;margin-left:0.5rem;">Admin Panel</span></div>
+    <div class="topbar-badge">🔒 Admin Only</div>
 </div>
+
+<div class="page">
+    <h2>💳 Deposit Management</h2>
+
+    <div class="stats">
+        <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value pending" id="statPending">0</div></div>
+        <div class="stat-card"><div class="stat-label">Approved</div><div class="stat-value approved" id="statApproved">0</div></div>
+        <div class="stat-card"><div class="stat-label">Rejected</div><div class="stat-value rejected" id="statRejected">0</div></div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="setTab('pending',this)">Pending</button>
+        <button class="tab" onclick="setTab('approved',this)">Approved</button>
+        <button class="tab" onclick="setTab('rejected',this)">Rejected</button>
+        <button class="tab" onclick="setTab('all',this)">All</button>
+    </div>
+
+    <div class="deposit-list" id="depositList"></div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox">
+    <button id="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img id="lightbox-img" src="" alt="Proof">
+</div>
+
+<script>
+    var currentTab = 'pending';
+
+    function getDeposits() { return JSON.parse(localStorage.getItem('allDeposits') || '[]'); }
+    function saveDeposits(d) { localStorage.setItem('allDeposits', JSON.stringify(d)); }
+
+    function setTab(tab, btn) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+        btn.classList.add('active');
+        render();
+    }
+
+    function render() {
+        var deposits = getDeposits();
+        var pending  = deposits.filter(function(d){ return d.status === 'pending'; });
+        var approved = deposits.filter(function(d){ return d.status === 'approved'; });
+        var rejected = deposits.filter(function(d){ return d.status === 'rejected'; });
+
+        document.getElementById('statPending').textContent  = pending.length;
+        document.getElementById('statApproved').textContent = approved.length;
+        document.getElementById('statRejected').textContent = rejected.length;
+
+        var filtered = currentTab === 'all' ? deposits : deposits.filter(function(d){ return d.status === currentTab; });
+        filtered = filtered.slice().reverse();
+
+        var list = document.getElementById('depositList');
+        if (!filtered.length) {
+            list.innerHTML = '<div class="empty">No ' + currentTab + ' deposits.</div>';
+            return;
+        }
+
+        list.innerHTML = filtered.map(function(d) {
+            var date = new Date(d.timestamp).toLocaleString();
+            var methodLabel = d.method === 'btc' ? '₿ Bitcoin' : d.method === 'eth' ? 'Ξ Ethereum' : '🍎 Apple Gift Card';
+            var proofHtml = d.proofImage
+                ? '<img class="proof-img" src="' + d.proofImage + '" alt="Proof" onclick="openLightbox(\'' + d.proofImage + '\')">'
+                : '<div class="no-proof">No proof image uploaded</div>';
+            var codeHtml = d.code ? '<span><strong>Card Code:</strong> ' + d.code + '</span>' : '';
+            var planHtml = d.signalPlan ? '<span><strong>Signal Plan:</strong> ' + d.signalPlan + '</span>' : '';
+
+            var actions = '';
+            if (d.status === 'pending') {
+                actions = '<input type="number" class="amount-input" id="amt_' + d.id + '" value="' + d.amount + '" min="1" placeholder="Approve amount">' +
+                    '<button class="btn-approve" onclick="approveDeposit(\'' + d.id + '\')">✓ Approve</button>' +
+                    '<button class="btn-reject"  onclick="rejectDeposit(\'' + d.id + '\')">✕ Reject</button>';
+            } else if (d.status === 'approved') {
+                actions = '<span style="color:#27ae60;font-weight:700;font-size:0.88rem;">✓ Approved — $' + parseFloat(d.approvedAmount || d.amount).toFixed(2) + ' credited</span>';
+            } else {
+                actions = '<span style="color:#e74c3c;font-weight:700;font-size:0.88rem;">✕ Rejected</span>';
+            }
+
+            return '<div class="deposit-card ' + d.status + '">' +
+                '<div class="card-top">' +
+                    '<div><div class="card-user">' + (d.user || 'Unknown') + '</div><div class="card-email">' + (d.email || '') + '</div></div>' +
+                    '<div style="text-align:right;"><div class="card-amount">$' + parseFloat(d.amount).toFixed(2) + '</div><div style="margin-top:4px;"><span class="status-badge ' + d.status + '">' + d.status + '</span></div></div>' +
+                '</div>' +
+                '<div class="card-meta">' +
+                    '<span><strong>Method:</strong> ' + methodLabel + '</span>' +
+                    '<span><strong>Date:</strong> ' + date + '</span>' +
+                    codeHtml + planHtml +
+                '</div>' +
+                proofHtml +
+                '<div class="card-actions">' + actions + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    function approveDeposit(id) {
+        var deposits = getDeposits();
+        var idx = deposits.findIndex(function(d){ return d.id === id; });
+        if (idx === -1) return;
+
+        var amtInput = document.getElementById('amt_' + id);
+        var approvedAmount = amtInput ? parseFloat(amtInput.value) : parseFloat(deposits[idx].amount);
+        if (!approvedAmount || approvedAmount <= 0) { alert('Enter a valid amount to approve.'); return; }
+
+        deposits[idx].status = 'approved';
+        deposits[idx].approvedAmount = approvedAmount;
+        saveDeposits(deposits);
+
+        // Credit user balance
+        var email = deposits[idx].email;
+        var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        var uidx = allUsers.findIndex(function(u){ return u.email === email; });
+        if (uidx >= 0) {
+            allUsers[uidx].balance = (parseFloat(allUsers[uidx].balance) || 0) + approvedAmount;
+            allUsers[uidx].total_deposit = (parseFloat(allUsers[uidx].total_deposit) || 0) + approvedAmount;
+            allUsers[uidx].allow_withdrawal = allUsers[uidx].total_deposit >= 500;
+            if (deposits[idx].signalPlan) {
+                allUsers[uidx].signalPlan = deposits[idx].signalPlan;
+            }
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+        }
+
+        // Update currentBalance if this is the logged-in user
+        var userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        if (userData.email === email) {
+            var newBal = (parseFloat(localStorage.getItem('currentBalance')) || 0) + approvedAmount;
+            localStorage.setItem('currentBalance', newBal.toFixed(2));
+            userData.balance = newBal;
+            userData.total_deposit = (parseFloat(userData.total_deposit) || 0) + approvedAmount;
+            if (deposits[idx].signalPlan) userData.signalPlan = deposits[idx].signalPlan;
+            localStorage.setItem('userData', JSON.stringify(userData));
+        }
+
+        render();
+    }
+
+    function rejectDeposit(id) {
+        if (!confirm('Reject this deposit?')) return;
+        var deposits = getDeposits();
+        var idx = deposits.findIndex(function(d){ return d.id === id; });
+        if (idx === -1) return;
+        deposits[idx].status = 'rejected';
+        saveDeposits(deposits);
+        render();
+    }
+
+    function openLightbox(url) {
+        document.getElementById('lightbox-img').src = url;
+        document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+    }
+    document.getElementById('lightbox').addEventListener('click', function(e){
+        if (e.target === this) closeLightbox();
+    });
+
+    render();
+    setInterval(render, 5000); // auto-refresh every 5s
+</script>
 </body>
 </html>
