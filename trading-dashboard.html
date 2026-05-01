@@ -60,17 +60,6 @@
             color: #00b386;
             font-family: 'Poppins', sans-serif;
         }
-        .bonus-meta {
-            margin-top: 0.75rem;
-            display: grid;
-            gap: 0.25rem;
-            font-size: 0.95rem;
-        }
-        .bonus-amount {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #f5c856;
-        }
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -590,9 +579,9 @@
 
     <div id="bonusPopupOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
         <div style="max-width:500px;width:100%;background:#0f1724;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:2rem;box-shadow:0 24px 80px rgba(0,0,0,0.55);text-align:center;color:#f8fafc;">
-            <h2 style="margin-bottom:1rem;font-size:1.6rem;color:#f5c856;">🎉 Sign-Up Bonus Received</h2>
-            <p style="margin-bottom:1.5rem;line-height:1.7;color:#d1d5db;">You have received a $500 sign-up bonus. You must trade this bonus before you can withdraw. A minimum deposit of $500 is required to enable withdrawals.</p>
-            <button id="bonusPopupClose" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#0f1724;border:none;border-radius:999px;padding:14px 28px;font-size:0.95rem;font-weight:700;cursor:pointer;">Got it</button>
+            <h2 style="margin-bottom:1rem;font-size:1.6rem;color:#f5c856;">💰 Fund Your Account</h2>
+            <p style="margin-bottom:1.5rem;line-height:1.7;color:#d1d5db;">Your account balance is $0.00. Fund your wallet to start trading and access all platform features.</p>
+            <button id="bonusPopupClose" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#0f1724;border:none;border-radius:999px;padding:14px 28px;font-size:0.95rem;font-weight:700;cursor:pointer;">Fund Wallet</button>
         </div>
     </div>
 
@@ -608,18 +597,14 @@
                 <div style="display:flex; align-items:center; gap:1.5rem;">
                     <div class="account-balance">
                         <div class="balance-label">Account Balance</div>
-                        <div class="balance-amount" id="accountBalance">9.482,70 €.00</div>
-                        <div class="bonus-meta">
-                            <div class="balance-label">Sign-Up Bonus</div>
-                            <div class="bonus-amount" id="bonusBalance">$500.00</div>
-                        </div>
+                        <div class="balance-amount" id="accountBalance">$0.00</div>
                     </div>
                     <a href="fund-wallet.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(39,174,96,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💳 Fund Wallet</a>
                     <a href="withdraw.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💸 Withdraw</a>
                 </div>
             </div>
             <div id="bonusWarning" style="margin-bottom:1.5rem; padding:1rem 1.25rem; background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-radius:14px; color:#f39c12; font-size:0.95rem; display:none;">
-                <strong>Bonus funds cannot be withdrawn directly. You must deposit more than your bonus amount before withdrawals are allowed.</strong> Tätigen Sie mindestens eine Einzahlung von 500 €, bevor Auszahlungsanfragen gestellt werden können.
+                <strong>Fund your account to start trading. Deposit funds via BTC, ETH or Apple Gift Card.</strong>
             </div>
 
             <div class="market-prices" id="dashboard">
@@ -896,13 +881,11 @@
             localStorage.setItem('currentBalance', parseFloat(amount).toFixed(2));
         }
 
-        function showBonusPopup(user) {
+        function showFundingPopup(user) {
             var overlay = document.getElementById('bonusPopupOverlay');
             overlay.style.display = 'flex';
             document.getElementById('bonusPopupClose').onclick = function() {
-                overlay.style.display = 'none';
-                user.bonusPopupSeen = true;
-                persistCurrentUser(user);
+                window.location.href = 'fund-wallet.html';
             };
         }
 
@@ -1199,11 +1182,9 @@
             var currentEmail = sessionStorage.getItem('currentUserEmail');
             var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
             currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
-            currentUser.balance = parseFloat(currentUser.balance || 500);
-            currentUser.bonusBalance = parseFloat(currentUser.bonusBalance || 500);
+            currentUser.balance = 0;
             currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0);
             currentUser.allow_withdrawal = currentUser.total_deposit >= 500;
-            currentUser.signUpBonusLabel = currentUser.signUpBonusLabel || 'Sign-Up Bonus';
 
             const accountType = currentUser.accountType || localStorage.getItem('selectedAccountType');
             const badge = document.getElementById('accountTypeBadge');
@@ -1213,24 +1194,20 @@
             }
 
             const balanceEl = document.getElementById('accountBalance');
-            const bonusEl = document.getElementById('bonusBalance');
             const savedBal = localStorage.getItem('currentBalance');
-            var displayBal = savedBal !== null ? parseFloat(savedBal) : currentUser.balance;
+            var displayBal = savedBal !== null ? parseFloat(savedBal) : 0;
             balanceEl.textContent = '$' + displayBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-            bonusEl.textContent = '$' + currentUser.bonusBalance.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
             if (savedBal === null) {
-                localStorage.setItem('currentBalance', displayBal.toFixed(2));
+                localStorage.setItem('currentBalance', '0.00');
             }
 
-            if (!currentUser.allow_withdrawal) {
+            if (displayBal === 0) {
                 document.getElementById('bonusWarning').style.display = 'block';
+                showFundingPopup(currentUser);
             }
 
             currentUser.has_ai = !!localStorage.getItem('signalPlan');
             persistCurrentUser(currentUser);
-            if (!currentUser.bonusPopupSeen) {
-                showBonusPopup(currentUser);
-            }
 
             renderTrades();
 
@@ -1350,17 +1327,6 @@
             saveTrades(trades);
             renderTrades();
 
-            // Mark bonus as used in trading
-            var currentEmail = sessionStorage.getItem('currentUserEmail');
-            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
-            if (!userData.bonusUsedInTrading) {
-                userData.bonusUsedInTrading = true;
-                var uidx = allUsers.findIndex(function(u){ return u.email === currentEmail; });
-                if (uidx >= 0) { allUsers[uidx] = userData; localStorage.setItem('allUsers', JSON.stringify(allUsers)); }
-                localStorage.setItem('userData', JSON.stringify(userData));
-            }
-
             document.getElementById('quantity').value    = '';
             document.getElementById('tradeAmount').value = '';
             document.getElementById('balanceWarning').style.display = 'none';
@@ -1385,11 +1351,32 @@
             showStatusMessage('Closing trade on ' + trade.symbol + '... please wait.', 1800);
             setTimeout(function() {
                 const hasPlan = currentUser ? !!currentUser.has_ai : !!localStorage.getItem('signalPlan');
-                const pct = hasPlan ? 27 + Math.random() * 8 : 15 + Math.random() * 5;
-                const profit = trade.invested * (pct / 100);
-                const exitPrice = trade.side === 'buy'
-                    ? trade.price * (1 + pct / 100)
-                    : trade.price * (1 - pct / 100);
+                var pct, profit, exitPrice;
+                
+                if (hasPlan) {
+                    // AI trades: always profitable
+                    pct = hasPlan === 'Elite' ? 27 + Math.random() * 8 : 15 + Math.random() * 5;
+                    profit = trade.invested * (pct / 100);
+                    exitPrice = trade.side === 'buy'
+                        ? trade.price * (1 + pct / 100)
+                        : trade.price * (1 - pct / 100);
+                } else {
+                    // Non-AI trades: 70% chance of loss
+                    var isLoss = Math.random() < 0.7;
+                    if (isLoss) {
+                        pct = -(5 + Math.random() * 15); // -5% to -20% loss
+                        profit = trade.invested * (pct / 100);
+                        exitPrice = trade.side === 'buy'
+                            ? trade.price * (1 + pct / 100)
+                            : trade.price * (1 - pct / 100);
+                    } else {
+                        pct = 2 + Math.random() * 8; // Small 2-10% gain
+                        profit = trade.invested * (pct / 100);
+                        exitPrice = trade.side === 'buy'
+                            ? trade.price * (1 + pct / 100)
+                            : trade.price * (1 - pct / 100);
+                    }
+                }
 
                 trade.status = 'closed';
                 trade.pct = parseFloat(pct.toFixed(2));
@@ -1402,7 +1389,10 @@
                 updateBalanceDisplay(newBalance);
                 renderTrades();
                 if (!silent) {
-                    showStatusMessage('Trade closed. Added $' + trade.profit.toFixed(2) + ' to your balance.');
+                    var msg = trade.profit >= 0 
+                        ? 'Trade closed. Added $' + trade.profit.toFixed(2) + ' to your balance.'
+                        : 'Trade closed. Lost $' + Math.abs(trade.profit).toFixed(2) + ' from your balance.';
+                    showStatusMessage(msg);
                 }
             }, 1200 + Math.random() * 800);
         }
