@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -491,49 +491,30 @@
     function approveDeposit(index) {
         var amtEl = document.getElementById('amt-' + index);
         var amount = parseFloat(amtEl ? amtEl.value : 0);
-        if (!amount || amount <= 0) {
-            if (amtEl) amtEl.style.borderColor = '#e74c3c';
-            return;
-        }
+        if (!amount || amount <= 0) { if (amtEl) amtEl.style.borderColor = '#e74c3c'; return; }
         var deposits = getDeposits();
-        deposits[index].status = 'approved';
-        deposits[index].approvedAmount = amount;
-        updateDepositInCloud(deposits[index].id, { status: 'approved', approvedAmount: amount });
-
-        var email = deposits[index].email || '';
-        if (deposits[index].isSignalPayment && deposits[index].signalPlan) {
-            if (email) {
-                var users = getUsers();
-                var uid = users.findIndex(function(u){ return u.email === email; });
-                if (uid >= 0) { users[uid].signalPlan = deposits[index].signalPlan; saveUsers(users); }
-                localStorage.setItem('signalPlan_' + email, deposits[index].signalPlan);
-                // Also write to Firestore so user's device picks it up
-                fsdb.collection('userPlans').doc(email).set({ signalPlan: deposits[index].signalPlan }, { merge: true });
-            }
+        var deposit = deposits[index];
+        var email = deposit.email || '';
+        // Update status in Firestore â€” works from any device
+        updateDepositInCloud(deposit.id, { status: 'approved', approvedAmount: amount });
+        if (deposit.isSignalPayment && deposit.signalPlan) {
+            if (email) fsdb.collection('userPlans').doc(email).set({ signalPlan: deposit.signalPlan }, { merge: true });
             return;
         }
         if (email) {
-            var users = getUsers();
-            var uid = users.findIndex(function(u){ return u.email === email; });
-            if (uid >= 0) {
-                users[uid].total_deposit = parseFloat(users[uid].total_deposit || 0) + amount;
-                users[uid].allow_withdrawal = true;
-                saveUsers(users);
-            }
-            var userBalKey = 'balance_' + email;
-            var userBal = parseFloat(localStorage.getItem(userBalKey) || 0);
-            var newBal = userBal + amount;
-            localStorage.setItem(userBalKey, newBal.toFixed(2));
-            // Write approved balance to Firestore so user's device picks it up
-            fsdb.collection('userBalances').doc(email).set({ balance: newBal, email: email }, { merge: true });
+            // Read current balance from Firestore first, then add â€” no localStorage dependency
+            fsdb.collection('userBalances').doc(email).get().then(function(doc) {
+                var currentBal = doc.exists ? parseFloat(doc.data().balance || 0) : 0;
+                var newBal = currentBal + amount;
+                return fsdb.collection('userBalances').doc(email).set({ balance: newBal, email: email }, { merge: true });
+            }).catch(function() {
+                fsdb.collection('userBalances').doc(email).set({ balance: amount, email: email }, { merge: true });
+            });
         }
     }
 
     function rejectDeposit(index) {
         var deposits = getDeposits();
-        deposits[index].status = 'rejected';
         updateDepositInCloud(deposits[index].id, { status: 'rejected' });
     }
-</script>
-</body>
 </html>
