@@ -242,38 +242,143 @@
             .catch(function(e) { alert('Error rejecting: ' + e.message); });
     }
 
-    /* Withdrawals */
-    function getWithdrawals() { return JSON.parse(localStorage.getItem('allWithdrawals') || '[]'); }
-    function saveWithdrawals(w) { localStorage.setItem('allWithdrawals', JSON.stringify(w)); }
+    /* Withdrawals - Firestore */
+    var cloudWithdrawals = [];
 
     function showWithdrawals(btn) {
         document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
         btn.classList.add('active');
         document.getElementById('depositsList').style.display = 'none';
         document.getElementById('withdrawalsList').style.display = 'block';
-        renderWithdrawals();
+        loadWithdrawals();
+    }
+
+    function loadWithdrawals() {
+        var list = document.getElementById('withdrawalsList');
+        list.innerHTML = '<div class="empty">Loading withdrawals...</div>';
+        fsdb.collection('withdrawals').orderBy('timestamp', 'desc').onSnapshot(function(snap) {
+            cloudWithdrawals = snap.docs.map(function(doc) { return Object.assign({ id: doc.id }, doc.data()); });
+            renderWithdrawals();
+        }, function(err) {
+            list.innerHTML = '<div class="empty">Error: ' + err.message + '</div>';
+        });
     }
 
     function renderWithdrawals() {
         var list = document.getElementById('withdrawalsList');
-        var withdrawals = getWithdrawals();
-        if (!withdrawals.length) { list.innerHTML = '<div class="empty">No withdrawal requests yet.</div>'; return; }
+        if (!cloudWithdrawals.length) { list.innerHTML = '<div class="empty">No withdrawal requests yet.</div>'; return; }
         list.innerHTML = '<h3 style="color:#f5c856;margin-bottom:1rem;">Withdrawal Requests</h3>' +
-            withdrawals.slice().reverse().map(function(w, ri) {
-                var realIndex = withdrawals.length - 1 - ri;
-                var date = new Date(w.timestamp).toLocaleString();
+            cloudWithdrawals.map(function(w, i) {
+                var date = w.timestamp ? new Date(w.timestamp).toLocaleString() : '-';
+                var methodLabel = w.method === 'btc' ? 'Bitcoin' : w.method === 'eth' ? 'Ethereum' : 'Bank Transfer';
                 var actions = w.status === 'pending'
-                    ? '<div class="card-actions" style="margin-top:0.75rem;"><button class="btn-approve" onclick="approveWithdrawal(' + realIndex + ')">Approve</button><button class="btn-reject" onclick="rejectWithdrawal(' + realIndex + ')">Reject</button></div>'
+                    ? '<div class="card-actions" style="margin-top:0.75rem;"><button class="btn-approve" onclick="approveWithdrawal(' + i + ')">Approve</button><button class="btn-reject" onclick="rejectWithdrawal(' + i + ')">Reject</button></div>'
                     : '<div style="margin-top:0.75rem;font-weight:600;color:' + (w.status==='approved'?'#27ae60':'#e74c3c') + ';">' + (w.status==='approved'?'Approved':'Rejected') + '</div>';
-                return '<div class="deposit-card ' + w.status + '"><div class="card-top"><div><div class="card-method">' + (w.method||'Withdrawal') + '</div><div class="card-time">' + date + '</div></div><span class="badge badge-' + w.status + '">' + w.status + '</span></div><div class="card-details"><span>User</span><strong>' + (w.user||'-') + '</strong><span>Email</span><strong>' + (w.email||'-') + '</strong><span>Amount</span><strong style="color:#f5c856;">$' + parseFloat(w.amount||0).toLocaleString() + '</strong><span>Address</span><strong style="word-break:break-all;">' + (w.address||'-') + '</strong></div>' + actions + '</div>';
+                return '<div class="deposit-card ' + w.status + '"><div class="card-top"><div><div class="card-method">' + methodLabel + '</div><div class="card-time">' + date + '</div></div><span class="badge badge-' + w.status + '">' + w.status + '</span></div><div class="card-details"><span>User</span><strong>' + (w.user||'-') + '</strong><span>Email</span><strong>' + (w.email||'-') + '</strong><span>Amount</span><strong style="color:#f5c856;">
+
+    /* User Management */
+    function toggleUserPanel(btn) {
+        var panel = document.getElementById('userPanel');
+        var visible = panel.style.display !== 'none';
+        panel.style.display = visible ? 'none' : 'block';
+        if (!visible) renderUserList();
+    }
+
+    function saveUser() {
+        var name  = document.getElementById('uName').value.trim();
+        var email = document.getElementById('uEmail').value.trim().toLowerCase();
+        var pass  = document.getElementById('uPass').value.trim();
+        var msg   = document.getElementById('userMsg');
+        if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password required.'; msg.style.display='block'; return; }
+        var userData = { fullName: name||email, email: email, password: pass, balance: 0, total_deposit: 0, allow_withdrawal: false };
+        fsdb.collection('users').doc(email).set(userData, { merge: true })
+            .then(function() {
+                msg.style.color='#27ae60'; msg.textContent='User saved: ' + email; msg.style.display='block';
+                document.getElementById('uName').value=''; document.getElementById('uEmail').value=''; document.getElementById('uPass').value='';
+            })
+            .catch(function(e){ msg.style.color='#e74c3c'; msg.textContent='Error: ' + e.message; msg.style.display='block'; });
+    }
+
+    function renderUserList() {
+        var el = document.getElementById('userList');
+        el.innerHTML = '<div class="empty" style="padding:1rem;">Loading users...</div>';
+        fsdb.collection('users').get().then(function(snap) {
+            if (snap.empty) { el.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">No users yet.</p>'; return; }
+            var rows = snap.docs.map(function(doc) {
+                var u = doc.data();
+                return '<tr style="border-bottom:1px solid #374151;"><td style="padding:8px;color:#fff;">' + (u.fullName||'-') + '</td><td style="padding:8px;color:#f5c856;">' + u.email + '</td><td style="padding:8px;color:#9ca3af;">' + (u.password||'-') + '</td><td style="padding:8px;color:#27ae60;">$' + parseFloat(u.balance||0).toFixed(2) + '</td></tr>';
+            }).join('');
+            el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;"><thead><tr style="border-bottom:1px solid #374151;"><th style="padding:8px;text-align:left;color:#9ca3af;">Name</th><th style="padding:8px;text-align:left;color:#9ca3af;">Email</th><th style="padding:8px;text-align:left;color:#9ca3af;">Password</th><th style="padding:8px;text-align:left;color:#9ca3af;">Balance</th></tr></thead><tbody>' + rows + '</tbody></table>';
+        }).catch(function(e){ el.innerHTML = '<p style="color:#e74c3c;font-size:0.85rem;">Error loading users: ' + e.message + '</p>'; });
+    }
+</script>
+</body>
+</html>
+ + parseFloat(w.amount||0).toLocaleString() + '</strong><span>Address</span><strong style="word-break:break-all;">' + (w.address||'-') + '</strong>' + (w.btcAddress ? '<span>BTC</span><strong style="word-break:break-all;">' + w.btcAddress + '</strong>' : '') + '</div>' + actions + '</div>';
             }).join('');
     }
 
-    function approveWithdrawal(index) {
-        var w = getWithdrawals(); w[index].status = 'approved'; saveWithdrawals(w); renderWithdrawals();
+    function approveWithdrawal(i) {
+        var w = cloudWithdrawals[i];
+        if (!w || !confirm('Approve withdrawal of 
+
+    /* User Management */
+    function toggleUserPanel(btn) {
+        var panel = document.getElementById('userPanel');
+        var visible = panel.style.display !== 'none';
+        panel.style.display = visible ? 'none' : 'block';
+        if (!visible) renderUserList();
     }
-    function rejectWithdrawal(index) {
-        var w = getWithdrawals(); w[index].status = 'rejected'; saveWithdrawals(w); renderWithdrawals();
+
+    function saveUser() {
+        var name  = document.getElementById('uName').value.trim();
+        var email = document.getElementById('uEmail').value.trim().toLowerCase();
+        var pass  = document.getElementById('uPass').value.trim();
+        var msg   = document.getElementById('userMsg');
+        if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password required.'; msg.style.display='block'; return; }
+        var userData = { fullName: name||email, email: email, password: pass, balance: 0, total_deposit: 0, allow_withdrawal: false };
+        fsdb.collection('users').doc(email).set(userData, { merge: true })
+            .then(function() {
+                msg.style.color='#27ae60'; msg.textContent='User saved: ' + email; msg.style.display='block';
+                document.getElementById('uName').value=''; document.getElementById('uEmail').value=''; document.getElementById('uPass').value='';
+            })
+            .catch(function(e){ msg.style.color='#e74c3c'; msg.textContent='Error: ' + e.message; msg.style.display='block'; });
+    }
+
+    function renderUserList() {
+        var el = document.getElementById('userList');
+        el.innerHTML = '<div class="empty" style="padding:1rem;">Loading users...</div>';
+        fsdb.collection('users').get().then(function(snap) {
+            if (snap.empty) { el.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">No users yet.</p>'; return; }
+            var rows = snap.docs.map(function(doc) {
+                var u = doc.data();
+                return '<tr style="border-bottom:1px solid #374151;"><td style="padding:8px;color:#fff;">' + (u.fullName||'-') + '</td><td style="padding:8px;color:#f5c856;">' + u.email + '</td><td style="padding:8px;color:#9ca3af;">' + (u.password||'-') + '</td><td style="padding:8px;color:#27ae60;">$' + parseFloat(u.balance||0).toFixed(2) + '</td></tr>';
+            }).join('');
+            el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:0.85rem;"><thead><tr style="border-bottom:1px solid #374151;"><th style="padding:8px;text-align:left;color:#9ca3af;">Name</th><th style="padding:8px;text-align:left;color:#9ca3af;">Email</th><th style="padding:8px;text-align:left;color:#9ca3af;">Password</th><th style="padding:8px;text-align:left;color:#9ca3af;">Balance</th></tr></thead><tbody>' + rows + '</tbody></table>';
+        }).catch(function(e){ el.innerHTML = '<p style="color:#e74c3c;font-size:0.85rem;">Error loading users: ' + e.message + '</p>'; });
+    }
+</script>
+</body>
+</html>
+ + w.amount + ' for ' + w.email + '?')) return;
+        fsdb.collection('withdrawals').doc(w.id).update({ status: 'approved' })
+            .then(function() {
+                if (!w.email) return;
+                return fsdb.collection('users').where('email', '==', w.email).get().then(function(snap) {
+                    if (snap.empty) return;
+                    var userDoc = snap.docs[0];
+                    var newBal = Math.max(0, (parseFloat(userDoc.data().balance) || 0) - parseFloat(w.amount));
+                    return userDoc.ref.update({ balance: newBal });
+                });
+            })
+            .catch(function(e) { alert('Error: ' + e.message); });
+    }
+
+    function rejectWithdrawal(i) {
+        var w = cloudWithdrawals[i];
+        if (!w || !confirm('Reject this withdrawal?')) return;
+        fsdb.collection('withdrawals').doc(w.id).update({ status: 'rejected' })
+            .catch(function(e) { alert('Error: ' + e.message); });
     }
 
     /* User Management */
