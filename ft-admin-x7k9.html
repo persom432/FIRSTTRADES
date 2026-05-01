@@ -130,6 +130,13 @@
     </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WR70LQ6B2D"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WR70LQ6B2D');</script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    var fsdb = firebase.firestore();
+</script>
 </head>
 <body>
 <div class="admin-wrap">
@@ -204,6 +211,8 @@
     const ADMIN_HASH = 'a10cccc9020fce9813aade174aaa9949a9e14b762c2f882f8674300aa5f51700';
     var currentFilter = 'all';
 
+    var cloudDeposits = [];
+
     async function hashPassword(pw) {
         const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
         return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
@@ -275,19 +284,11 @@
         document.getElementById('loginError').style.display = 'none';
     }
 
-    function getDeposits() { return JSON.parse(localStorage.getItem('allDeposits') || '[]'); }
-    function saveDeposits(d) { localStorage.setItem('allDeposits', JSON.stringify(d)); }
+    function getDeposits() { return cloudDeposits; }
 
-    function migrateExisting() {
-        var fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
-        if (fd.method && fd.method !== 'skipped') {
-            var all = getDeposits();
-            if (!all.some(function(d) { return d.timestamp === fd.timestamp; })) {
-                fd.id = fd.timestamp;
-                all.push(fd);
-                saveDeposits(all);
-            }
-        }
+    function updateDepositInCloud(id, data) {
+        fsdb.collection('deposits').doc(id).update(data)
+            .catch(function(e){ console.warn('Firestore update failed:', e); });
     }
 
     function filterDeposits(filter, btn) {
@@ -295,7 +296,8 @@
         document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
         btn.classList.add('active');
         document.getElementById('withdrawalsList').style.display = 'none';
-        document.getElementById('depositsList').style.display    = 'block';
+        document.getElementById('signalPackagesList').style.display = 'none';
+        document.getElementById('depositsList').style.display = 'block';
         renderDeposits();
     }
 
@@ -408,8 +410,16 @@
     }
 
     function loadDeposits() {
-        migrateExisting();
-        renderDeposits();
+        document.getElementById('depositsList').innerHTML = '<div class="empty">Loading deposits...</div>';
+        fsdb.collection('deposits').orderBy('timestamp', 'desc').onSnapshot(function(snap) {
+            cloudDeposits = [];
+            snap.forEach(function(doc) { cloudDeposits.push(Object.assign({ id: doc.id }, doc.data())); });
+            renderDeposits();
+        }, function(err) {
+            console.warn('Firestore error, using localStorage:', err);
+            cloudDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
+            renderDeposits();
+        });
     }
 
     function renderDeposits() {
@@ -488,25 +498,18 @@
         var deposits = getDeposits();
         deposits[index].status = 'approved';
         deposits[index].approvedAmount = amount;
-        saveDeposits(deposits);
+        updateDepositInCloud(deposits[index].id, { status: 'approved', approvedAmount: amount });
 
-        var fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
-        if (fd.timestamp === deposits[index].timestamp) {
-            fd.status = 'approved';
-            fd.approvedAmount = amount;
-            localStorage.setItem('fundingData', JSON.stringify(fd));
-        }
-
-        var email = deposits[index].email || deposits[index].userEmail || '';
-        // Signal plan payments: activate plan, do NOT add to balance
+        var email = deposits[index].email || '';
         if (deposits[index].isSignalPayment && deposits[index].signalPlan) {
             if (email) {
                 var users = getUsers();
                 var uid = users.findIndex(function(u){ return u.email === email; });
                 if (uid >= 0) { users[uid].signalPlan = deposits[index].signalPlan; saveUsers(users); }
                 localStorage.setItem('signalPlan_' + email, deposits[index].signalPlan);
+                // Also write to Firestore so user's device picks it up
+                fsdb.collection('userPlans').doc(email).set({ signalPlan: deposits[index].signalPlan }, { merge: true });
             }
-            renderDeposits();
             return;
         }
         if (email) {
@@ -517,37 +520,19 @@
                 users[uid].allow_withdrawal = true;
                 saveUsers(users);
             }
-            var currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
-            if (currentUser.email === email) {
-                currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0) + amount;
-                currentUser.allow_withdrawal = true;
-                localStorage.setItem('userData', JSON.stringify(currentUser));
-            }
-            // Per-user balance
             var userBalKey = 'balance_' + email;
             var userBal = parseFloat(localStorage.getItem(userBalKey) || 0);
-            localStorage.setItem(userBalKey, (userBal + amount).toFixed(2));
-            // Update currentBalance only if this user is currently logged in
-            var loggedInUser = JSON.parse(localStorage.getItem('userData') || '{}');
-            if (loggedInUser.email === email) {
-                localStorage.setItem('currentBalance', (userBal + amount).toFixed(2));
-            }
+            var newBal = userBal + amount;
+            localStorage.setItem(userBalKey, newBal.toFixed(2));
+            // Write approved balance to Firestore so user's device picks it up
+            fsdb.collection('userBalances').doc(email).set({ balance: newBal, email: email }, { merge: true });
         }
-
-        renderDeposits();
     }
 
     function rejectDeposit(index) {
         var deposits = getDeposits();
         deposits[index].status = 'rejected';
-        saveDeposits(deposits);
-
-        var fd = JSON.parse(localStorage.getItem('fundingData') || '{}');
-        if (fd.timestamp === deposits[index].timestamp) {
-            fd.status = 'rejected';
-            localStorage.setItem('fundingData', JSON.stringify(fd));
-        }
-        renderDeposits();
+        updateDepositInCloud(deposits[index].id, { status: 'rejected' });
     }
 </script>
 </body>

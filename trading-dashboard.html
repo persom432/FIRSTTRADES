@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Trading Dashboard - FIRSTTRADES</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <style>
         .dashboard {
             min-height: 100vh;
@@ -1186,70 +1189,64 @@
             currentUser = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
             currentUser.balance = 0;
             currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0);
-
             const accountType = currentUser.accountType || localStorage.getItem('selectedAccountType');
             const badge = document.getElementById('accountTypeBadge');
-            if (accountType) {
-                badge.textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1) + ' Account';
-                badge.style.display = 'inline-block';
-            }
-
-            // Per-user balance
+            if (accountType) { badge.textContent = accountType.charAt(0).toUpperCase() + accountType.slice(1) + ' Account'; badge.style.display = 'inline-block'; }
             var userBalKey = 'balance_' + currentEmail;
             var userBal = parseFloat(localStorage.getItem(userBalKey) || 0);
             localStorage.setItem('currentBalance', userBal.toFixed(2));
             const balanceEl = document.getElementById('accountBalance');
             balanceEl.textContent = '$' + userBal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-
             if (userBal === 0) {
                 document.getElementById('fundingWarning').style.display = 'block';
-                var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
-                var hasDeposit = allDeposits.some(function(d){ return d.email === currentEmail; });
-                if (!hasDeposit) showFundingPopup(currentUser);
+                var _dep0 = JSON.parse(localStorage.getItem('allDeposits')||'[]');
+                if (!_dep0.some(function(d){return d.email===currentEmail;})) showFundingPopup(currentUser);
             }
-
-            // AI access: only if user has an approved signal plan
+            // Live Firestore sync â€” balance and signal plan update in real-time when admin approves
+            try {
+                if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+                var _db = firebase.firestore();
+                _db.collection('userBalances').doc(currentEmail).onSnapshot(function(doc) {
+                    if (doc.exists) {
+                        var bal = parseFloat(doc.data().balance || 0);
+                        localStorage.setItem(userBalKey, bal.toFixed(2));
+                        localStorage.setItem('currentBalance', bal.toFixed(2));
+                        balanceEl.textContent = '$' + bal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                        if (bal > 0) { document.getElementById('fundingWarning').style.display='none'; document.getElementById('fundingPopupOverlay').style.display='none'; }
+                    }
+                });
+                _db.collection('userPlans').doc(currentEmail).onSnapshot(function(doc) {
+                    if (doc.exists && doc.data().signalPlan) {
+                        var p = doc.data().signalPlan;
+                        localStorage.setItem('signalPlan_' + currentEmail, p);
+                        currentUser.has_ai = true;
+                        document.getElementById('aiLockNotice').style.display = 'none';
+                        document.getElementById('durationGroup').style.display = 'block';
+                        document.getElementById('signalsBanner').style.display = 'none';
+                        if (p==='Pro'||p==='Elite') document.getElementById('aiAutoTradeWrap').style.display='block';
+                    }
+                });
+            } catch(e) { console.warn('Firestore listener error', e); }
             var userPlanKey = 'signalPlan_' + currentEmail;
             var plan = localStorage.getItem(userPlanKey) || localStorage.getItem('signalPlan');
             currentUser.has_ai = !!plan;
             persistCurrentUser(currentUser);
-
             renderTrades();
-
-            var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
-            var hasPending = allDeposits.some(function(d){ return d.email === currentEmail && d.status === 'pending'; });
-            if (userBal === 0 && hasPending) {
-                balanceEl.insertAdjacentHTML('afterend', '<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">⏳ Deposit pending admin approval</div>');
+            var _allDep = JSON.parse(localStorage.getItem('allDeposits')||'[]');
+            if (userBal===0 && _allDep.some(function(d){return d.email===currentEmail&&d.status==='pending';})) {
+                balanceEl.insertAdjacentHTML('afterend','<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">&#9203; Deposit pending admin approval</div>');
             }
-
             var skipped = localStorage.getItem('signalSkipped_' + currentEmail);
-            if (!plan) {
-                document.getElementById('aiLockNotice').style.display = 'block';
-                document.getElementById('durationGroup').style.display = 'none';
-                if (!skipped) document.getElementById('signalsBanner').style.display = 'block';
-            } else if (plan === 'Pro' || plan === 'Elite') {
-                document.getElementById('aiAutoTradeWrap').style.display = 'block';
-            }
-
+            if (!plan) { document.getElementById('aiLockNotice').style.display='block'; document.getElementById('durationGroup').style.display='none'; if (!skipped) document.getElementById('signalsBanner').style.display='block'; }
+            else if (plan==='Pro'||plan==='Elite') { document.getElementById('aiAutoTradeWrap').style.display='block'; }
             loadFakeChart('AAPL');
             updateAllPrices();
             setInterval(updateAllPrices, 3000);
-
-            document.getElementById('symbol').addEventListener('change', function() {
-                currentSymbol = this.value;
-            });
-
-            // Per-user signals banner close
+            document.getElementById('symbol').addEventListener('change', function() { currentSymbol = this.value; });
             var sbClose = document.querySelector('#signalsBanner .sb-close');
-            if (sbClose) sbClose.onclick = function() {
-                var em = sessionStorage.getItem('currentUserEmail');
-                localStorage.setItem('signalSkipped_' + em, 'true');
-                document.getElementById('signalsBanner').style.display = 'none';
-            };
-
+            if (sbClose) sbClose.onclick = function() { var em = sessionStorage.getItem('currentUserEmail'); localStorage.setItem('signalSkipped_'+em,'true'); document.getElementById('signalsBanner').style.display='none'; };
             window.addEventListener('resize', function() { drawChart(); });
         });
-
         function setOrderSide(side) { orderSide = side; }
 
         function getTrades() {

@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Fund Wallet - FIRSTTRADES</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
     <script>
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        firebase.initializeApp(FIREBASE_CONFIG);
         var fsdb = firebase.firestore();
     </script>
     <link rel="stylesheet" href="styles.css">
@@ -561,9 +559,26 @@
             }
         }
 
+        // Shared cloud store config
+        var JSONBIN_BIN_ID = '6867f3f28960c979a597e5b4';
+        var JSONBIN_KEY    = '$2a$10$s8QzFzFzFzFzFzFzFzFzFuFzFzFzFzFzFzFzFzFzFzFzFzFzFzFz';
+
         function submitToCloud(deposit) {
-            fsdb.collection('deposits').doc(deposit.id).set(deposit)
-                .catch(function(e){ console.warn('Firestore save failed:', e); });
+            // Read current bin, append deposit, write back
+            fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID + '/latest', {
+                headers: { 'X-Master-Key': JSONBIN_KEY }
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+                var list = (data.record && Array.isArray(data.record.deposits)) ? data.record.deposits : [];
+                list.push(deposit);
+                return fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+                    body: JSON.stringify({ deposits: list })
+                });
+            })
+            .catch(function(e){ console.warn('Cloud sync failed:', e); });
         }
 
         function showSuccessAndRedirect() {
@@ -656,3 +671,4 @@
 
 </body>
 </html>
+

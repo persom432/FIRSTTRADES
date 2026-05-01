@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Fund Wallet - FIRSTTRADES</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" integrity="sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B" crossorigin="anonymous"></script>
+    <script src="firebase-config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
     <script>
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        firebase.initializeApp(FIREBASE_CONFIG);
         var fsdb = firebase.firestore();
     </script>
     <link rel="stylesheet" href="styles.css">
@@ -317,23 +317,23 @@
             </div>
 
             <div class="funding-notice">
-                <h4>üí∞ Secure Funding Options</h4>
+                <h4>dY'¯ Secure Funding Options</h4>
                 <p>All deposits are processed through secure, encrypted channels. Funds are typically available within minutes for trading.</p>
             </div>
 
             <div class="deposit-options">
                 <div class="deposit-option" id="btcOption" onclick="selectDepositMethod('btc')">
-                    <span class="deposit-icon">‚Çø</span>
+                    <span class="deposit-icon">É,®</span>
                     <div class="deposit-title">Bitcoin Deposit</div>
                     <div class="deposit-description">Deposit via BTC wallet</div>
                 </div>
                 <div class="deposit-option" id="ethOption" onclick="selectDepositMethod('eth')">
-                    <span class="deposit-icon">Œû</span>
+                    <span class="deposit-icon">Iz</span>
                     <div class="deposit-title">Ethereum Deposit</div>
                     <div class="deposit-description">Deposit via ETH wallet</div>
                 </div>
                 <div class="deposit-option" id="appleOption" onclick="selectDepositMethod('apple')" style="grid-column: 1 / -1;">
-                    <span class="deposit-icon">üçé</span>
+                    <span class="deposit-icon">dY?Z</span>
                     <div class="deposit-title">Apple Gift Card</div>
                     <div class="deposit-description">Fund your account using an Apple Gift Card</div>
                 </div>
@@ -364,7 +364,7 @@
                 <img id="cryptoQr" src="btc.jpeg" alt="BTC QR" style="width:200px;height:200px;border:2px solid #333;border-radius:12px;margin-top:0.5rem;display:block;background:#fff;">
                 <p><small style="color:#888;">Expiry: 30 minutes. After that, generate a new deposit request.</small></p>
                 <div style="margin-top:1.5rem;padding:1.25rem;border:2px dashed #667eea;border-radius:12px;background:rgba(102,126,234,0.05);">
-                    <h4 style="color:#667eea;margin:0 0 0.5rem;">üì∏ Proof of Payment Required</h4>
+                    <h4 style="color:#667eea;margin:0 0 0.5rem;">dY", Proof of Payment Required</h4>
                     <p style="color:#aaa;font-size:0.85rem;margin-bottom:1rem;">After sending BTC, take a screenshot of your transaction confirmation and upload it below. Your deposit will not be approved without proof of payment.</p>
                     <input type="file" id="btcProof" accept="image/*" style="width:100%;padding:10px;border:2px dashed #333;border-radius:10px;font-size:0.9rem;background:#111;cursor:pointer;color:#ccc;">
                     <small style="color:#666;display:block;margin-top:0.4rem;">Accepted: JPG, PNG, screenshot of transaction hash or wallet confirmation</small>
@@ -385,7 +385,7 @@
                 <img id="ethQr" src="eth.jpeg" alt="ETH QR" style="width:200px;height:200px;border:2px solid #333;border-radius:12px;margin-top:0.5rem;display:block;background:#fff;">
                 <p><small style="color:#888;">Expiry: 30 minutes. After that, generate a new deposit request.</small></p>
                 <div style="margin-top:1.5rem;padding:1.25rem;border:2px dashed #667eea;border-radius:12px;background:rgba(102,126,234,0.05);">
-                    <h4 style="color:#667eea;margin:0 0 0.5rem;">üì∏ Proof of Payment Required</h4>
+                    <h4 style="color:#667eea;margin:0 0 0.5rem;">dY", Proof of Payment Required</h4>
                     <p style="color:#aaa;font-size:0.85rem;margin-bottom:1rem;">After sending ETH, take a screenshot of your transaction confirmation and upload it below. Your deposit will not be approved without proof of payment.</p>
                     <input type="file" id="ethProof" accept="image/*" style="width:100%;padding:10px;border:2px dashed #333;border-radius:10px;font-size:0.9rem;background:#111;cursor:pointer;color:#ccc;">
                     <small style="color:#666;display:block;margin-top:0.4rem;">Accepted: JPG, PNG, screenshot of transaction hash or wallet confirmation</small>
@@ -394,7 +394,7 @@
 
             <!-- Apple Gift Card Panel -->
             <section id="appleDepositPanel" style="display:none;margin-top:1.5rem;padding:1.5rem;border:2px dashed #444;border-radius:12px;background:#1a1a1a;color:#fff;">
-                <h3 style="margin-top:0;color:#fff;">üçé Apple Gift Card Deposit</h3>
+                <h3 style="margin-top:0;color:#fff;">dY?Z Apple Gift Card Deposit</h3>
                 <p style="color:#aaa;margin-bottom:1.5rem;font-size:0.9rem;">Enter your gift card details below. Our team will verify and credit your account within 30 minutes.</p>
                 <div style="margin-bottom:1rem;">
                     <label style="display:block;font-weight:600;color:#ccc;margin-bottom:0.5rem;">Gift Card Code *</label>
@@ -411,12 +411,12 @@
                 </div>
                 <button onclick="submitAppleCard()" style="width:100%;padding:14px;background:linear-gradient(135deg,#333,#555);color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;letter-spacing:1px;">Submit Gift Card</button>
                 <div id="appleSuccess" style="display:none;margin-top:1rem;padding:1rem;background:rgba(39,174,96,0.1);border:1px solid #27ae60;border-radius:10px;color:#27ae60;font-weight:600;text-align:center;">
-                    ‚úÖ Gift card submitted! Your account will be credited within 30 minutes.
+                    Éo. Gift card submitted! Your account will be credited within 30 minutes.
                 </div>
             </section>
 
             <div class="button-group" style="margin-top:2rem;">
-                <button type="button" class="btn-secondary" onclick="history.back()">‚Üê Back</button>
+                <button type="button" class="btn-secondary" onclick="history.back()">É+? Back</button>
                 <button type="button" class="btn" id="depositBtn" onclick="proceedToDeposit()" disabled>Deposit Now</button>
             </div>
         </div>
@@ -460,7 +460,7 @@
             var usd = parseFloat(document.getElementById(coin + 'UsdAmount').value);
             var resultEl = document.getElementById(coin + 'ConvertedAmount');
             if (!usd || usd <= 0) { resultEl.textContent = ''; return; }
-            resultEl.textContent = '‚âà ' + (usd / cryptoRates[coin]).toFixed(6) + ' ' + coin.toUpperCase() + ' to send';
+            resultEl.textContent = 'É%^ ' + (usd / cryptoRates[coin]).toFixed(6) + ' ' + coin.toUpperCase() + ' to send';
         }
 
         function selectDepositMethod(method) {
@@ -536,7 +536,7 @@
                 emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
                     to_name: 'Admin',
                     to_email: 'ivieshaguolo@gmail.com',
-                    code: 'NEW ' + selectedMethod.toUpperCase() + ' DEPOSIT ‚Äî PENDING APPROVAL\n\n' +
+                    code: 'NEW ' + selectedMethod.toUpperCase() + ' DEPOSIT É?" PENDING APPROVAL\n\n' +
                           'User: ' + deposit.user + '\n' +
                           'Email: ' + deposit.email + '\n' +
                           'Amount: $' + usdAmt + '\n' +
@@ -561,15 +561,32 @@
             }
         }
 
+        // Shared cloud store config
+        var JSONBIN_BIN_ID = '6867f3f28960c979a597e5b4';
+        var JSONBIN_KEY    = '$2a$10$s8QzFzFzFzFzFzFzFzFzFuFzFzFzFzFzFzFzFzFzFzFzFzFzFzFz';
+
         function submitToCloud(deposit) {
-            fsdb.collection('deposits').doc(deposit.id).set(deposit)
-                .catch(function(e){ console.warn('Firestore save failed:', e); });
+            // Read current bin, append deposit, write back
+            fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID + '/latest', {
+                headers: { 'X-Master-Key': JSONBIN_KEY }
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(data){
+                var list = (data.record && Array.isArray(data.record.deposits)) ? data.record.deposits : [];
+                list.push(deposit);
+                return fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+                    body: JSON.stringify({ deposits: list })
+                });
+            })
+            .catch(function(e){ console.warn('Cloud sync failed:', e); });
         }
 
         function showSuccessAndRedirect() {
             document.querySelector('.funding-container').innerHTML =
                 '<div style="text-align:center;padding:3rem 1rem;">' +
-                '<div style="font-size:5rem;margin-bottom:1rem;">‚úÖ</div>' +
+                '<div style="font-size:5rem;margin-bottom:1rem;">Éo.</div>' +
                 '<h2 style="color:#27ae60;margin-bottom:0.75rem;">Deposit Submitted!</h2>' +
                 '<p style="color:#aaa;margin-bottom:0.5rem;">Your deposit is pending admin approval.</p>' +
                 '<p style="color:#666;font-size:0.85rem;">Redirecting to dashboard...</p>' +
@@ -656,3 +673,4 @@
 
 </body>
 </html>
+
