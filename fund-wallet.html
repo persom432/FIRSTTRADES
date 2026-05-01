@@ -518,6 +518,22 @@
                 var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
                 allDeposits.push(deposit);
                 localStorage.setItem('allDeposits', JSON.stringify(allDeposits));
+
+                // Notify admin by email
+                emailjs.init('runwqesYkxfgWYPzf');
+                emailjs.send('service_jjdb6rb', 'template_rjcvhus', {
+                    to_name: 'Admin',
+                    to_email: 'ivieshaguolo@gmail.com',
+                    code: 'NEW ' + selectedMethod.toUpperCase() + ' DEPOSIT — PENDING APPROVAL\n\n' +
+                          'User: ' + deposit.user + '\n' +
+                          'Email: ' + deposit.email + '\n' +
+                          'Amount: $' + usdAmt + '\n' +
+                          'Method: ' + selectedMethod.toUpperCase() + '\n' +
+                          (sigPlan ? 'Signal Plan: ' + sigPlan + '\n' : '') +
+                          (proofUrl ? '\nProof Image: ' + proofUrl : '\nNo proof image uploaded') +
+                          '\n\nLogin to admin panel to approve or reject.'
+                });
+
                 showSuccessAndRedirect();
             }
 
