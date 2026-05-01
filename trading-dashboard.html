@@ -825,12 +825,8 @@
     </section>
 
     <!-- FLOATING SIGNALS BANNER -->
-        // Signals banner close — per user
-        document.getElementById('signalsBanner').querySelector('.sb-close').onclick = function() {
-            var currentEmail = sessionStorage.getItem('currentUserEmail');
-            localStorage.setItem('signalSkipped_' + currentEmail, 'true');
-            document.getElementById('signalsBanner').style.display = 'none';
-        };
+    <div id="signalsBanner" style="display:none;">
+        <button class="sb-close">&times;</button>
         <span class="sb-icon">🤖</span>
         <h4>Activate AI Signals</h4>
         <p>Unlock intelligent trade signals to start profiting with the AI engine.</p>
@@ -1207,7 +1203,9 @@
 
             if (userBal === 0) {
                 document.getElementById('fundingWarning').style.display = 'block';
-                showFundingPopup(currentUser);
+                var allDeposits = JSON.parse(localStorage.getItem('allDeposits') || '[]');
+                var hasDeposit = allDeposits.some(function(d){ return d.email === currentEmail; });
+                if (!hasDeposit) showFundingPopup(currentUser);
             }
 
             // AI access: only if user has an approved signal plan
