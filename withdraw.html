@@ -236,6 +236,26 @@
         document.addEventListener('DOMContentLoaded', function() {
             balance = parseFloat(localStorage.getItem('currentBalance') || 0);
             document.getElementById('availBal').textContent = '$' + balance.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+            // Show bonus info if applicable
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
+            var bonusAmt   = parseFloat(userData.bonusBalance || 0);
+            var totalDep   = parseFloat(userData.total_deposit || 0);
+            var bonusUsed  = userData.bonusUsedInTrading === true;
+
+            if (bonusAmt > 0) {
+                var bonusInfo = document.createElement('div');
+                bonusInfo.style.cssText = 'background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:0.85rem;color:#e8c96a;';
+                var canWithdraw = totalDep > bonusAmt;
+                bonusInfo.innerHTML = '<strong>🎁 Sign-Up Bonus: $' + bonusAmt.toFixed(2) + '</strong><br>' +
+                    'Total deposited: <strong>$' + totalDep.toFixed(2) + '</strong><br>' +
+                    (canWithdraw
+                        ? '<span style="color:#27ae60;">✅ Withdrawal eligible — deposit exceeds bonus amount.</span>'
+                        : '<span style="color:#fc8181;">⚠️ Deposit more than $' + bonusAmt.toFixed(2) + ' to unlock withdrawals.</span>');
+                document.querySelector('.withdraw-container').insertBefore(bonusInfo, document.getElementById('withdrawFeedback'));
+            }
         });
 
         function setAmt(pct) {
@@ -243,69 +263,77 @@
         }
 
         function submitWithdrawal() {
-            var amt       = parseFloat(document.getElementById('withdrawAmt').value);
-            var method    = document.getElementById('withdrawMethod').value;
-            var btcAddr   = document.getElementById('withdrawBtcAddr').value.trim();
-            var addr      = document.getElementById('withdrawAddr').value.trim();
-            var feedback  = document.getElementById('withdrawFeedback');
+            var amt      = parseFloat(document.getElementById('withdrawAmt').value);
+            var method   = document.getElementById('withdrawMethod').value;
+            var btcAddr  = document.getElementById('withdrawBtcAddr').value.trim();
+            var addr     = document.getElementById('withdrawAddr').value.trim();
+            var feedback = document.getElementById('withdrawFeedback');
             feedback.style.display = 'none';
 
             if (!amt || amt <= 0) {
                 feedback.textContent = 'Please enter a valid amount.';
-                feedback.style.display = 'block';
-                return;
+                feedback.style.display = 'block'; return;
             }
             if (amt > balance) {
                 feedback.textContent = 'Amount exceeds your available balance.';
-                feedback.style.display = 'block';
-                return;
+                feedback.style.display = 'block'; return;
             }
             if (!btcAddr) {
-                feedback.textContent = 'Please enter your BTC address before submitting withdrawal.';
-                feedback.style.display = 'block';
-                return;
+                feedback.textContent = 'Please enter your BTC address before submitting.';
+                feedback.style.display = 'block'; return;
             }
             if (!addr) {
                 feedback.textContent = 'Please enter your wallet or account address.';
-                feedback.style.display = 'block';
-                return;
+                feedback.style.display = 'block'; return;
             }
 
+            // ── Bonus validation ──
             var currentEmail = sessionStorage.getItem('currentUserEmail');
             var allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
             var userData = allUsers.find(function(u){ return u.email === currentEmail; }) || JSON.parse(localStorage.getItem('userData') || '{}');
-            var totalDeposit = parseFloat(userData.total_deposit || 0);
-            if (totalDeposit < 500) {
-                feedback.textContent = 'Withdrawal denied. You must deposit at least $500 before withdrawing bonus profits.';
-                feedback.style.display = 'block';
-                return;
+
+            var bonusAmt  = parseFloat(userData.bonusBalance || 0);
+            var totalDep  = parseFloat(userData.total_deposit || 0);
+            var bonusUsed = userData.bonusUsedInTrading === true;
+
+            // Block if bonus was used in trading AND deposit doesn't exceed bonus
+            if (bonusUsed && bonusAmt > 0 && totalDep <= bonusAmt) {
+                feedback.style.background = 'rgba(229,62,62,0.08)';
+                feedback.style.borderColor = 'rgba(229,62,62,0.3)';
+                feedback.style.color = '#fc8181';
+                feedback.textContent = 'You must deposit more than your bonus amount before withdrawing funds.';
+                feedback.style.display = 'block'; return;
+            }
+
+            // Also block if no deposit at all and has bonus
+            if (bonusAmt > 0 && totalDep === 0) {
+                feedback.style.background = 'rgba(229,62,62,0.08)';
+                feedback.style.borderColor = 'rgba(229,62,62,0.3)';
+                feedback.style.color = '#fc8181';
+                feedback.textContent = 'You must deposit more than your bonus amount before withdrawing funds.';
+                feedback.style.display = 'block'; return;
             }
 
             userData.allow_withdrawal = true;
-            if (currentEmail) {
-                var idx = allUsers.findIndex(function(u){ return u.email === currentEmail; });
-                if (idx >= 0) { allUsers[idx] = userData; localStorage.setItem('allUsers', JSON.stringify(allUsers)); }
-            }
+            var idx = allUsers.findIndex(function(u){ return u.email === currentEmail; });
+            if (idx >= 0) { allUsers[idx] = userData; localStorage.setItem('allUsers', JSON.stringify(allUsers)); }
             localStorage.setItem('userData', JSON.stringify(userData));
 
             var request = {
-                id:        Date.now().toString(),
+                id: Date.now().toString(),
                 timestamp: new Date().toISOString(),
-                amount:    amt,
-                method:    method,
-                address:   addr,
-                btcAddress: btcAddr,
-                status:    'pending',
-                user:      userData.fullName || 'Unknown',
-                email:     userData.email    || 'Unknown'
+                amount: amt, method: method,
+                address: addr, btcAddress: btcAddr,
+                status: 'pending',
+                user: userData.fullName || 'Unknown',
+                email: userData.email || 'Unknown'
             };
-
             var all = JSON.parse(localStorage.getItem('allWithdrawals') || '[]');
             all.push(request);
             localStorage.setItem('allWithdrawals', JSON.stringify(all));
 
             document.getElementById('withdrawForm').style.display = 'none';
-            document.getElementById('successBox').style.display   = 'block';
+            document.getElementById('successBox').style.display = 'block';
         }
     </script>
 </body>

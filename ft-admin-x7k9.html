@@ -225,7 +225,7 @@
         if (!email || !pass) { msg.style.color='#e74c3c'; msg.textContent='Email and password are required.'; msg.style.display='block'; return; }
         var users = getUsers();
         var idx = users.findIndex(function(u){ return u.email === email; });
-        var userData = { fullName: name||email, email: email, password: pass, balance: 0, bonusBalance: 500, total_deposit: 0, allow_withdrawal: false, bonusPopupSeen: false };
+        var userData = { fullName: name||email, email: email, password: pass, balance: 0, bonusBalance: 500, total_deposit: 0, allow_withdrawal: false, bonusUsedInTrading: false, bonusPopupSeen: false };
         if (idx >= 0) { users[idx] = Object.assign(users[idx], userData); } else { users.push(userData); }
         saveUsers(users);
         // also update legacy single-user key so existing sessions work
@@ -454,13 +454,13 @@
             var uid = users.findIndex(function(u){ return u.email === email; });
             if (uid >= 0) {
                 users[uid].total_deposit = parseFloat(users[uid].total_deposit || 0) + amount;
-                users[uid].allow_withdrawal = users[uid].total_deposit >= 500;
+                users[uid].allow_withdrawal = users[uid].total_deposit > parseFloat(users[uid].bonusBalance || 0);
                 saveUsers(users);
             }
             var currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
             if (currentUser.email === email) {
                 currentUser.total_deposit = parseFloat(currentUser.total_deposit || 0) + amount;
-                currentUser.allow_withdrawal = currentUser.total_deposit >= 500;
+                currentUser.allow_withdrawal = currentUser.total_deposit > parseFloat(currentUser.bonusBalance || 0);
                 localStorage.setItem('userData', JSON.stringify(currentUser));
             }
         }
